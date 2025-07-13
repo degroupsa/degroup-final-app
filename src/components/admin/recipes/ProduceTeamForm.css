@@ -1,0 +1,67 @@
+.produce-form-container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+  }
+  
+  .produce-form-container h3 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-top: 0;
+  }
+  
+  .produce-form-container .product-name {
+      background-color: #f8f9fa;
+      padding: 0.5rem;
+      border-radius: 4px;
+      margin-bottom: 1.5rem;
+  }
+  
+  .production-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem; /* Espacio entre los campos del formulario */
+  }
+  
+  .production-form .form-group {
+      text-align: left;
+  }
+  
+  .produce-form-container input {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem; /* Tamaño de fuente consistente */
+      border: 1px solid #ccc;
+      border-radius: 4px;
+  }
+  
+  /* El .form-actions que ya teníamos en RecipeForm.css puede aplicar aquí */
+  /* pero lo incluimos por si acaso */
+  .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 1rem;
+  }
+
+  .production-type-selector {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+.production-type-selector label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+}

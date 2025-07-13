@@ -1,0 +1,48 @@
+.conversationList {
+    border-right: 1px solid #e0e0e0;
+    height: 100%;
+    overflow-y: auto;
+  }
+  
+  .loading, .noConvos {
+    padding: 20px;
+    text-align: center;
+    color: #888;
+  }
+  
+  .convoItem {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    gap: 15px;
+    cursor: pointer;
+    text-decoration: none;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+  }
+  
+  .convoItem:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .convoItem.active {
+    background-color: #eef5ff;
+  }
+  
+  .convoDetails {
+    overflow: hidden;
+  }
+  
+  .displayName {
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .lastMessage {
+    margin: 4px 0 0;
+    font-size: 0.9rem;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }

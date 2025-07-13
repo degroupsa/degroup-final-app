@@ -1,0 +1,53 @@
+/* Estilos para los Widgets del Dashboard de Inventario */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .kpi-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .kpi-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  }
+  
+  .kpi-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+  }
+  
+  .kpi-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #343a40;
+    line-height: 1.2;
+  }
+  
+  .kpi-value-small {
+    font-size: 1.4rem; /* Un poco más pequeño para textos largos */
+    font-weight: 700;
+    color: #343a40;
+    line-height: 1.2;
+    word-wrap: break-word;
+  }
+  
+  
+  .kpi-description {
+    font-size: 0.8rem;
+    color: #adb5bd;
+    margin-top: auto; /* Empuja la descripción hacia abajo */
+    padding-top: 0.5rem;
+  }

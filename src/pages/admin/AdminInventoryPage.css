@@ -1,0 +1,104 @@
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.grid-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.card-title {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    color: #343a40;
+}
+
+.full-width-card {
+    margin-top: 2rem;
+}
+
+/* --- Estilos para el botón de Agregar/Cancelar --- */
+
+/* Base del botón */
+.toggle-form-btn {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    color: white;
+    min-width: 180px; /* Ancho mínimo para que no cambie de tamaño */
+  }
+  
+  /* Estilo para "Agregar Producto" */
+  .toggle-form-btn.add {
+    background-color: #28a745; /* Verde éxito */
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.4);
+  }
+  
+  .toggle-form-btn.add:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+  }
+  
+  /* Estilo para "Cancelar" */
+  .toggle-form-btn.cancel {
+    background-color: #6c757d; /* Gris secundario */
+    box-shadow: 0 2px 4px rgba(108, 117, 125, 0.4);
+  }
+  
+  .toggle-form-btn.cancel:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+  }
+  
+  /* Contenedor del header para alinear título y botón */
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem; /* Espacio antes del dashboard */
+  }
+
+  /* Contenedor para los botones del header */
+.header-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  /* Estilo para el botón de "Salida" */
+  .toggle-form-btn.egress {
+    background-color: #dc3545; /* Rojo peligro */
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.4);
+  }
+  
+  .toggle-form-btn.egress:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+  }
+
+  /* ... (estilos existentes) ... */
+.section-title {
+  margin-top: 3rem;
+  font-size: 1.5rem;
+  color: #000000;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.section-divider {
+  border: none;
+  height: 1px;
+  background-color: #dee2e6;
+  margin: 4rem 0;
+}

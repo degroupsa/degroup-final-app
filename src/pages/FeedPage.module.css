@@ -1,0 +1,149 @@
+.pageBackground {
+  background-color: #f0f2f5;
+  min-height: calc(100vh - 60px);
+  padding: 2rem;
+}
+
+.hubContainer {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ▼▼▼ ESTILOS DEL TÍTULO MODIFICADOS PARA EL LOGO ▼▼▼ */
+.hubHeader {
+  
+  margin-bottom: 2rem;
+  text-align: center; 
+}
+
+.headerLogo {
+  height: 150px; /* Ajusta la altura de tu logo como prefieras */
+  width: auto; /* El ancho se ajusta automáticamente */
+  margin-bottom: -2rem;
+}
+/* ▲▲▲ FIN DE ESTILOS DEL TÍTULO ▲▲▲ */
+
+
+.tabNav {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  border-bottom: 1px solid #ddd;
+  margin-top: 1.5rem;
+}
+
+.tabNav button {
+  padding: 1rem 0.5rem;
+  border: none;
+  background: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #65676b;
+  cursor: pointer;
+  position: relative;
+}
+
+.tabNav button::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #1877f2;
+  transform: scaleX(0);
+  transition: transform 0.2s ease-in-out;
+}
+
+.tabNav button.activeTab {
+  color: #1877f2;
+}
+
+.tabNav button.activeTab::after {
+  transform: scaleX(1);
+}
+
+.hubLayout {
+  display: block;
+}
+
+.hubLayout.twoColumns {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.mainContent {
+  width: 100%;
+}
+
+.rightSidebar .sidebarCard {
+  position: sticky;
+  top: 80px; 
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.rightSidebar h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 0 0.5rem 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 0.5rem;
+}
+
+/* --- Estilos para contenido existente --- */
+
+.postListContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.placeholder {
+  text-align: center;
+  padding: 3rem;
+  color: #65676b;
+}
+
+/* --- Estilos para la pestaña de Búsqueda --- */
+
+.searchContainer {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.searchInputWrapper {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.searchInputIcon {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  color: #aaa;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 12px 12px 45px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  background-color: #f0f2f5;
+}
+
+.searchResults {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}

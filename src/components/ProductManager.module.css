@@ -1,0 +1,86 @@
+.managerContainer {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-top: 2rem;
+  }
+  
+  .formContainer {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .formContainer h3 {
+    margin-top: 0;
+  }
+  
+  .formGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .formGrid input {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Importante para que el padding no afecte el ancho */
+  }
+  
+  .formContainer button {
+    margin-top: 1rem;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    background-color: #28a745; /* Verde para crear */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .productTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+  }
+  
+  .productTable th,
+  .productTable td {
+    border-bottom: 1px solid #ddd;
+    padding: 0.8rem;
+    text-align: left;
+  }
+  
+  .productTable th {
+    background-color: #f9f9f9;
+  }
+  
+  .actionsCell button {
+    margin-right: 0.5rem;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+  
+  .editButton {
+    background-color: #ffc107;
+    color: #212529;
+  }
+  
+  .deleteButton {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  .tableTitle {
+    text-align: center;
+    margin-top: 2rem; /* Le damos un poco de espacio arriba */
+    color: #000000;
+  }

@@ -1,0 +1,72 @@
+.track-production-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+}
+
+.track-production-container h1 {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.track-production-container > p {
+    text-align: center;
+    color: #6c757d;
+    margin-bottom: 3rem;
+}
+
+.no-orders-found {
+    text-align: center;
+    padding: 3rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.production-card {
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.production-card-header {
+    padding: 1rem 1.5rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.production-card-header h3 {
+    margin: 0;
+}
+
+.production-card-header .tracking-code {
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.production-card-body {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+    padding: 2rem 1.5rem;
+}
+
+.info-section p {
+    margin: 0 0 1rem 0;
+}
+
+/* Responsive para pantallas chicas */
+@media (max-width: 768px) {
+    .production-card-body {
+        grid-template-columns: 1fr;
+    }
+}

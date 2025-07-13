@@ -1,0 +1,73 @@
+.storyReel {
+    display: flex;
+    gap: 10px;
+    padding: 1rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    overflow-x: auto; /* Permite el scroll horizontal */
+    margin-bottom: 2rem;
+  }
+  
+  /* Ocultar la barra de scroll */
+  .storyReel::-webkit-scrollbar {
+    display: none;
+  }
+  .storyReel {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .story {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    min-width: 80px;
+  }
+  
+  .avatar, .createStoryAvatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #0d6efd; /* Borde para indicar que hay historia */
+    padding: 2px;
+    background-color: #fff;
+  }
+  
+  .createStoryAvatar {
+      border-style: dashed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      color: #0d6efd;
+  }
+  
+  .authorName {
+    font-size: 0.75rem;
+    margin-top: 6px;
+    text-align: center;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ... (todos tus estilos anteriores) ... */
+
+.avatar, .createStoryAvatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #0d6efd; /* Borde azul para historias NO VISTAS */
+  padding: 2px;
+  background-color: #fff;
+}
+
+/* --- NUEVO ESTILO PARA HISTORIAS VISTAS --- */
+.avatar.seen {
+    border-color: #bdc3c7; /* Borde gris para historias VISTAS */
+}

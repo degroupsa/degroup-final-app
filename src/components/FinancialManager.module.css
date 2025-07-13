@@ -1,0 +1,62 @@
+.financialContainer {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.financialContainer h2 {
+margin-top: 0;
+text-align: center;
+}
+
+.form {
+display: flex;
+flex-direction: column;
+gap: 1rem;
+}
+
+.formRow {
+display: grid;
+grid-template-columns: 1fr 1fr 2fr 1fr;
+gap: 1rem;
+align-items: center;
+}
+
+.form input, .form select {
+padding: 0.8rem;
+border-radius: 5px;
+border: 1px solid \#ddd;
+}
+
+.form button {
+padding: 0.8rem;
+font-size: 1rem;
+font-weight: bold;
+color: white;
+background-color: \#007bff;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+transition: background-color 0.2s;
+}
+.form button:hover {
+background-color: \#0056b3;
+}
+
+.recordsTable {
+width: 100%;
+margin-top: 2rem;
+border-collapse: collapse;
+}
+.recordsTable th, .recordsTable td {
+padding: 0.8rem;
+text-align: left;
+border-bottom: 1px solid \#eee;
+}
+.recordsTable th {
+background-color: \#f8f9fa;
+}
+
+.incomeText { color: \#28a745; }
+.expenseText { color: \#dc3545; }

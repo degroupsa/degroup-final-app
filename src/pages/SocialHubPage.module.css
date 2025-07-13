@@ -1,0 +1,59 @@
+.hubContainer {
+    max-width: 800px; /* Hacemos el contenedor principal un poco más ancho */
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  
+  .hubHeader {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .hubHeader h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #2d3436;
+  }
+  
+  .tabNav {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .tabNav button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    color: #6c757d;
+    transition: all 0.2s;
+  }
+  
+  .tabNav button:hover {
+    color: #2d3436;
+  }
+  
+  .tabNav button.activeTab {
+    color: #0d6efd;
+    border-bottom-color: #0d6efd;
+  }
+  
+  /* --- NUEVOS ESTILOS --- */
+  
+  .postList {
+      margin-top: 2rem;
+  }
+  
+  .noPostsMessage {
+      text-align: center;
+      padding: 3rem;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      color: #6c757d;
+  }

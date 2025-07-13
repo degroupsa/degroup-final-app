@@ -1,0 +1,41 @@
+.kpiCard {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-left: 5px solid #007bff; /* Color por defecto */
+    gap: 1.5rem;
+}
+
+.iconWrapper {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.textWrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 600;
+}
+
+.value {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #343a40;
+}

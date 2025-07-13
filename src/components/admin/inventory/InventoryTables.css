@@ -1,0 +1,74 @@
+.table-container {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow-x: auto; /* Para que la tabla sea responsive en pantallas chicas */
+  }
+  
+  .table-title {
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+      font-size: 1.2rem;
+      color: #343a40;
+  }
+  
+  .inventory-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  
+  .inventory-table th,
+  .inventory-table td {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .inventory-table th {
+    font-weight: 600;
+    color: #495057;
+    background-color: #f8f9fa;
+  }
+  
+  .inventory-table tbody tr:hover {
+    background-color: #f1f3f5;
+  }
+  
+  /* Fila para stock bajo */
+  .low-stock-row {
+    background-color: #fff1f2 !important;
+    color: #d90429;
+    font-weight: 600;
+  }
+
+  /* ... (estilos existentes) ... */
+
+.action-btn {
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-btn.deliver {
+  background-color: #007bff;
+  color: white;
+}
+
+.action-btn.deliver:hover {
+  background-color: #0056b3;
+}
+
+.action-btn:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+/* Añade esta nueva regla al final del archivo */
+.centeredTitle {
+  text-align: center;
+}

@@ -1,0 +1,106 @@
+.manual-egress-container {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-top: 2rem;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.egress-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Aumentamos el espacio */
+}
+
+.egress-form .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Estilo para el contenedor del buscador para posicionar la lista */
+.search-group {
+    position: relative;
+}
+
+.egress-form label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.egress-form input {
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.found-item-info {
+    font-size: 0.9rem;
+    margin-top: -0.5rem; /* Lo acercamos al input */
+    padding: 0.5rem 0.8rem;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    color: #155724;
+    font-weight: 500;
+}
+
+.egress-form .submit-btn {
+    padding: 0.8rem;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #dc3545;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.egress-form .submit-btn:hover {
+    background-color: #c82333;
+}
+
+.egress-form .submit-btn:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* --- NUEVOS ESTILOS PARA LA LISTA DE SUGERENCIAS --- */
+.suggestions-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ced4da;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.suggestions-list li {
+    padding: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+}
+
+.suggestions-list li:hover {
+    background-color: #f0f0f0;
+}
+
+.suggestion-stock {
+    color: #6c757d;
+    font-size: 0.85rem;
+}

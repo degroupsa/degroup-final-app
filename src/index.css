@@ -1,0 +1,58 @@
+/* src/index.css */
+
+:root {
+  --color-primario: #2c3e50;
+  --color-texto: #333333;
+  --color-fondo: #ffffff;
+  --color-acento: #61dafb;
+  --color-fondo-seccion: #f0f2f5;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Ahora el color de fondo principal lo controla la capa de abajo */
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  position: relative; /* Necesario para que el z-index de la capa de fondo funcione */
+  z-index: 1;
+}
+
+/* === TÉCNICA AVANZADA: CAPA DE FONDO CON OPACIDAD === */
+/* Creamos un pseudo-elemento que se expande por toda la pantalla,
+   justo por detrás del contenido del body. */
+body::before {
+  content: ''; /* Obligatorio para que se muestre el pseudo-elemento */
+  position: fixed; /* Se queda fijo aunque hagamos scroll */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  /* Aquí aplicamos nuestra imagen de patrón */
+  background-image: url('/images/background-pattern.jpg');
+
+  /* Hacemos que la imagen sea mucho más pequeña y se repita */
+  background-size: 400px;
+
+  /* ¡LA CLAVE! Le bajamos la opacidad al 5% para que sea súper sutil */
+  opacity: 0.2;
+
+  /* Nos aseguramos de que esté detrás de todo el contenido */
+  z-index: -1;
+}
+
+/* El resto de los estilos no cambia */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--color-primario);
+}

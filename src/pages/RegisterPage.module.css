@@ -1,0 +1,216 @@
+.registerPage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 60px); /* 60px es la altura del navbar */
+  padding: 2rem;
+  background-color: #f4f5f7;
+}
+
+.registerContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 900px;
+  width: 100%;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.brandingSection {
+  background-color: #172b4d; /* Un color corporativo oscuro */
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.logo {
+  width: 350px;
+  margin-bottom: 3.5rem;
+}
+
+.brandingSection h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+}
+
+.brandingSection p {
+  font-size: 1rem;
+  color: #b3bac5;
+}
+
+.formSection {
+  padding: 3rem 2.5rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form h1 {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.errorMessage {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  border-radius: 5px;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.inputGroup {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.inputIcon {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  color: #aaa;
+}
+
+.inputGroup input,
+.genderSelect {
+  width: 100%;
+  padding: 12px 12px 12px 45px; /* Espacio para el ícono */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+/* Estilo específico para el select de género */
+.genderSelect {
+  color: #555;
+  cursor: pointer;
+}
+
+.genderSelect:required:invalid {
+  color: #aaa;
+}
+
+.submitButton {
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: white;
+  background-color: #0052cc;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #0065ff;
+}
+
+.submitButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.redirectText {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+}
+
+/* Estilos para el autocompletado de Google */
+.inputGroup > div { /* Target el div de react-google-places-autocomplete */
+  width: 100%;
+}
+
+.conversationList {
+  border-right: 1px solid #e0e0e0;
+  height: 100%;
+  overflow-y: auto;
+  background-color: #f7f7f7;
+}
+
+.loading, .noConvos {
+  padding: 20px;
+  text-align: center;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.convoItem {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  gap: 15px;
+  cursor: pointer;
+  text-decoration: none;
+  border-bottom: 1px solid #e9e9e9;
+  transition: background-color 0.2s;
+  position: relative; /* Necesario para posicionar el botón de borrar */
+}
+
+.convoItem:hover {
+  background-color: #f0f0f0;
+}
+
+.convoItem.active {
+  background-color: #eef5ff;
+  border-right: 3px solid #007bff;
+}
+
+.convoDetails {
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.displayName {
+  font-weight: 600;
+  color: #333;
+}
+
+.lastMessage {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ▼▼▼ ESTILOS PARA EL BOTÓN DE ELIMINAR ▼▼▼ */
+.deleteButton {
+  background-color: #e0e0e0;
+  color: #888;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  /* Por defecto está oculto */
+  opacity: 0;
+  transition: opacity 0.2s, background-color 0.2s;
+}
+
+/* Aparece cuando el ratón está sobre el item de la conversación */
+.convoItem:hover .deleteButton {
+  opacity: 1;
+}
+
+.deleteButton:hover {
+  background-color: #dc3545;
+  color: white;
+}

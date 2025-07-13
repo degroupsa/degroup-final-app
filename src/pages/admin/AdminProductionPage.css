@@ -1,0 +1,130 @@
+.production-orders-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.order-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+}
+
+.order-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.order-card-header h4 { margin: 0; }
+.order-card-header span { font-size: 0.8rem; font-family: monospace; color: #6c757d; }
+
+.order-card-body { padding: 1.5rem; }
+.order-card-body p { margin: 0 0 0.5rem 0; }
+.status-badge {
+    background-color: #007bff;
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.order-card-actions {
+    margin-top: auto; /* Empuja las acciones hacia abajo */
+    border-top: 1px solid #dee2e6;
+}
+
+.order-card-actions .advance-btn {
+    width: 100%;
+    padding: 0.8rem;
+    border: none;
+    background-color: #28a745;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.order-card-actions .advance-btn:hover {
+    background-color: #218838;
+}
+
+.order-card-actions .advance-btn:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* ... (estilos existentes) ... */
+
+/* Ajustes al header de la tarjeta */
+.order-card-header .tracking-code {
+    align-self: flex-start;
+}
+
+/* Estilos para las acciones */
+.order-card-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem; /* Padding más ajustado */
+    background-color: #f8f9fa;
+}
+
+.next-step-info {
+    font-size: 0.85rem;
+    color: #495057;
+}
+
+.order-card-actions .advance-btn {
+    width: auto; /* Ancho automático */
+    padding: 0.5rem 1rem;
+}
+
+/* ... (estilos existentes) ... */
+
+/* Contenedor para alinear código y botón de eliminar */
+.header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+}
+
+.delete-order-btn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 0.2rem;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.delete-order-btn:hover {
+    opacity: 1;
+}
+
+.production-type-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    color: white;
+    text-align: right;
+}
+.production-type-badge.for_stock {
+    background-color: #17a2b8; /* Azul info */
+}
+.production-type-badge.for_delivery {
+    background-color: #ffc107; /* Amarillo advertencia */
+    color: #212529;
+}

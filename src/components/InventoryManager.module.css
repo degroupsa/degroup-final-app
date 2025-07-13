@@ -1,0 +1,90 @@
+/* Usaremos estilos muy similares a los otros gestores para mantener la consistencia */
+.managerContainer {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-top: 2rem;
+  }
+  
+  .formContainer {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .formContainer h3 {
+    margin-top: 0;
+  }
+  
+  .formGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  
+  .formGrid input,
+  .formGrid select {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+  
+  .formContainer button {
+    margin-top: 1rem;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .inventoryTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+  }
+  
+  .inventoryTable th,
+  .inventoryTable td {
+    border-bottom: 1px solid #ddd;
+    padding: 0.8rem;
+    text-align: left;
+  }
+  
+  .inventoryTable th {
+    background-color: #f9f9f9;
+  }
+  
+  .stockInput {
+      padding: 0.4rem;
+      width: 80px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-align: center;
+  }
+  
+  .actionsCell button {
+    margin-right: 0.5rem;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+  
+  .editButton {
+    background-color: #ffc107;
+    color: #212529;
+  }
+  
+  .deleteButton {
+    background-color: #dc3545;
+    color: white;
+  }

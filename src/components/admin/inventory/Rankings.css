@@ -1,0 +1,56 @@
+.rankings-container {
+    display: grid;
+    /* Usamos 2 columnas para un diseño más limpio */
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem; /* Aumentamos el espacio */
+    height: 100%;
+}
+
+.ranking-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.ranking-title {
+    font-size: 0.95rem; /* Un poco más grande */
+    font-weight: 600;
+    color: #343a40; /* Un poco más oscuro */
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Espacio entre el ícono y el texto */
+}
+
+.ranking-title svg {
+    color: #007bff; /* Color para los íconos */
+}
+
+.ranking-list {
+    list-style-type: none; /* Quitamos los números */
+    padding-left: 0;
+    margin: 0;
+    font-size: 0.85rem;
+    flex-grow: 1;
+}
+
+.ranking-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.2rem; /* Más espaciado vertical */
+    color: #495057;
+}
+
+.ranking-list li:not(:first-child) {
+    border-top: 1px solid #e9ecef; /* Separador horizontal */
+}
+
+.ranking-list li span {
+    font-weight: 600;
+    color: #495057;
+    background-color: #f1f3f5;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}

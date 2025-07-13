@@ -1,0 +1,118 @@
+.managerContainer {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.orderCard {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background-color: #fff;
+  overflow: hidden; /* Para que los bordes redondeados se apliquen bien */
+}
+
+.orderSummary {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto auto;
+  gap: 1rem;
+  padding: 1.5rem;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.orderSummary:hover {
+  background-color: #f8f9fa;
+}
+
+.orderSummary p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.orderSummary p span {
+  font-weight: 600;
+  display: block;
+  font-size: 1rem;
+  color: #2c3e50;
+}
+
+.detailsButton {
+  background-color: #e9ecef;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  justify-self: end; /* Alinea el botón a la derecha en la grilla */
+}
+
+.orderDetails {
+  padding: 1.5rem;
+  background-color: #fafafa;
+  border-top: 1px solid #e9ecef;
+}
+
+.orderDetails h4 {
+  margin-top: 0;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed #eee;
+}
+
+/* --- NUEVOS ESTILOS --- */
+
+.statusBadge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.8rem !important;
+  font-weight: bold !important;
+  color: white !important;
+  text-transform: capitalize;
+}
+
+/* Colores por estado */
+.statusBadge.generada, .statusBadge.pendiente { background-color: #ffc107; color: #343a40 !important; }
+.statusBadge.aceptado { background-color: #28a745; }
+.statusBadge.rechazado { background-color: #dc3545; }
+.statusBadge.cerrado { background-color: #1585e7; }
+
+.actionsContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.actionsContainer span {
+  font-weight: 600;
+  color: #495057;
+}
+
+.actionButton {
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.actionButton.acceptButton { background-color: #28a745; color: white; }
+.actionButton.rejectButton { background-color: #dc3545; color: white; }
+.actionButton.closeButton { background-color: #1585e7; color: white; }
+
+.actionButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}

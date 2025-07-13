@@ -1,0 +1,38 @@
+.featuredSection {
+  
+  background-color: #dee3e9; /* Fondo gris muy suave */
+  padding: 2rem 1rem; /* Más espacio vertical para que respire */
+  text-align: center;
+}
+
+.featuredSection h2 {
+
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 3rem;
+  position: relative;
+  display: inline-block;
+  color: #000000;
+}
+
+/* Línea decorativa dorada debajo del título */
+.featuredSection h2::after {
+  content: '';
+  position: absolute;
+  width: 70%;
+  height: 4px;
+  /* Usamos el mismo color dorado de la barra de navegación */
+  background-color: #f0c420; 
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}

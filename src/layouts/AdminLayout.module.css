@@ -1,0 +1,137 @@
+.adminLayout {
+  display: flex;
+  transition: margin-left 0.3s ease; /* Transición suave para el contenido principal */
+}
+
+.sidebar {
+  width: 240px; /* Un poco más ancho para los textos e íconos */
+  background-color: black; /* Un negro un poco más suave */
+  color: white;
+  padding: 1rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease; /* Transición para el ancho del sidebar */
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+}
+
+.sidebarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ffd000;
+  padding-bottom: 1rem;
+}
+
+.sidebar h2 {
+  color: #ffd000;
+  text-align: center;
+  margin: 0;
+  font-size: 1.2rem;
+  white-space: nowrap; /* Evita que el texto se rompa */
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.toggleButton {
+  background: #495057;
+  border: none;
+  color: #ffd000;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.nav {
+  flex-grow: 1;
+  margin-top: 1rem;
+}
+
+.navList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navLink, .backToSiteButton {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Espacio entre ícono y texto */
+  color: #ffffff;
+  text-decoration: none;
+  padding: 0.8rem 1rem;
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap; /* Evita que el texto se rompa */
+}
+
+.navLink:hover, .backToSiteButton:hover {
+/*  background-color: #ffffff;*/    /*FONDO AL PASAR EL CURSOR ENCIMA DE LOS BOTONES*/
+  color: #ffd000;
+}
+
+.navLinkActive {
+  background-color: #007bff;
+  color: #ffd000;
+}
+
+.navLink span, .backToSiteButton span {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.backToSiteButton {
+  margin-top: auto; /* Empuja el botón hacia abajo */
+  border: 1px solid #ffd000;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  transition: margin-left 0.3s ease; /* Transición suave */
+  margin-left: 240px; /* Espacio inicial para el sidebar */
+}
+
+/* --- ESTILOS PARA CUANDO EL SIDEBAR ESTÁ COLAPSADO (VERSIÓN MEJORADA) --- */
+
+.sidebarCollapsed .sidebar {
+  width: 35px; /* <-- REDUCIMOS EL ANCHO TOTAL */
+  padding: 1rem 0.9rem; /* <-- REDUCIMOS EL PADDING A LOS LADOS */
+}
+
+.sidebarCollapsed .content {
+  margin-left: 65px; /* Ajustamos el margen del contenido */
+}
+
+/* Ocultamos los textos */
+.sidebarCollapsed .sidebar h2,
+.sidebarCollapsed .navLink span,
+.sidebarCollapsed .backToSiteButton span {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+/* Giramos la flecha del botón */
+.sidebarCollapsed .toggleButton {
+  transform: rotate(180deg);
+}
+
+/* --- NUEVA REGLA PARA CENTRAR ÍCONOS --- */
+/* Cuando el menú está colapsado, centramos el ícono y quitamos su padding lateral */
+.sidebarCollapsed .navLink,
+.sidebarCollapsed .backToSiteButton {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}

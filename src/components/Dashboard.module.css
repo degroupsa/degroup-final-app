@@ -1,0 +1,68 @@
+.dashboardContainer {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.dashboardContainer h2 {
+color: \#343a40;
+margin-top: 0;
+margin-bottom: 2rem;
+text-align: center;
+font-size: 1.8rem;
+}
+
+.kpiGrid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+gap: 1.5rem;
+margin-bottom: 2.5rem;
+}
+
+.kpiCard {
+background-color: \#f8f9fa;
+padding: 1.5rem;
+border-radius: 8px;
+border-left: 5px solid;
+box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.kpiCard h3 {
+margin: 0 0 0.5rem 0;
+font-size: 0.9rem;
+text-transform: uppercase;
+color: \#6c757d;
+font-weight: 600;
+}
+
+.kpiValue {
+font-size: 2rem;
+font-weight: 700;
+}
+
+.income { border-color: \#28a745; color: \#28a745; }
+.expense { border-color: \#dc3545; color: \#dc3545; }
+.profit { border-color: \#007bff; color: \#007bff; }
+.margin { border-color: \#ffc107; color: \#ffc107; }
+
+.chartsGrid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+gap: 2rem;
+margin-top: 2rem;
+}
+
+.chartContainer {
+background-color: \#f8f9fa;
+padding: 1.5rem;
+border-radius: 8px;
+}
+
+.chartContainer h3 {
+margin-top: 0;
+text-align: center;
+color: \#495057;
+font-size: 1.1rem;
+margin-bottom: 1.5rem;
+}

@@ -1,0 +1,28 @@
+.individual-stock-container {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.chart-filter-input {
+    padding: 0.5rem 0.8rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    min-width: 250px;
+    font-size: 0.9rem;
+}
+
+.chart-wrapper {
+    position: relative;
+    width: 100%;
+}

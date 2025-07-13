@@ -1,0 +1,86 @@
+.panel {
+    position: absolute;
+    top: 60px; /* Lo subimos un poco */
+    right: 0px; /* Lo movemos más a la derecha, cerca de los íconos */
+    width: 340px; /* Lo hacemos un poco más angosto */
+    max-height: 400px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border: 1px solid #ddd;
+    z-index: 1100;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  
+  .list {
+    overflow-y: auto;
+  }
+  
+  .noNotifs {
+    padding: 2rem;
+    text-align: center;
+    color: #6c757d;
+  }
+  
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 1rem;
+    text-decoration: none;
+    color: inherit;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+  }
+  
+  .item:last-child {
+    border-bottom: none;
+  }
+  
+  .item:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .item.unread {
+    background-color: #e7f1ff; /* Un azul claro para las no leídas */
+  }
+  
+  .iconWrapper {
+    font-size: 1.2rem;
+  }
+  
+  .likeIcon {
+    color: #ed4956;
+  }
+  
+  .commentIcon {
+    color: #0d6efd;
+  }
+  
+  .message {
+    flex-grow: 1;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  
+  .message strong {
+    font-weight: 600;
+  }
+  
+  .time {
+    display: block;
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 4px;
+  }

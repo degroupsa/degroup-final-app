@@ -1,0 +1,42 @@
+/* src/components/PillarsSection.module.css */
+
+.pillarsSection {
+  background-color: #cabfbf; /* <-- AÑADIDO: Mismo fondo gris claro */
+  padding: 4rem 2rem; /* <-- AJUSTADO: Más espacio vertical para que respire */
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pillarCard {
+  text-align: center;
+  padding: 1.5rem;
+  /* Hacemos las tarjetas blancas para que contrasten con el nuevo fondo gris */
+  background-color: #1b1a1a;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.iconWrapper {
+  font-size: 3.5rem;
+  color: #ffd000;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+}
+
+.pillarCard h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #ffd000;
+}
+
+.pillarCard p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #ffffff;
+}

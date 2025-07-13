@@ -1,0 +1,31 @@
+.resultCard {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 1rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    margin-bottom: 1rem;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .resultCard:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .displayName {
+    font-weight: 600;
+    display: block;
+  }
+  .email {
+    font-size: 0.9rem;
+    color: #6c757d;
+  }

@@ -1,0 +1,19 @@
+/* src/pages/ProductsPage.module.css */
+.productsContainer {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+.productsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.loadingMessage {
+  font-size: 1.5rem;
+  color: #555;
+  text-align: center;
+  padding: 4rem;
+}
