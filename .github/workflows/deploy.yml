@@ -15,17 +15,13 @@ jobs:
       - name: Instalar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'  # <-- ESTE ES EL ÚNICO CAMBIO
 
       - name: Instalar dependencias
         run: npm install
 
       - name: Compilar el proyecto
         run: npm run build
-      
-      # ---- PASO DE DEPURACIÓN ----
-      - name: Listar archivos para depuración
-        run: ls -la
 
       - name: Desplegar en Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
