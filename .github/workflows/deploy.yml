@@ -17,11 +17,15 @@ jobs:
         with:
           node-version: '18'
 
+      # ---- INICIO DE LA CORRECCIÓN ----
       - name: Instalar dependencias
         run: npm install
+        working-directory: ./degroup-reparado2
 
       - name: Compilar el proyecto
         run: npm run build
+        working-directory: ./degroup-reparado2
+      # ---- FIN DE LA CORRECCIÓN ----
 
       - name: Desplegar en Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
