@@ -30,4 +30,4 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEGROUP_FINAL_APP }}'
           channelId: live
           projectId: degroup-final-app
-          entryPoint: ./  # <-- ESTA ES LA LÍNEA NUEVA
+          public: dist  # <-- ESTA ES LA LÍNEA NUEVA Y CORREGIDA
