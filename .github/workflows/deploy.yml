@@ -15,7 +15,7 @@ jobs:
       - name: Instalar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'  # <-- ESTE ES EL ÚNICO CAMBIO
+          node-version: '20'
 
       - name: Instalar dependencias
         run: npm install
@@ -29,4 +29,4 @@ jobs:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEGROUP_FINAL_APP }}'
           channelId: live
-          projectId: degroup-final-app
+          projectId: web-de-group  # <-- ESTE ES EL CAMBIO CLAVE
