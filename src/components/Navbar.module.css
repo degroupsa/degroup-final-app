@@ -116,13 +116,13 @@
 .hamburger {
   display: none;
   /* --- 2. CAMBIO: Ícono de hamburguesa más pequeño --- */
-  font-size: 0.8rem; 
+  font-size: 0.9rem; 
   color: #ffffff;
   background: none;
   border: none;
   cursor: pointer;
   z-index: 1001;
-  padding: -2rem;
+  padding: 0.5rem;
 }
 
 .mobileMenu {
@@ -133,11 +133,22 @@
 /* ▼▼▼ Media Query para pantallas pequeñas (móviles) ▼▼▼ */
 @media (max-width: 992px) {
   
-  /* --- 3. CAMBIO: Ajuste de espaciado para centrar visualmente --- */
-  .nav {
-    justify-content: space-around;
+  .header {
+    padding: 0 1.5rem; /* Ajustamos el padding para el espacio de los bordes */
   }
 
+  /* --- 3. CAMBIO: Nueva estrategia de centrado --- */
+  .nav {
+    position: relative; /* Contexto para el posicionamiento absoluto del logo */
+    justify-content: flex-end; /* Alinea los items (solo el ícono) a la derecha */
+  }
+
+  .logoContainer {
+    position: absolute; /* Lo sacamos del flujo normal */
+    left: 50%; /* Lo movemos al 50% del contenedor */
+    transform: translateX(-50%); /* Lo corremos la mitad de su propio ancho para centrarlo perfectamente */
+  }
+  
   .desktopNavLinks, .navActions {
     display: none;
   }
