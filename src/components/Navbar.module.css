@@ -17,6 +17,18 @@
   height: 60px;
 }
 
+/* --- ESTILOS PARA EL LOGO --- */
+.logoContainer {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.logo {
+  height: 40px; /* Ajusta la altura del logo como prefieras */
+  width: auto;
+}
+
 .navLinks {
   display: flex;
   align-items: center;
@@ -61,6 +73,13 @@
 .activeLink::after {
   width: 100%;
   left: 0;
+}
+
+/* --- CONTENEDOR PARA LA SECCIÓN DERECHA --- */
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .navActions {
@@ -208,7 +227,24 @@
 
 @media (max-width: 992px) {
   
+  /* Ocultamos los enlaces del menú principal */
   .navLinks {
+    display: none;
+  }
+
+  /* Mostramos el ícono de hamburguesa */
+  .hamburger {
+    display: block;
+  }
+  
+  /* Ocultamos las acciones de usuario (login/logout, etc.) */
+  .navActions {
+    display: none;
+  }
+
+  /* Estilos para el menú lateral cuando está cerrado */
+  .navLinks {
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
     padding: 2rem;
@@ -219,19 +255,14 @@
     height: 100vh;
     width: 280px;
     z-index: 1000;
-    left: -280px; 
-    transition: left 0.3s ease-in-out;
+    
+    /* Lo escondemos fuera de la pantalla hacia la derecha */
+    right: -280px; 
+    transition: right 0.3s ease-in-out;
   }
 
+  /* Cuando el menú tiene la clase .menuOpen, lo deslizamos para que sea visible */
   .navLinks.menuOpen {
-    left: 0;
-  }
-
-  .navActions {
-    display: none;
-  }
-
-  .hamburger {
-    display: block;
+    right: 0;
   }
 }
