@@ -55,7 +55,7 @@ function Navbar() {
       <nav className={styles.nav}>
         <Link to="/" className={styles.logoContainer}>
           <img 
-            src="https://firebasestorage.googleapis.com/v0/b/web-de-group.firebasestorage.app/o/logos%2FLogodorado.png?alt=media&token=53c7c49d-5f2b-404e-8f9b-c33211229856" 
+            src="https://firebasestorage.googleapis.com/v0/b/web-de-group.firebasestorage.app/o/logos%2FLogoplateado.png?alt=media&token=44ae5d44-f901-44d8-880f-b2115e186e35" 
             alt="DE Group Logo" 
             className={styles.logo}
           />
