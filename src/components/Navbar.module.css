@@ -25,7 +25,8 @@
 }
 
 .logo {
-  height: 50px;
+  /* --- 1. CAMBIO: Logo más pequeño --- */
+  height: 45px; 
   width: auto;
 }
 
@@ -114,7 +115,8 @@
 
 .hamburger {
   display: none;
-  font-size: 1.8rem;
+  /* --- 2. CAMBIO: Ícono de hamburguesa más pequeño --- */
+  font-size: 1.6rem; 
   color: #ffffff;
   background: none;
   border: none;
@@ -150,19 +152,15 @@
     
     position: fixed;
     top: 0;
-    right: 0; /* Lo anclamos a la derecha */
+    right: 0;
     height: 100vh;
     width: 280px;
     z-index: 1000;
     
-    /* --- INICIO DE LA CORRECCIÓN --- */
-    /* Lo ocultamos moviéndolo 100% de su propio ancho hacia la derecha */
     transform: translateX(100%);
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    /* --- FIN DE LA CORRECCIÓN --- */
   }
 
-  /* Cuando el menú está abierto, lo traemos de vuelta a su posición original */
   .mobileMenu.menuOpen {
     transform: translateX(0);
   }
