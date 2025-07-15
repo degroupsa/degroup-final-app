@@ -14,23 +14,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 70px; /* Un poco más de altura para el logo */
+  height: 70px;
 }
 
-/* --- ESTILOS PARA EL LOGO --- */
 .logoContainer {
   display: flex;
   align-items: center;
   height: 100%;
-  flex-shrink: 0; /* Evita que el logo se encoja */
+  flex-shrink: 0;
 }
 
 .logo {
-  height: 50px; /* Ajusta la altura del logo */
+  height: 50px;
   width: auto;
 }
 
-/* --- ESTILOS PARA ENLACES --- */
 .desktopNavLinks {
   display: flex;
   align-items: center;
@@ -77,7 +75,6 @@
   left: 0;
 }
 
-/* --- CONTENEDOR PARA LA SECCIÓN DERECHA --- */
 .rightSection {
   display: flex;
   align-items: center;
@@ -116,13 +113,13 @@
 /* --- ESTILOS PARA EL MENÚ RESPONSIVE --- */
 
 .hamburger {
-  display: none; /* Oculto en desktop */
+  display: none;
   font-size: 1.8rem;
   color: #ffffff;
   background: none;
   border: none;
   cursor: pointer;
-  z-index: 1001;
+  z-index: 1001; /* Asegura que esté sobre el menú */
 }
 
 /* El menú móvil está oculto por defecto */
@@ -144,30 +141,35 @@
     display: block;
   }
   
-  /* Estilos para el menú lateral cuando está cerrado */
+  /* Estilos para el menú lateral */
   .mobileMenu {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 6rem 2rem 2rem 2rem; /* Más padding arriba para dejar espacio */
+    padding: 6rem 2rem 2rem 2rem;
     gap: 1.5rem;
     
-    /* Fondo semitransparente como en el ejemplo */
-    background-color: rgba(28, 28, 28, 0.95);
-    backdrop-filter: blur(5px); /* Efecto de desenfoque del fondo */
+    /* --- INICIO DE LA CORRECCIÓN VISUAL --- */
+    /* Fondo oscuro semitransparente */
+    background-color: rgba(20, 20, 20, 0.9);
+    
+    /* Efecto de desenfoque para el contenido de atrás (vidrio esmerilado) */
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    /* --- FIN DE LA CORRECCIÓN VISUAL --- */
     
     position: fixed;
     top: 0;
     height: 100vh;
-    width: 280px;
+    width: 280px; /* Ancho del panel */
     z-index: 1000;
     
-    /* Lo escondemos fuera de la pantalla hacia la derecha */
+    /* Posicionamiento y animación desde la derecha */
     right: -280px; 
-    transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Animación más suave */
+    transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
-  /* Cuando el menú tiene la clase .menuOpen, lo deslizamos para que sea visible */
+  /* Cuando el menú está abierto, lo deslizamos para que sea visible */
   .mobileMenu.menuOpen {
     right: 0;
   }
