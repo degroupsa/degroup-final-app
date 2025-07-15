@@ -119,10 +119,9 @@
   background: none;
   border: none;
   cursor: pointer;
-  z-index: 1001; /* Asegura que esté sobre el menú */
+  z-index: 1001;
 }
 
-/* El menú móvil está oculto por defecto */
 .mobileMenu {
   display: none;
 }
@@ -131,46 +130,40 @@
 /* ▼▼▼ Media Query para pantallas pequeñas (móviles) ▼▼▼ */
 @media (max-width: 992px) {
   
-  /* Ocultamos los enlaces y acciones del modo desktop */
   .desktopNavLinks, .navActions {
     display: none;
   }
 
-  /* Mostramos el ícono de hamburguesa */
   .hamburger {
     display: block;
   }
   
-  /* Estilos para el menú lateral */
   .mobileMenu {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     padding: 6rem 2rem 2rem 2rem;
     gap: 1.5rem;
-    
-    /* --- INICIO DE LA CORRECCIÓN VISUAL --- */
-    /* Fondo oscuro semitransparente */
     background-color: rgba(20, 20, 20, 0.9);
-    
-    /* Efecto de desenfoque para el contenido de atrás (vidrio esmerilado) */
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
-    /* --- FIN DE LA CORRECCIÓN VISUAL --- */
     
     position: fixed;
     top: 0;
+    right: 0; /* Lo anclamos a la derecha */
     height: 100vh;
-    width: 280px; /* Ancho del panel */
+    width: 280px;
     z-index: 1000;
     
-    /* Posicionamiento y animación desde la derecha */
-    right: -280px; 
-    transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* --- INICIO DE LA CORRECCIÓN --- */
+    /* Lo ocultamos moviéndolo 100% de su propio ancho hacia la derecha */
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* --- FIN DE LA CORRECCIÓN --- */
   }
 
-  /* Cuando el menú está abierto, lo deslizamos para que sea visible */
+  /* Cuando el menú está abierto, lo traemos de vuelta a su posición original */
   .mobileMenu.menuOpen {
-    right: 0;
+    transform: translateX(0);
   }
 }
