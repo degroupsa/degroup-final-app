@@ -64,10 +64,16 @@ function Navbar() {
       {menuOpen && <div className={styles.overlay} onClick={() => setMenuOpen(false)}></div>}
       
       <nav className={styles.nav}>
-        <div className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
-          {menuOpen ? <FaTimes /> : <FaBars />}
-        </div>
+        {/* --- 1. LOGO A LA IZQUIERDA --- */}
+        <Link to="/" className={styles.logoContainer}>
+          <img 
+            src="https://firebasestorage.googleapis.com/v0/b/web-de-group.firebasestorage.app/o/logos%2FLogodorado.png?alt=media&token=53c7c49d-5f2b-404e-8f9b-c33211229856" 
+            alt="DE Group Logo" 
+            className={styles.logo}
+          />
+        </Link>
 
+        {/* --- 2. MENÚ DE NAVEGACIÓN (DESKTOP Y MÓVIL) --- */}
         <div className={`${styles.navLinks} ${menuOpen ? styles.menuOpen : ''}`}>
           <NavLink to="/" className={getNavLinkClass} onClick={closeMenu}>Inicio</NavLink>
           <NavLink to="/productos" className={getNavLinkClass} onClick={closeMenu}>Productos</NavLink>
@@ -76,35 +82,42 @@ function Navbar() {
           <NavLink to="/canal" className={getNavLinkClass} onClick={closeMenu}>DE Group Social</NavLink>
         </div>
         
-        <div className={styles.navActions}>
-            {!loading && (
-                user ? (
-                    <div ref={userSectionRef} className={styles.userSection}>
-                        <div className={styles.notificationContainer}>
-                            <button onClick={handleNotificationsClick} className={styles.notificationButton}>
-                                <FaBell />
-                                {unreadCount > 0 && (
-                                    <span className={styles.notificationBadge}>{unreadCount}</span>
-                                )}
-                            </button>
-                            {showPanel && (
-                                <div className={styles.panelWrapper}>
-                                    <NotificationsPanel notifications={notifications} onClose={() => setShowPanel(false)} />
-                                </div>
-                            )}
-                        </div>
-                        <NavLink to="/mi-perfil" className={styles.profileLink}>Mi Perfil</NavLink>
-                        <span className={styles.userEmail}>{user.email}</span>
-                        <button onClick={handleLogout} className={`${styles.authButton} ${styles.logoutButton}`}>Cerrar Sesión</button>
-                    </div>
-                ) : (
-                    <div className={styles.authSection}>
-                        <Link to="/login" className={styles.authLink}>Iniciar Sesión</Link>
-                        <Link to="/register" className={`${styles.authButton} ${styles.registerButton}`}>Registrarse</Link>
-                    </div>
-                )
-            )}
-            <CartWidget />
+        {/* --- 3. ACCIONES Y MENÚ HAMBURGUESA A LA DERECHA --- */}
+        <div className={styles.rightSection}>
+          <div className={styles.navActions}>
+              {!loading && (
+                  user ? (
+                      <div ref={userSectionRef} className={styles.userSection}>
+                          <div className={styles.notificationContainer}>
+                              <button onClick={handleNotificationsClick} className={styles.notificationButton}>
+                                  <FaBell />
+                                  {unreadCount > 0 && (
+                                      <span className={styles.notificationBadge}>{unreadCount}</span>
+                                  )}
+                              </button>
+                              {showPanel && (
+                                  <div className={styles.panelWrapper}>
+                                      <NotificationsPanel notifications={notifications} onClose={() => setShowPanel(false)} />
+                                  </div>
+                              )}
+                          </div>
+                          <NavLink to="/mi-perfil" className={styles.profileLink}>Mi Perfil</NavLink>
+                          <span className={styles.userEmail}>{user.email}</span>
+                          <button onClick={handleLogout} className={`${styles.authButton} ${styles.logoutButton}`}>Cerrar Sesión</button>
+                      </div>
+                  ) : (
+                      <div className={styles.authSection}>
+                          <Link to="/login" className={styles.authLink}>Iniciar Sesión</Link>
+                          <Link to="/register" className={`${styles.authButton} ${styles.registerButton}`}>Registrarse</Link>
+                      </div>
+                  )
+              )}
+              <CartWidget />
+          </div>
+          
+          <div className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <FaTimes /> : <FaBars />}
+          </div>
         </div>
       </nav>
     </header>
