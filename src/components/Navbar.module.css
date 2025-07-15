@@ -26,7 +26,7 @@
 
 .logo {
   /* --- 1. CAMBIO: Logo más pequeño --- */
-  height: 45px; 
+  height: 40px; 
   width: auto;
 }
 
@@ -116,7 +116,7 @@
 .hamburger {
   display: none;
   /* --- 2. CAMBIO: Ícono de hamburguesa más pequeño --- */
-  font-size: 1.6rem; 
+  font-size: 1.5rem; 
   color: #ffffff;
   background: none;
   border: none;
@@ -132,6 +132,11 @@
 /* ▼▼▼ Media Query para pantallas pequeñas (móviles) ▼▼▼ */
 @media (max-width: 992px) {
   
+  /* --- 3. CAMBIO: Ajuste de padding para centrar visualmente --- */
+  .header {
+    padding: 0 1.5rem;
+  }
+
   .desktopNavLinks, .navActions {
     display: none;
   }
