@@ -26,7 +26,7 @@
 
 .logo {
   /* --- 1. CAMBIO: Logo más pequeño --- */
-  height: 75px; /* Reducimos un poco más la altura */
+  height: 45px; /* Lo ajustamos a un tamaño más refinado */
   width: auto;
 }
 
@@ -122,7 +122,7 @@
   border: none;
   cursor: pointer;
   z-index: 1001;
-  padding: 0.5rem; /* Añadimos padding para un área de clic más grande */
+  padding: 0.5rem;
 }
 
 .mobileMenu {
@@ -133,11 +133,23 @@
 /* ▼▼▼ Media Query para pantallas pequeñas (móviles) ▼▼▼ */
 @media (max-width: 992px) {
   
-  /* --- 3. CAMBIO: Ajuste de padding para centrar visualmente --- */
   .header {
-    padding: 0 1rem; /* Reducimos aún más el padding lateral */
+    padding: 0 1.5rem;
   }
 
+  /* --- 3. CAMBIO: Nueva estrategia de centrado --- */
+  .nav {
+    position: relative; /* Contexto para el posicionamiento absoluto del logo */
+    justify-content: flex-end; /* Alinea los items (solo el ícono) a la derecha */
+  }
+
+  .logoContainer {
+    position: absolute; /* Lo sacamos del flujo normal */
+    left: 50%; /* Lo movemos al 50% del contenedor */
+    transform: translateX(-50%); /* Lo corremos la mitad de su propio ancho para centrarlo perfectamente */
+  }
+  /* --- FIN DEL CAMBIO DE ESTRATEGIA --- */
+  
   .desktopNavLinks, .navActions {
     display: none;
   }
