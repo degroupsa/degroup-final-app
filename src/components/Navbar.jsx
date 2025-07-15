@@ -3,7 +3,7 @@ import { Link, useNavigate, NavLink } from 'react-router-dom';
 import CartWidget from './CartWidget.jsx';
 import styles from './Navbar.module.css';
 import { useAuth } from '../context/AuthContext.jsx';
-import { FaBell, FaBars, FaTimes } from 'react-icons/fa'; // Importamos íconos de hamburguesa y cierre
+import { FaBell, FaBars, FaTimes } from 'react-icons/fa';
 import NotificationsPanel from './NotificationsPanel.jsx';
 import { db } from '../firebase/config.js';
 import { doc, writeBatch } from 'firebase/firestore';
@@ -16,7 +16,7 @@ function Navbar() {
   const { user, loading, logout, notifications, unreadCount } = useAuth();
   const navigate = useNavigate();
   const [showPanel, setShowPanel] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false); // <-- 1. AÑADIMOS ESTADO PARA EL MENÚ
+  const [menuOpen, setMenuOpen] = useState(false);
   const userSectionRef = useRef(null);
 
   const handleLogout = async () => {
@@ -29,26 +29,45 @@ function Navbar() {
   };
 
   const handleNotificationsClick = async () => {
-    // Código existente...
+    setShowPanel(prev => !prev);
+    if (unreadCount > 0 && !showPanel) {
+      const batch = writeBatch(db);
+      const unreadNotifs = notifications.filter(n => !n.read);
+      unreadNotifs.forEach(notif => {
+        const notifRef = doc(db, 'notifications', notif.id);
+        batch.update(notifRef, { read: true });
+      });
+      try {
+        await batch.commit();
+      } catch (error) {
+        console.error("Error al marcar notificaciones como leídas:", error);
+      }
+    }
   };
-  
-  // Función para cerrar el menú al hacer clic en un enlace
+
   const closeMenu = () => setMenuOpen(false);
 
   useEffect(() => {
-    // Código existente...
+    function handleClickOutside(event) {
+      if (userSectionRef.current && !userSectionRef.current.contains(event.target)) {
+        setShowPanel(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, [userSectionRef]);
 
   return (
     <header className={styles.header}>
+      {menuOpen && <div className={styles.overlay} onClick={() => setMenuOpen(false)}></div>}
+      
       <nav className={styles.nav}>
-        
-        {/* ▼▼▼ 2. AÑADIMOS EL BOTÓN DE HAMBURGUESA ▼▼▼ */}
         <div className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <FaTimes /> : <FaBars />}
         </div>
 
-        {/* ▼▼▼ 3. MODIFICAMOS EL CONTENEDOR DE ENLACES ▼▼▼ */}
         <div className={`${styles.navLinks} ${menuOpen ? styles.menuOpen : ''}`}>
           <NavLink to="/" className={getNavLinkClass} onClick={closeMenu}>Inicio</NavLink>
           <NavLink to="/productos" className={getNavLinkClass} onClick={closeMenu}>Productos</NavLink>
@@ -58,19 +77,32 @@ function Navbar() {
         </div>
         
         <div className={styles.navActions}>
-            {/* El resto de tu código para acciones de usuario y carrito */}
-            {/* ... este código se ocultará en móvil con CSS ... */}
             {!loading && (
-              user ? (
-                <div ref={userSectionRef} className={styles.userSection}>
-                  {/* ... tu código de notificaciones, perfil, etc. ... */}
-                </div>
-              ) : (
-                <div className={styles.authSection}>
-                  <Link to="/login" className={styles.authLink}>Iniciar Sesión</Link>
-                  <Link to="/register" className={`${styles.authButton} ${styles.registerButton}`}>Registrarse</Link>
-                </div>
-              )
+                user ? (
+                    <div ref={userSectionRef} className={styles.userSection}>
+                        <div className={styles.notificationContainer}>
+                            <button onClick={handleNotificationsClick} className={styles.notificationButton}>
+                                <FaBell />
+                                {unreadCount > 0 && (
+                                    <span className={styles.notificationBadge}>{unreadCount}</span>
+                                )}
+                            </button>
+                            {showPanel && (
+                                <div className={styles.panelWrapper}>
+                                    <NotificationsPanel notifications={notifications} onClose={() => setShowPanel(false)} />
+                                </div>
+                            )}
+                        </div>
+                        <NavLink to="/mi-perfil" className={styles.profileLink}>Mi Perfil</NavLink>
+                        <span className={styles.userEmail}>{user.email}</span>
+                        <button onClick={handleLogout} className={`${styles.authButton} ${styles.logoutButton}`}>Cerrar Sesión</button>
+                    </div>
+                ) : (
+                    <div className={styles.authSection}>
+                        <Link to="/login" className={styles.authLink}>Iniciar Sesión</Link>
+                        <Link to="/register" className={`${styles.authButton} ${styles.registerButton}`}>Registrarse</Link>
+                    </div>
+                )
             )}
             <CartWidget />
         </div>
