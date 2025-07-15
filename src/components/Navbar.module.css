@@ -26,7 +26,7 @@
 
 .logo {
   /* --- 1. CAMBIO: Logo más pequeño --- */
-  height: 70px;
+  height: 75px; /* Reducimos un poco más la altura */
   width: auto;
 }
 
@@ -116,13 +116,13 @@
 .hamburger {
   display: none;
   /* --- 2. CAMBIO: Ícono de hamburguesa más pequeño --- */
-  font-size: 1.5rem; 
+  font-size: 1.3rem; 
   color: #ffffff;
   background: none;
   border: none;
   cursor: pointer;
   z-index: 1001;
-  padding: 0.5rem;
+  padding: 0.5rem; /* Añadimos padding para un área de clic más grande */
 }
 
 .mobileMenu {
@@ -133,22 +133,11 @@
 /* ▼▼▼ Media Query para pantallas pequeñas (móviles) ▼▼▼ */
 @media (max-width: 992px) {
   
+  /* --- 3. CAMBIO: Ajuste de padding para centrar visualmente --- */
   .header {
-    padding: 0 1.5rem; /* Ajustamos el padding para el espacio de los bordes */
+    padding: 0 1rem; /* Reducimos aún más el padding lateral */
   }
 
-  /* --- 3. CAMBIO: Nueva estrategia de centrado --- */
-  .nav {
-    position: relative; /* Contexto para el posicionamiento absoluto del logo */
-    justify-content: flex-end; /* Alinea los items (solo el ícono) a la derecha */
-  }
-
-  .logoContainer {
-    position: absolute; /* Lo sacamos del flujo normal */
-    left: 50%; /* Lo movemos al 50% del contenedor */
-    transform: translateX(-50%); /* Lo corremos la mitad de su propio ancho para centrarlo perfectamente */
-  }
-  
   .desktopNavLinks, .navActions {
     display: none;
   }
