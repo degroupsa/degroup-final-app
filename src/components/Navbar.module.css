@@ -142,11 +142,11 @@
   .logoContainer {
     position: static;
     transform: none;
-    height: 60px; /* Altura más chica para móvil */
+    height: 60px;
   }
 
   .logo {
-    height: 40px;
+    height: 60px;
   }
   
   .desktopNavLinks {
@@ -155,25 +155,25 @@
 
   /* --- INICIO DE LA CORRECCIÓN DE ALINEACIÓN Y TAMAÑO --- */
   .rightSection {
-    gap: 0.25rem; /* Espacio mínimo entre los íconos */
+    gap: 0.25rem;
     height: 100%;
     align-items: center; /* Clave para alinear verticalmente */
   }
 
   .navActions {
     display: flex;
-    align-items: center;
+    align-items: center; /* Alinear usuario y carrito */
     gap: 0.25rem;
   }
 
   .userMenuButton {
-    font-size: 1.3rem; /* Tamaño final de ícono */
+    font-size: 1.1rem; /* Tamaño final de ícono */
     padding: 0.5rem;
   }
   
   .hamburger {
     display: block;
-    font-size: 1.3rem; /* Mismo tamaño que el de usuario */
+    font-size: 1.1rem; /* Mismo tamaño que el de usuario */
     padding: 0.5rem;
   }
   /* --- FIN DE LA CORRECCIÓN --- */
