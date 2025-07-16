@@ -22,7 +22,7 @@ function Navbar() {
   const handleLogout = async () => {
     try {
       await logout();
-      closeMenu(); // Cierra el menú al hacer logout
+      closeMenu();
       navigate('/login');
     } catch (error) {
       console.error("Error al cerrar sesión", error);
@@ -36,7 +36,7 @@ function Navbar() {
   const closeMenu = () => setMenuOpen(false);
 
   useEffect(() => {
-    // ... (código existente)
+    // ... (código existente para cerrar el panel de notificaciones)
   }, [userSectionRef]);
   
   useEffect(() => {
@@ -71,11 +71,11 @@ function Navbar() {
         
         <div className={styles.rightSection}>
           <div className={styles.navActions}>
-              {/* ... (código de acciones de usuario para desktop) ... */}
+              {/* Contenido para desktop */}
           </div>
           
           <div className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <FaTimes /> : <FaBars />}
+            {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </div>
         </div>
       </nav>
@@ -94,20 +94,22 @@ function Navbar() {
         {/* Contenedor para las acciones de usuario */}
         <div className={styles.mobileMenuActions}>
             <hr className={styles.divider} />
+            <div className={styles.cartContainerMobile}>
+              <CartWidget />
+            </div>
             {!loading && (
                 user ? (
                     <div className={styles.userSectionMobile}>
-                        <NavLink to="/mi-perfil" className={styles.profileLink} onClick={closeMenu}>Mi Perfil</NavLink>
-                        <button onClick={handleLogout} className={`${styles.authButton} ${styles.logoutButton}`}>Cerrar Sesión</button>
+                        <NavLink to="/mi-perfil" className={styles.mobileButton} onClick={closeMenu}>Mi Perfil</NavLink>
+                        <button onClick={handleLogout} className={`${styles.mobileButton} ${styles.logoutButtonMobile}`}>Cerrar Sesión</button>
                     </div>
                 ) : (
                     <div className={styles.authSectionMobile}>
-                        <Link to="/login" className={styles.authLink} onClick={closeMenu}>Iniciar Sesión</Link>
-                        <Link to="/register" className={`${styles.authButton} ${styles.registerButton}`} onClick={closeMenu}>Registrarse</Link>
+                        <Link to="/login" className={styles.mobileButton} onClick={closeMenu}>Iniciar Sesión</Link>
+                        <Link to="/register" className={`${styles.mobileButton} ${styles.registerButtonMobile}`} onClick={closeMenu}>Registrarse</Link>
                     </div>
                 )
             )}
-            <CartWidget />
         </div>
       </div>
        {/* --- FIN DE LA MODIFICACIÓN --- */}
