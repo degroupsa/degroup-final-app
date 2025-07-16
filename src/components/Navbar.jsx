@@ -3,10 +3,11 @@ import { Link, useNavigate, NavLink } from 'react-router-dom';
 import CartWidget from './CartWidget.jsx';
 import styles from './Navbar.module.css';
 import { useAuth } from '../context/AuthContext.jsx';
-// --- 1. CAMBIO: Importamos los nuevos íconos ---
+// --- 1. CAMBIO: Importamos todos los íconos necesarios ---
 import { 
   FaBars, FaTimes, FaUserCircle, 
-  FaHome, FaBoxOpen, FaUsers, FaEnvelope, FaHashtag 
+  FaHome, FaBoxOpen, FaUsers, FaEnvelope, FaHashtag,
+  FaSignInAlt, FaUserPlus, FaSignOutAlt
 } from 'react-icons/fa';
 
 const getNavLinkClass = ({ isActive }) => {
@@ -23,7 +24,7 @@ function Navbar() {
   const handleLogout = async () => {
     try {
       await logout();
-      closeMenu();
+      setUserMenuOpen(false); // Cerramos el menú de usuario
       navigate('/login');
     } catch (error) {
       console.error("Error al cerrar sesión", error);
@@ -84,13 +85,22 @@ function Navbar() {
                 <div className={styles.userDropdown}>
                   {user ? (
                     <>
-                      <Link to="/mi-perfil" className={styles.dropdownLink} onClick={() => setUserMenuOpen(false)}>Mi Perfil</Link>
-                      <button onClick={handleLogout} className={`${styles.dropdownLink} ${styles.dropdownButton}`}>Cerrar Sesión</button>
+                      {/* --- 2. CAMBIO: Añadimos íconos al menú de usuario --- */}
+                      <Link to="/mi-perfil" className={styles.dropdownLink} onClick={() => setUserMenuOpen(false)}>
+                        <FaUserCircle /> <span>Mi Perfil</span>
+                      </Link>
+                      <button onClick={handleLogout} className={`${styles.dropdownLink} ${styles.dropdownButton}`}>
+                        <FaSignOutAlt /> <span>Cerrar Sesión</span>
+                      </button>
                     </>
                   ) : (
                     <>
-                      <Link to="/login" className={styles.dropdownLink} onClick={() => setUserMenuOpen(false)}>Iniciar Sesión</Link>
-                      <Link to="/register" className={styles.dropdownLink} onClick={() => setUserMenuOpen(false)}>Registrarse</Link>
+                      <Link to="/login" className={styles.dropdownLink} onClick={() => setUserMenuOpen(false)}>
+                        <FaSignInAlt /> <span>Iniciar Sesión</span>
+                      </Link>
+                      <Link to="/register" className={styles.dropdownLink} onClick={() => setUserMenuOpen(false)}>
+                        <FaUserPlus /> <span>Registrarse</span>
+                      </Link>
                     </>
                   )}
                 </div>
@@ -105,7 +115,7 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* --- 2. CAMBIO: Menú móvil limpio y con íconos --- */}
+      {/* --- 3. CAMBIO: Menú móvil limpio y con íconos --- */}
       <div className={`${styles.mobileMenu} ${menuOpen ? styles.menuOpen : ''}`}>
         <div className={styles.mobileMenuLinks}>
             <NavLink to="/" className={getNavLinkClass} onClick={closeMenu}>
@@ -124,6 +134,7 @@ function Navbar() {
               <FaHashtag /> <span>DE Group Social</span>
             </NavLink>
         </div>
+        {/* La sección de acciones y carrito se ha eliminado de aquí */}
       </div>
     </header>
   );
