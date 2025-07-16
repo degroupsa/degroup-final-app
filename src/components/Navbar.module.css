@@ -71,7 +71,7 @@
   background: none;
   border: none;
   color: #fff;
-  font-size: 1.8rem;
+  font-size: 1.3rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -116,7 +116,7 @@
 
 .hamburger {
   display: none;
-  font-size: 1.3rem; 
+  font-size: 1.2rem; 
   color: #ffffff;
   background: none;
   border: none;
@@ -129,7 +129,6 @@
   display: none;
 }
 
-/* ▼▼▼ Media Query para pantallas pequeñas (móviles) ▼▼▼ */
 @media (max-width: 992px) {
   .header {
     padding: 0 1.5rem;
@@ -137,47 +136,40 @@
 
   .nav {
     position: relative;
-    justify-content: space-between; /* Mantenemos el espaciado */
+    justify-content: space-between;
   }
 
   .logoContainer {
-    /* Quitamos el centrado absoluto para que el layout sea más flexible */
     position: static;
     transform: none;
   }
   
-  /* --- 1. CAMBIO: Solo ocultamos los enlaces de texto --- */
   .desktopNavLinks {
     display: none;
   }
 
-  /* --- 2. CAMBIO: Hacemos visibles todos los íconos de la derecha --- */
-  .rightSection {
-    gap: 0.5rem; /* Reducimos el espacio entre íconos */
-  }
-
+  /* --- INICIO DE LA MODIFICACIÓN --- */
+  /* Mostramos el contenedor de acciones, pero solo para los íconos */
   .navActions {
-    gap: 0.5rem; /* Reducimos el espacio entre el usuario y el carrito */
+    display: flex;
+    gap: 0.5rem;
   }
 
-  /* --- 3. CAMBIO: Ajustamos el tamaño de los íconos para que sean consistentes --- */
   .userMenuButton {
-    font-size: 1.6rem;
+    font-size: 1.3rem;
     padding: 0.4rem;
   }
   
   .hamburger {
     display: block;
-    font-size: 1.6rem;
+    font-size: 1.2rem;
     padding: 0.4rem;
   }
-  
-  /* --- FIN DE LOS CAMBIOS --- */
+  /* --- FIN DE LA MODIFICACIÓN --- */
 
   .mobileMenu {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     padding: 80px 2rem 2rem 2rem;
     box-sizing: border-box;
     gap: 1rem;
@@ -198,15 +190,20 @@
     transform: translateX(0);
   }
 
-  /* ... (resto de tus estilos para el menú desplegable) ... */
-  .mobileMenuLinks { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; width: 100%; }
-  .mobileMenuLinks .link { font-size: 1.1rem; }
-  .mobileMenuActions { width: 100%; display: flex; flex-direction: column; gap: 1rem; }
-  .divider { width: 100%; border: none; border-top: 1px solid #444; margin: 0.5rem 0; }
-  .userSectionMobile, .authSectionMobile { display: flex; flex-direction: column; width: 100%; gap: 1rem; }
-  .mobileButton { width: 100%; padding: 0.8rem; text-align: center; font-size: 1rem; font-weight: 500; border-radius: 6px; text-decoration: none; color: #f1f1f1; background-color: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); transition: background-color 0.2s; }
-  .mobileButton:hover { background-color: rgba(255, 255, 255, 0.2); }
-  .registerButtonMobile { background-color: #f0c420; color: #000000; font-weight: bold; }
-  .logoutButtonMobile { background-color: transparent; border: 1px solid #dc3545; color: #dc3545; }
-  .cartContainerMobile { align-self: center; }
+  .mobileMenuLinks {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  /* --- INICIO DE NUEVOS ESTILOS PARA ÍCONOS --- */
+  .mobileMenuLinks .link {
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* Espacio entre el ícono y el texto */
+  }
+  /* --- FIN DE NUEVOS ESTILOS --- */
 }
