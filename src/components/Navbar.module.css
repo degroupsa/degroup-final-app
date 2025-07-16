@@ -151,27 +151,24 @@
   }
 
   .rightSection {
-    gap: 0.2rem; /* Reducimos el espacio entre los íconos de la derecha */
+    gap: 0.2rem;
   }
 
   .navActions {
     display: flex;
-    gap: 0.2rem; /* Reducimos el espacio entre usuario y carrito */
+    gap: 0.2rem;
   }
 
-  /* --- INICIO DE AJUSTES DE TAMAÑO DE ÍCONOS --- */
   .userMenuButton {
-    font-size: 1.4rem; /* Achicamos el ícono de usuario */
+    font-size: 1.4rem;
     padding: 0.5rem;
   }
   
   .hamburger {
     display: block;
-    font-size: 1.4rem; /* Achicamos el ícono de hamburguesa */
+    font-size: 1.4rem;
     padding: 0.5rem;
   }
-  /* El tamaño del carrito se ajustará en su propio CSS */
-  /* --- FIN DE AJUSTES DE TAMAÑO --- */
 
   .mobileMenu {
     display: flex;
