@@ -35,7 +35,7 @@
 /* --- INICIO DE AJUSTE PARA MÓVIL --- */
 @media (max-width: 992px) {
   .cartIcon {
-    font-size: 1.3rem; /* Mismo tamaño que los otros íconos */
+    font-size: 1.1rem; /* Mismo tamaño que los otros íconos */
   }
 
   .itemCount {
