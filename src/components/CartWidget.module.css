@@ -1,33 +1,46 @@
-/* src/components/CartWidget.module.css */
 .cartWidget {
   position: relative;
   cursor: pointer;
   display: flex;
   align-items: center;
+  padding: 0.5rem; /* Añadimos padding para un área de clic consistente */
 }
 
 .cartIcon {
   font-size: 1.8rem;
-  color: white; /* El ícono será blanco */
+  color: white;
   transition: color 0.2s ease;
 }
 
 .cartWidget:hover .cartIcon {
-  color: #61dafb; /* Se pone azul al pasar el mouse */
+  color: #61dafb;
 }
 
 .itemCount {
   position: absolute;
-  top: -8px;
-  right: -10px;
-  background-color: #ff4d4d; /* Un rojo llamativo para la notificación */
+  top: -2px; /* Ajustado para el nuevo tamaño */
+  right: -2px; /* Ajustado para el nuevo tamaño */
+  background-color: #ff4d4d;
   color: white;
   border-radius: 50%;
   padding: 0.15rem 0.45rem;
   font-size: 0.75rem;
   font-weight: bold;
-  border: 2px solid #20232a; /* Borde del mismo color del navbar */
+  border: 2px solid #000000; /* Borde del color del header */
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
+/* --- INICIO DE AJUSTE PARA MÓVIL --- */
+@media (max-width: 992px) {
+  .cartIcon {
+    font-size: 1.4rem; /* Mismo tamaño que los otros íconos */
+  }
+
+  .itemCount {
+    top: -4px;
+    right: -4px;
+  }
+}
+/* --- FIN DE AJUSTE --- */
