@@ -31,3 +31,11 @@
   background-color: rgba(0, 0, 0, 0.8);
   transform: scale(1.05);
 }
+
+/* --- INICIO DE LA CORRECCIÓN RESPONSIVE --- */
+@media (max-width: 768px) {
+  .hero {
+    height: 35vh; /* Reducimos la altura a 35% en pantallas chicas */
+  }
+}
+/* --- FIN DE LA CORRECCIÓN --- */

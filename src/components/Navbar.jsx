@@ -20,6 +20,10 @@ function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
 
+  // --- 1. AÑADIMOS REFS PARA EL MENÚ MÓVIL Y EL BOTÓN HAMBURGUESA ---
+  const mobileMenuRef = useRef(null);
+  const hamburgerRef = useRef(null);
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -32,6 +36,7 @@ function Navbar() {
 
   const closeMenu = () => setMenuOpen(false);
 
+  // Hook para cerrar el menú de usuario (este ya lo tenías)
   useEffect(() => {
     function handleClickOutside(event) {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
@@ -43,7 +48,22 @@ function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [userMenuRef]);
+
+  // --- 2. AÑADIMOS EL NUEVO HOOK PARA CERRAR EL MENÚ HAMBURGUESA ---
+  useEffect(() => {
+    function handleClickOutside(event) {
+      // Si el menú está abierto y el clic NO fue dentro del menú NI en el botón de hamburguesa...
+      if (menuOpen && mobileMenuRef.current && !mobileMenuRef.current.contains(event.target) && hamburgerRef.current && !hamburgerRef.current.contains(event.target)) {
+        setMenuOpen(false); // ...entonces cerramos el menú.
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]); // Depende del estado menuOpen para ejecutarse
   
+  // Hook para evitar el scroll del body cuando el menú está abierto
   useEffect(() => {
     if (menuOpen) {
       document.body.style.overflow = 'hidden';
@@ -59,14 +79,13 @@ function Navbar() {
     <header className={styles.header}>
       <nav className={styles.nav}>
         
-        {/* --- 1. SECCIÓN IZQUIERDA: HAMBURGUESA (SOLO MÓVIL) --- */}
         <div className={styles.leftSection}>
-          <div className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
+          {/* --- 3. ASIGNAMOS EL REF AL BOTÓN HAMBURGUESA --- */}
+          <div className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)} ref={hamburgerRef}>
             <FaBars />
           </div>
         </div>
 
-        {/* --- 2. SECCIÓN CENTRAL: LOGO Y ENLACES (DESKTOP) --- */}
         <div className={styles.centerSection}>
           <Link to="/" className={styles.logoContainer}>
             <img 
@@ -84,7 +103,6 @@ function Navbar() {
           </div>
         </div>
         
-        {/* --- 3. SECCIÓN DERECHA: ACCIONES DE USUARIO --- */}
         <div className={styles.rightSection}>
           <div className={styles.navActions}>
             <div className={styles.userMenuContainer} ref={userMenuRef}>
@@ -120,8 +138,8 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* --- MENÚ DESPLEGABLE MÓVIL --- */}
-      <div className={`${styles.mobileMenu} ${menuOpen ? styles.menuOpen : ''}`}>
+      {/* --- 4. ASIGNAMOS EL REF AL PANEL DEL MENÚ MÓVIL --- */}
+      <div className={`${styles.mobileMenu} ${menuOpen ? styles.menuOpen : ''}`} ref={mobileMenuRef}>
         <div className={styles.mobileMenuHeader}>
           <button className={styles.closeButton} onClick={() => setMenuOpen(false)}>
             <FaTimes />
