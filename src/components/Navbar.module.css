@@ -167,13 +167,13 @@
   }
 
   .userMenuButton {
-    font-size: 1.2rem; /* Tamaño final de ícono */
+    font-size: 0.9rem; /* Tamaño final de ícono */
     padding: 0.5rem;
   }
   
   .hamburger {
     display: block;
-    font-size: 0.7rem; /* Mismo tamaño que el de usuario */
+    font-size: 0.9rem; /* Mismo tamaño que el de usuario */
     padding: 0.5rem;
   }
   /* --- FIN DE LA CORRECCIÓN --- */
