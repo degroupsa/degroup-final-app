@@ -7,13 +7,13 @@ import { useAuth } from '../context/AuthContext.jsx';
 import toast from 'react-hot-toast';
 import ItemCount from '../components/ItemCount.jsx';
 import styles from './ProductDetailPage.module.css';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'; // Importamos los iconos de flecha
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 function ProductDetailPage() {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeIndex, setActiveIndex] = useState(0); // Estado para el índice de la imagen activa
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const { addItem } = useCart();
   const { user } = useAuth();
@@ -26,7 +26,7 @@ function ProductDetailPage() {
 
       if (docSnap.exists()) {
         setProduct({ id: docSnap.id, ...docSnap.data() });
-        setActiveIndex(0); // Siempre empezamos por la primera imagen
+        setActiveIndex(0);
       } else {
         setProduct(null);
       }
@@ -36,13 +36,11 @@ function ProductDetailPage() {
   }, [productId]);
 
   const goToNextSlide = () => {
-    // Si estamos en la última imagen, volvemos a la primera. Si no, vamos a la siguiente.
     const newIndex = activeIndex === product.imageUrls.length - 1 ? 0 : activeIndex + 1;
     setActiveIndex(newIndex);
   };
 
   const goToPrevSlide = () => {
-    // Si estamos en la primera, vamos a la última. Si no, a la anterior.
     const newIndex = activeIndex === 0 ? product.imageUrls.length - 1 : activeIndex - 1;
     setActiveIndex(newIndex);
   };
@@ -50,6 +48,13 @@ function ProductDetailPage() {
   const handleAddToCart = (quantity) => {
     addItem(product, quantity);
     toast.success(`${product.name} (x${quantity}) fue agregado al carrito!`);
+  };
+
+  // --- 1. Definimos la nueva función para el botón de cotización ---
+  const handleAddToQuote = () => {
+    if (!product) return;
+    addItem(product, 1); // Reutilizamos la función del contexto para añadir 1 unidad
+    toast.success(`${product.name} fue añadido a la cotización!`);
   };
   
   if (loading) return <p style={{textAlign: 'center', padding: '4rem'}}>Cargando producto...</p>;
@@ -64,7 +69,6 @@ function ProductDetailPage() {
           <>
             <img src={product.imageUrls[activeIndex]} alt={product.name} className={styles.mainImage} />
             
-            {/* Solo mostramos las flechas si hay más de una imagen */}
             {product.imageUrls.length > 1 && (
                 <>
                     <button onClick={goToPrevSlide} className={`${styles.navArrow} ${styles.prevArrow}`}><FaChevronLeft /></button>
@@ -100,7 +104,8 @@ function ProductDetailPage() {
           </>
         ) : (
           <div className={styles.quoteButtonContainer}>
-            <button className="button-primary" onClick={() => handleAddItem(1)}>
+            {/* --- 2. Conectamos la nueva función al onClick del botón --- */}
+            <button className={styles.quoteButton} onClick={handleAddToQuote}>
               Añadir a la Cotización
             </button>
           </div>

@@ -3,11 +3,20 @@ import React from 'react';
 import styles from './AboutPage.module.css';
 import PillarsSection from '../components/PillarsSection';
 
+// --- 1. IMPORTAMOS LA IMAGEN DIRECTAMENTE ---
+// Asegúrate de que la ruta sea correcta desde la carpeta 'src'
+import headerBgImage from '../../public/nosotros-header.jpg'; 
+
 function AboutPage() {
+  // Objeto de estilo para el fondo del header
+  const headerStyle = {
+    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${headerBgImage})`
+  };
+
   return (
     <div className={styles.aboutContainer}>
-      <header className={styles.header}>
-        {/* --- NUEVO CONTENIDO --- */}
+      {/* --- 2. APLICAMOS EL ESTILO AL HEADER --- */}
+      <header className={styles.header} style={headerStyle}>
         <h1>Forjados en el Campo, Impulsados por la Innovación</h1>
         <p>
           Combinamos la experiencia en el trabajo agrícola con ingeniería
@@ -15,13 +24,12 @@ function AboutPage() {
         </p>
       </header>
 
-      {/* Asumimos que esta sección existe y se adaptará al fondo oscuro */}
       <PillarsSection />
-
 
       <section className={styles.contentSection}>
         <div className={styles.contentWrapper}>
-            <h2>Nuestra Historia</h2>
+            {/* --- 3. APLICAMOS CLASE COMÚN AL TÍTULO --- */}
+            <h2 className={styles.sectionTitle}>Nuestra Historia</h2>
             <p>
             Fundada en la localidad de Cañada de Gómez - Santa Fe, DE Group nació
             con la experiencia directa del campo. Conociendo de primera mano los
@@ -34,11 +42,11 @@ function AboutPage() {
         </div>
       </section>
 
-
       <section className={styles.missionVisionSection}>
         <div className={styles.missionVisionContainer}>
           <div className={styles.missionVisionBox}>
-            <h2>Misión</h2>
+            {/* --- 3. APLICAMOS CLASE COMÚN AL TÍTULO --- */}
+            <h2 className={styles.sectionTitle}>Misión</h2>
             <p>
               Desarrollar y fabricar accesorios agrícolas que mejoren el
               rendimiento, la seguridad y la durabilidad de la maquinaria,
@@ -49,7 +57,8 @@ function AboutPage() {
             </p>
           </div>
           <div className={styles.missionVisionBox}>
-            <h2>Visión</h2>
+            {/* --- 3. APLICAMOS CLASE COMÚN AL TÍTULO --- */}
+            <h2 className={styles.sectionTitle}>Visión</h2>
             <p>
               Ser la empresa líder en soluciones agrícolas innovadoras a nivel
               nacional e internacional, reconocida por la calidad de nuestros

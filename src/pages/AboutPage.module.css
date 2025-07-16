@@ -8,24 +8,18 @@
 
 .header {
   text-align: center;
-  padding: 8rem 2rem; /* Le damos un poco más de padding para que la imagen se vea más */
-  color: white; /* Aseguramos que el texto por defecto sea blanco */
-
-  /* --- AQUÍ ESTÁ EL CAMBIO --- */
-  /* Reemplaza 'nosotros-header.jpg' por el nombre de tu archivo */
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-    url('/nosotros-header.jpg');
-
+  /* --- CAMBIO 1: Padding reducido para la vista móvil por defecto --- */
+  padding: 2rem 2rem; 
+  color: white;
+  
   background-size: cover;
   background-position: center;
-  background-attachment: fixed; /* Efecto parallax opcional, ¡se ve muy bien! */
+  background-attachment: fixed;
 }
 
 .header h1 {
   font-size: 3.2rem;
   color: #ffd000;
-  /* AJUSTADO: Unificamos el espacio después de los títulos */
   margin-bottom: 1.1rem; 
   font-weight: 700;
 }
@@ -37,21 +31,19 @@
   margin: 0 auto;
 }
 
-/* Contenedor para centrar el contenido de las secciones */
 .contentWrapper {
     max-width: 900px;
     margin: 0 auto;
-    /* AJUSTADO: Estandarizamos el padding vertical a 5rem */
     padding: 5rem 2rem;
 }
 
-.contentSection h2 {
+.sectionTitle {
   font-size: 2.5rem;
   color: #ffd000;
   border-left: 4px solid #ffd000;
   padding-left: 1.5rem;
-  /* AJUSTADO: Unificamos el espacio después de los títulos */
-  margin-bottom: 1.5rem; 
+  margin-bottom: 1.5rem;
+  margin-top: 0;
 }
 
 .contentSection p {
@@ -59,22 +51,18 @@
   color: #ffffff;
 }
 
-/* Sección de Misión/Visión */
 .missionVisionSection {
-  background-color: #cabfbf;
-  /* AJUSTADO: Estandarizamos el padding vertical a 5rem */
+  background-color: #1a1a1a;
   padding: 5rem 2rem;
 }
 
 .missionVisionContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  /* AJUSTADO: Damos un poco más de espacio entre las cajas */
   gap: 3rem; 
   max-width: 1200px;
   margin: 0 auto;
 }
-
 
 .missionVisionBox {
   padding: 2.5rem;
@@ -83,22 +71,28 @@
   border: 1px solid #343a40;
 }
 
-.missionVisionBox h2 {
-  font-size: 2.2rem;
-  color: #ffd000;
-  margin-top: 0;
-  margin-bottom: 1.5rem; /* Este ya estaba bien */
-}
-
 .missionVisionBox p {
-    color: #ced4da;
+  color: #ced4da;
 }
 
-/* Media query para pantallas pequeñas (no cambia) */
+/* --- MEDIA QUERY CON LOS CAMBIOS --- */
 @media (max-width: 768px) {
+  
+  /* Restauramos el padding grande solo para desktop (opcional si te gusta el nuevo) */
+  /* Si quieres mantener el padding de 8rem en desktop, descomenta la siguiente sección */
+  /*
+  .header {
+    padding: 8rem 2rem;
+  }
+  */
+
+  /* --- CAMBIO 2: Se reduce el tamaño de las fuentes en móvil --- */
+  .header h1 { font-size: 2.2rem; } /* <-- Más pequeño */
+  .header p { font-size: 1.1rem; }  /* <-- Más pequeño */
+  
+  .sectionTitle { font-size: 2rem; }
+  
   .missionVisionContainer {
     grid-template-columns: 1fr;
   }
-  .header h1 { font-size: 2.5rem; }
-  .contentSection h2, .missionVisionBox h2 { font-size: 2rem; }
 }

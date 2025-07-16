@@ -1,141 +1,162 @@
+/* --- ESTILOS BASE (MOBILE-FIRST) --- */
 .detailContainer {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 2rem;
+  display: flex;
+  flex-direction: column; 
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
 .imageColumn {
-  position: relative; /* <-- AÑADE ESTA LÍNEA */
-}
-
-/* ...el resto de tus estilos... */
-
-/* --- AÑADE ESTAS NUEVAS REGLAS AL FINAL --- */
-
-.navArrow {
-position: absolute;
-top: 50%;
-transform: translateY(-50%);
-background-color: rgba(0, 0, 0, 0.4);
-color: white;
-border: none;
-border-radius: 50%;
-width: 40px;
-height: 40px;
-font-size: 1.5rem;
-cursor: pointer;
-display: flex;
-align-items: center;
-justify-content: center;
-transition: background-color 0.2s ease;
-}
-
-.navArrow:hover {
-background-color: rgba(0, 0, 0, 0.7);
-}
-
-.prevArrow {
-left: 1rem;
-}
-
-.nextArrow {
-right: 1rem;
+  position: relative;
+  width: 100%;
 }
 
 .infoColumn {
-    text-align: left;
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
 }
 
-.infoColumn h1 {
-    margin-top: 0;
-    font-size: 2.3rem;
-    line-height: 1.2;
-    margin-bottom: 0.5rem;
+.mainImage {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+}
+
+.thumbnailGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.thumbnail {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.thumbnail:hover {
+  border-color: #ccc;
+}
+
+.thumbnailActive {
+  border-color: #007bff;
+}
+
+/* --- ✅ CAMBIO AQUÍ: Se reduce el tamaño de las flechas --- */
+.navArrow {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.4);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px; /* <-- Más chico */
+  height: 32px; /* <-- Más chico */
+  font-size: 1rem; /* <-- Ícono más chico */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  z-index: 10;
+}
+
+.navArrow:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.prevArrow {
+  left: 0.5rem; /* Un poco más cerca del borde */
+}
+
+.nextArrow {
+  right: 0.5rem; /* Un poco más cerca del borde */
 }
 
 .categoryLabel {
-    background-color: #e9ecef;
-    padding: 0.3rem 0.8rem;
-    border-radius: 15px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    display: inline-block;
-    margin-bottom: 1.5rem;
+  background-color: #e9ecef;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: inline-block;
+  margin-bottom: 1rem;
+  align-self: flex-start;
+}
+
+.infoColumn h1 {
+  margin-top: 0;
+  font-size: 1.8rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
 }
 
 .description {
-    line-height: 1.7;
-    /*flex-grow: 1; /* Empuja el precio y el botón hacia abajo */
+  line-height: 1.7;
+  font-size: 0.95rem;
+  color: #495057;
 }
 
 .price {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: var(--color-primario);
-    margin: 1.5rem 0;
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--color-primario);
+  margin: 1.5rem 0;
 }
 
-/* Usaremos un estilo de botón global para el botón principal */
-/* ¡Este estilo debemos añadirlo a nuestro index.css! */
-:global(.button-primary) {
-  padding: 1rem 2rem;
+/* --- ✅ CAMBIO AQUÍ: Nuevo estilo para el botón de cotización --- */
+.quoteButtonContainer {
+  margin-top: 1rem;
+}
+
+.quoteButton {
+  width: 100%;
+  padding: 1rem;
   font-size: 1.1rem;
   font-weight: bold;
   color: white;
-  background-color: #007bff;
+  background-color: #343a40; /* Un color oscuro y sobrio */
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-:global(.button-primary:hover) {
-    background-color: #0056b3;
+.quoteButton:hover {
+  background-color: #212529; /* Un poco más oscuro al pasar el mouse */
 }
 
-/* --- AÑADE ESTOS ESTILOS NUEVOS AL FINAL --- */
+.quoteButton:active {
+  transform: scale(0.98); /* Efecto de clic */
+}
 
-.mainImage {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 4 / 3; /* Mantiene la proporción de la imagen */
-    object-fit: cover;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    margin-bottom: 1rem;
-  }
-  
-  .thumbnailGrid {
+
+/* --- MEDIA QUERY PARA TABLETS Y DESKTOP --- */
+@media (min-width: 768px) {
+  .detailContainer {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 miniaturas por fila */
-    gap: 0.5rem;
-  }
-  
-  .thumbnail {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    border-radius: 5px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: border-color 0.2s ease;
-  }
-  
-  .thumbnail:hover {
-    border-color: #ccc;
-  }
-  
-  .thumbnailActive {
-    border-color: #007bff; /* Borde azul para la miniatura activa */
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    padding: 2rem;
   }
 
-  .quoteButtonContainer {
-    margin-top: 2rem;
-    text-align: center;
+  .infoColumn h1 {
+    font-size: 2.3rem;
   }
+
+  .price {
+    font-size: 2.5rem;
+  }
+}

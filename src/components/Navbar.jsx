@@ -5,7 +5,7 @@ import styles from './Navbar.module.css';
 import { useAuth } from '../context/AuthContext.jsx';
 import { 
   FaBars, FaTimes, FaUserCircle, 
-  FaHome, FaBoxOpen, FaUsers, FaEnvelope, FaHashtag,
+  FaHome, FaBoxOpen, FaUsers, FaEnvelope, FaGlobe, // --- 1. CAMBIO: Se reemplaza FaHashtag por FaGlobe ---
   FaSignInAlt, FaUserPlus, FaSignOutAlt
 } from 'react-icons/fa';
 
@@ -20,7 +20,6 @@ function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
 
-  // --- 1. AÑADIMOS REFS PARA EL MENÚ MÓVIL Y EL BOTÓN HAMBURGUESA ---
   const mobileMenuRef = useRef(null);
   const hamburgerRef = useRef(null);
 
@@ -36,7 +35,6 @@ function Navbar() {
 
   const closeMenu = () => setMenuOpen(false);
 
-  // Hook para cerrar el menú de usuario (este ya lo tenías)
   useEffect(() => {
     function handleClickOutside(event) {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
@@ -49,21 +47,18 @@ function Navbar() {
     };
   }, [userMenuRef]);
 
-  // --- 2. AÑADIMOS EL NUEVO HOOK PARA CERRAR EL MENÚ HAMBURGUESA ---
   useEffect(() => {
     function handleClickOutside(event) {
-      // Si el menú está abierto y el clic NO fue dentro del menú NI en el botón de hamburguesa...
       if (menuOpen && mobileMenuRef.current && !mobileMenuRef.current.contains(event.target) && hamburgerRef.current && !hamburgerRef.current.contains(event.target)) {
-        setMenuOpen(false); // ...entonces cerramos el menú.
+        setMenuOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [menuOpen]); // Depende del estado menuOpen para ejecutarse
+  }, [menuOpen]);
   
-  // Hook para evitar el scroll del body cuando el menú está abierto
   useEffect(() => {
     if (menuOpen) {
       document.body.style.overflow = 'hidden';
@@ -80,7 +75,6 @@ function Navbar() {
       <nav className={styles.nav}>
         
         <div className={styles.leftSection}>
-          {/* --- 3. ASIGNAMOS EL REF AL BOTÓN HAMBURGUESA --- */}
           <div className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)} ref={hamburgerRef}>
             <FaBars />
           </div>
@@ -138,7 +132,6 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* --- 4. ASIGNAMOS EL REF AL PANEL DEL MENÚ MÓVIL --- */}
       <div className={`${styles.mobileMenu} ${menuOpen ? styles.menuOpen : ''}`} ref={mobileMenuRef}>
         <div className={styles.mobileMenuHeader}>
           <button className={styles.closeButton} onClick={() => setMenuOpen(false)}>
@@ -158,8 +151,9 @@ function Navbar() {
             <NavLink to="/contacto" className={getNavLinkClass} onClick={closeMenu}>
               <FaEnvelope /> <span>Contacto</span>
             </NavLink>
+            {/* --- 2. CAMBIO: Se usa el ícono correcto en el enlace --- */}
             <NavLink to="/canal" className={getNavLinkClass} onClick={closeMenu}>
-              <FaHashtag /> <span>DE Group Social</span>
+              <FaGlobe /> <span>DE Group Social</span>
             </NavLink>
         </div>
       </div>
