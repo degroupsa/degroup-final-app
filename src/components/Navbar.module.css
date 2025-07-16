@@ -139,8 +139,14 @@
   }
 
   .nav {
-    position: relative;
-    justify-content: space-between;
+    position: relative; /* Contexto para el posicionamiento absoluto del logo */
+    justify-content: flex-end; /* Alinea los items (solo el ícono) a la derecha */
+  }
+
+  .logoContainer {
+    position: absolute; /* Lo sacamos del flujo normal */
+    left: 50%; /* Lo movemos al 50% del contenedor */
+    transform: translateX(-50%); /* Lo corremos la mitad de su propio ancho para centrarlo perfectamente */
   }
 
   /* Ocultamos los enlaces y el menú de usuario de la barra principal */
