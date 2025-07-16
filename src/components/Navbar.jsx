@@ -3,7 +3,7 @@ import { Link, useNavigate, NavLink } from 'react-router-dom';
 import CartWidget from './CartWidget.jsx';
 import styles from './Navbar.module.css';
 import { useAuth } from '../context/AuthContext.jsx';
-import { FaBell, FaBars, FaTimes } from 'react-icons/fa';
+import { FaBell, FaBars, FaTimes, FaUserCircle } from 'react-icons/fa'; // Importamos el ícono de usuario
 import NotificationsPanel from './NotificationsPanel.jsx';
 import { db } from '../firebase/config.js';
 import { doc, writeBatch } from 'firebase/firestore';
@@ -13,11 +13,11 @@ const getNavLinkClass = ({ isActive }) => {
 };
 
 function Navbar() {
-  const { user, loading, logout, notifications, unreadCount } = useAuth();
+  const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
-  const [showPanel, setShowPanel] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const userSectionRef = useRef(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false); // Estado para el nuevo menú de usuario
+  const userMenuRef = useRef(null); // Ref para detectar clics fuera del menú de usuario
 
   const handleLogout = async () => {
     try {
@@ -29,16 +29,22 @@ function Navbar() {
     }
   };
 
-  const handleNotificationsClick = async () => {
-    // ... (código existente)
-  };
-
   const closeMenu = () => setMenuOpen(false);
 
+  // Hook para cerrar el menú de usuario si se hace clic afuera
   useEffect(() => {
-    // ... (código existente para cerrar el panel de notificaciones)
-  }, [userSectionRef]);
+    function handleClickOutside(event) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [userMenuRef]);
   
+  // Hook para evitar el scroll del body cuando el menú está abierto
   useEffect(() => {
     if (menuOpen) {
       document.body.style.overflow = 'hidden';
@@ -70,9 +76,31 @@ function Navbar() {
         </div>
         
         <div className={styles.rightSection}>
+          {/* --- INICIO DE LA MODIFICACIÓN: Menú de usuario --- */}
           <div className={styles.navActions}>
-              {/* Contenido para desktop */}
+            <div className={styles.userMenuContainer} ref={userMenuRef}>
+              <button className={styles.userMenuButton} onClick={() => setUserMenuOpen(!userMenuOpen)}>
+                <FaUserCircle />
+              </button>
+              {userMenuOpen && (
+                <div className={styles.userDropdown}>
+                  {user ? (
+                    <>
+                      <Link to="/mi-perfil" className={styles.dropdownLink} onClick={() => setUserMenuOpen(false)}>Mi Perfil</Link>
+                      <button onClick={handleLogout} className={`${styles.dropdownLink} ${styles.dropdownButton}`}>Cerrar Sesión</button>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/login" className={styles.dropdownLink} onClick={() => setUserMenuOpen(false)}>Iniciar Sesión</Link>
+                      <Link to="/register" className={styles.dropdownLink} onClick={() => setUserMenuOpen(false)}>Registrarse</Link>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+            <CartWidget />
           </div>
+          {/* --- FIN DE LA MODIFICACIÓN --- */}
           
           <div className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
@@ -80,9 +108,7 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* --- INICIO DE LA MODIFICACIÓN: Menú desplegable ahora incluye acciones --- */}
       <div className={`${styles.mobileMenu} ${menuOpen ? styles.menuOpen : ''}`}>
-        {/* Contenedor para los enlaces de navegación */}
         <div className={styles.mobileMenuLinks}>
             <NavLink to="/" className={getNavLinkClass} onClick={closeMenu}>Inicio</NavLink>
             <NavLink to="/productos" className={getNavLinkClass} onClick={closeMenu}>Productos</NavLink>
@@ -91,7 +117,6 @@ function Navbar() {
             <NavLink to="/canal" className={getNavLinkClass} onClick={closeMenu}>DE Group Social</NavLink>
         </div>
 
-        {/* Contenedor para las acciones de usuario */}
         <div className={styles.mobileMenuActions}>
             <hr className={styles.divider} />
             <div className={styles.cartContainerMobile}>
@@ -112,7 +137,6 @@ function Navbar() {
             )}
         </div>
       </div>
-       {/* --- FIN DE LA MODIFICACIÓN --- */}
     </header>
   );
 }
