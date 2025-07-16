@@ -71,7 +71,7 @@
   background: none;
   border: none;
   color: #fff;
-  font-size: 1.3rem;
+  font-size: 1.8rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -97,7 +97,9 @@
   padding: 0.75rem 1.5rem;
   color: #f8f9fa;
   text-decoration: none;
-  display: block;
+  display: flex; /* Cambiado a flex para alinear ícono y texto */
+  align-items: center;
+  gap: 0.75rem; /* Espacio entre ícono y texto */
   width: 100%;
   text-align: left;
   background: none;
@@ -116,7 +118,7 @@
 
 .hamburger {
   display: none;
-  font-size: 1.2rem; 
+  font-size: 1.3rem; 
   color: #ffffff;
   background: none;
   border: none;
@@ -148,24 +150,28 @@
     display: none;
   }
 
-  /* --- INICIO DE LA MODIFICACIÓN --- */
-  /* Mostramos el contenedor de acciones, pero solo para los íconos */
-  .navActions {
-    display: flex;
-    gap: 0.5rem;
+  .rightSection {
+    gap: 0.2rem; /* Reducimos el espacio entre los íconos de la derecha */
   }
 
+  .navActions {
+    display: flex;
+    gap: 0.2rem; /* Reducimos el espacio entre usuario y carrito */
+  }
+
+  /* --- INICIO DE AJUSTES DE TAMAÑO DE ÍCONOS --- */
   .userMenuButton {
-    font-size: 1.3rem;
-    padding: 0.4rem;
+    font-size: 1.4rem; /* Achicamos el ícono de usuario */
+    padding: 0.5rem;
   }
   
   .hamburger {
     display: block;
-    font-size: 1.2rem;
-    padding: 0.4rem;
+    font-size: 1.4rem; /* Achicamos el ícono de hamburguesa */
+    padding: 0.5rem;
   }
-  /* --- FIN DE LA MODIFICACIÓN --- */
+  /* El tamaño del carrito se ajustará en su propio CSS */
+  /* --- FIN DE AJUSTES DE TAMAÑO --- */
 
   .mobileMenu {
     display: flex;
@@ -198,12 +204,10 @@
     width: 100%;
   }
 
-  /* --- INICIO DE NUEVOS ESTILOS PARA ÍCONOS --- */
   .mobileMenuLinks .link {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     display: flex;
     align-items: center;
-    gap: 1rem; /* Espacio entre el ícono y el texto */
+    gap: 1rem;
   }
-  /* --- FIN DE NUEVOS ESTILOS --- */
 }
