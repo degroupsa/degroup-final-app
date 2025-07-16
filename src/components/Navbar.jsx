@@ -3,10 +3,11 @@ import { Link, useNavigate, NavLink } from 'react-router-dom';
 import CartWidget from './CartWidget.jsx';
 import styles from './Navbar.module.css';
 import { useAuth } from '../context/AuthContext.jsx';
-import { FaBell, FaBars, FaTimes, FaUserCircle } from 'react-icons/fa'; // Importamos el ícono de usuario
-import NotificationsPanel from './NotificationsPanel.jsx';
-import { db } from '../firebase/config.js';
-import { doc, writeBatch } from 'firebase/firestore';
+// --- 1. CAMBIO: Importamos los nuevos íconos ---
+import { 
+  FaBars, FaTimes, FaUserCircle, 
+  FaHome, FaBoxOpen, FaUsers, FaEnvelope, FaHashtag 
+} from 'react-icons/fa';
 
 const getNavLinkClass = ({ isActive }) => {
   return isActive ? `${styles.link} ${styles.activeLink}` : styles.link;
@@ -16,8 +17,8 @@ function Navbar() {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false); // Estado para el nuevo menú de usuario
-  const userMenuRef = useRef(null); // Ref para detectar clics fuera del menú de usuario
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
 
   const handleLogout = async () => {
     try {
@@ -31,7 +32,6 @@ function Navbar() {
 
   const closeMenu = () => setMenuOpen(false);
 
-  // Hook para cerrar el menú de usuario si se hace clic afuera
   useEffect(() => {
     function handleClickOutside(event) {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
@@ -44,7 +44,6 @@ function Navbar() {
     };
   }, [userMenuRef]);
   
-  // Hook para evitar el scroll del body cuando el menú está abierto
   useEffect(() => {
     if (menuOpen) {
       document.body.style.overflow = 'hidden';
@@ -76,7 +75,6 @@ function Navbar() {
         </div>
         
         <div className={styles.rightSection}>
-          {/* --- INICIO DE LA MODIFICACIÓN: Menú de usuario --- */}
           <div className={styles.navActions}>
             <div className={styles.userMenuContainer} ref={userMenuRef}>
               <button className={styles.userMenuButton} onClick={() => setUserMenuOpen(!userMenuOpen)}>
@@ -100,7 +98,6 @@ function Navbar() {
             </div>
             <CartWidget />
           </div>
-          {/* --- FIN DE LA MODIFICACIÓN --- */}
           
           <div className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
@@ -108,33 +105,24 @@ function Navbar() {
         </div>
       </nav>
 
+      {/* --- 2. CAMBIO: Menú móvil limpio y con íconos --- */}
       <div className={`${styles.mobileMenu} ${menuOpen ? styles.menuOpen : ''}`}>
         <div className={styles.mobileMenuLinks}>
-            <NavLink to="/" className={getNavLinkClass} onClick={closeMenu}>Inicio</NavLink>
-            <NavLink to="/productos" className={getNavLinkClass} onClick={closeMenu}>Productos</NavLink>
-            <NavLink to="/nosotros" className={getNavLinkClass} onClick={closeMenu}>Nosotros</NavLink>
-            <NavLink to="/contacto" className={getNavLinkClass} onClick={closeMenu}>Contacto</NavLink>
-            <NavLink to="/canal" className={getNavLinkClass} onClick={closeMenu}>DE Group Social</NavLink>
-        </div>
-
-        <div className={styles.mobileMenuActions}>
-            <hr className={styles.divider} />
-            <div className={styles.cartContainerMobile}>
-              <CartWidget />
-            </div>
-            {!loading && (
-                user ? (
-                    <div className={styles.userSectionMobile}>
-                        <NavLink to="/mi-perfil" className={styles.mobileButton} onClick={closeMenu}>Mi Perfil</NavLink>
-                        <button onClick={handleLogout} className={`${styles.mobileButton} ${styles.logoutButtonMobile}`}>Cerrar Sesión</button>
-                    </div>
-                ) : (
-                    <div className={styles.authSectionMobile}>
-                        <Link to="/login" className={styles.mobileButton} onClick={closeMenu}>Iniciar Sesión</Link>
-                        <Link to="/register" className={`${styles.mobileButton} ${styles.registerButtonMobile}`} onClick={closeMenu}>Registrarse</Link>
-                    </div>
-                )
-            )}
+            <NavLink to="/" className={getNavLinkClass} onClick={closeMenu}>
+              <FaHome /> <span>Inicio</span>
+            </NavLink>
+            <NavLink to="/productos" className={getNavLinkClass} onClick={closeMenu}>
+              <FaBoxOpen /> <span>Productos</span>
+            </NavLink>
+            <NavLink to="/nosotros" className={getNavLinkClass} onClick={closeMenu}>
+              <FaUsers /> <span>Nosotros</span>
+            </NavLink>
+            <NavLink to="/contacto" className={getNavLinkClass} onClick={closeMenu}>
+              <FaEnvelope /> <span>Contacto</span>
+            </NavLink>
+            <NavLink to="/canal" className={getNavLinkClass} onClick={closeMenu}>
+              <FaHashtag /> <span>DE Group Social</span>
+            </NavLink>
         </div>
       </div>
     </header>
