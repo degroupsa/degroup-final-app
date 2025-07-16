@@ -25,8 +25,7 @@
 }
 
 .logo {
-  /* --- 1. CAMBIO: Logo más pequeño --- */
-  height: 45px; /* Lo ajustamos a un tamaño más refinado */
+  height: 60px;
   width: auto;
 }
 
@@ -46,55 +45,15 @@
   transition: color 0.2s ease-in-out;
 }
 
-.link::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: 0;
-  left: 50%;
-  background-color: #f0c420;
-  transition: all 0.3s ease-in-out;
-}
-
-.link:hover {
-  color: #ffffff;
-}
-
-.link:hover::after {
-  width: 100%;
-  left: 0;
-}
-
-.activeLink {
-  color: #f0c420;
-  font-weight: 600;
-}
-
-.activeLink::after {
-  width: 100%;
-  left: 0;
-}
-
-.rightSection {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.navActions {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.userSection, .authSection {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-}
-
-/* ... (resto de tus estilos para botones y notificaciones) ... */
+/* ... (resto de tus estilos existentes para desktop) ... */
+.link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: 0; left: 50%; background-color: #f0c420; transition: all 0.3s ease-in-out; }
+.link:hover { color: #ffffff; }
+.link:hover::after { width: 100%; left: 0; }
+.activeLink { color: #f0c420; font-weight: 600; }
+.activeLink::after { width: 100%; left: 0; }
+.rightSection { display: flex; align-items: center; gap: 1.5rem; }
+.navActions { display: flex; align-items: center; gap: 1.5rem; }
+.userSection, .authSection { display: flex; align-items: center; gap: 0.8rem; }
 .userEmail { font-size: 0.8rem; color: #ced4da; }
 .authLink { padding: 0.2rem 0.4rem; border: 1px solid #f0c420; border-radius: 5px; text-decoration: none; color: #ebe2e2; font-weight: 500; font-size: 0.9rem; transition: all 0.2s; }
 .authLink:hover { color: #f0c420; }
@@ -115,7 +74,6 @@
 
 .hamburger {
   display: none;
-  /* --- 2. CAMBIO: Ícono de hamburguesa más pequeño --- */
   font-size: 1.3rem; 
   color: #ffffff;
   background: none;
@@ -129,26 +87,21 @@
   display: none;
 }
 
-
-/* ▼▼▼ Media Query para pantallas pequeñas (móviles) ▼▼▼ */
 @media (max-width: 992px) {
-  
   .header {
     padding: 0 1.5rem;
   }
 
-  /* --- 3. CAMBIO: Nueva estrategia de centrado --- */
   .nav {
-    position: relative; /* Contexto para el posicionamiento absoluto del logo */
-    justify-content: flex-end; /* Alinea los items (solo el ícono) a la derecha */
+    position: relative;
+    justify-content: flex-end;
   }
 
   .logoContainer {
-    position: absolute; /* Lo sacamos del flujo normal */
-    left: 50%; /* Lo movemos al 50% del contenedor */
-    transform: translateX(-50%); /* Lo corremos la mitad de su propio ancho para centrarlo perfectamente */
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
   }
-  /* --- FIN DEL CAMBIO DE ESTRATEGIA --- */
   
   .desktopNavLinks, .navActions {
     display: none;
@@ -159,12 +112,17 @@
   }
   
   .mobileMenu {
+    /* --- INICIO DE LA CORRECCIÓN DE LAYOUT --- */
     display: flex;
     flex-direction: column;
+    justify-content: space-between; /* Empuja las acciones al final */
     align-items: flex-start;
-    padding: 6rem 2rem 2rem 2rem;
+    padding: 80px 2rem 2rem 2rem; /* Más padding arriba para el botón de cierre */
+    box-sizing: border-box;
+    /* --- FIN DE LA CORRECCIÓN DE LAYOUT --- */
+    
     gap: 1.5rem;
-    background-color: rgba(20, 20, 20, 0.9);
+    background-color: rgba(20, 20, 20, 0.95);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     
@@ -182,4 +140,74 @@
   .mobileMenu.menuOpen {
     transform: translateX(0);
   }
+
+  /* --- INICIO DE NUEVOS ESTILOS PARA ORDENAR EL MENÚ --- */
+  .mobileMenuLinks {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    width: 100%;
+  }
+
+  .mobileMenuLinks .link {
+    font-size: 1.2rem; /* Letra más grande para mejor lectura */
+  }
+
+  .mobileMenuActions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .divider {
+    width: 100%;
+    border: none;
+    border-top: 1px solid #444;
+    margin: 1rem 0;
+  }
+
+  .userSectionMobile, .authSectionMobile {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+  }
+
+  /* Estilo base para todos los botones/links en el menú móvil */
+  .mobileButton {
+    width: 100%;
+    padding: 0.8rem;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #f1f1f1;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: background-color 0.2s;
+  }
+
+  .mobileButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .registerButtonMobile {
+    background-color: #f0c420;
+    color: #000000;
+    font-weight: bold;
+  }
+
+  .logoutButtonMobile {
+    background-color: transparent;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+  }
+  
+  .cartContainerMobile {
+    align-self: center;
+  }
+  /* --- FIN DE NUEVOS ESTILOS --- */
 }
