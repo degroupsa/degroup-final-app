@@ -3,7 +3,6 @@ import { Link, useNavigate, NavLink } from 'react-router-dom';
 import CartWidget from './CartWidget.jsx';
 import styles from './Navbar.module.css';
 import { useAuth } from '../context/AuthContext.jsx';
-// --- 1. CAMBIO: Importamos todos los íconos necesarios ---
 import { 
   FaBars, FaTimes, FaUserCircle, 
   FaHome, FaBoxOpen, FaUsers, FaEnvelope, FaHashtag,
@@ -24,7 +23,7 @@ function Navbar() {
   const handleLogout = async () => {
     try {
       await logout();
-      setUserMenuOpen(false); // Cerramos el menú de usuario
+      setUserMenuOpen(false);
       navigate('/login');
     } catch (error) {
       console.error("Error al cerrar sesión", error);
@@ -59,22 +58,33 @@ function Navbar() {
   return (
     <header className={styles.header}>
       <nav className={styles.nav}>
-        <Link to="/" className={styles.logoContainer}>
-          <img 
-            src="https://firebasestorage.googleapis.com/v0/b/web-de-group.firebasestorage.app/o/logos%2FLogoplateado.png?alt=media&token=44ae5d44-f901-44d8-880f-b2115e186e35" 
-            alt="DE Group Logo" 
-            className={styles.logo}
-          />
-        </Link>
+        
+        {/* --- 1. SECCIÓN IZQUIERDA: HAMBURGUESA (SOLO MÓVIL) --- */}
+        <div className={styles.leftSection}>
+          <div className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
+            <FaBars />
+          </div>
+        </div>
 
-        <div className={styles.desktopNavLinks}>
-          <NavLink to="/" className={getNavLinkClass}>Inicio</NavLink>
-          <NavLink to="/productos" className={getNavLinkClass}>Productos</NavLink>
-          <NavLink to="/nosotros" className={getNavLinkClass}>Nosotros</NavLink>
-          <NavLink to="/contacto" className={getNavLinkClass}>Contacto</NavLink>
-          <NavLink to="/canal" className={getNavLinkClass}>DE Group Social</NavLink>
+        {/* --- 2. SECCIÓN CENTRAL: LOGO Y ENLACES (DESKTOP) --- */}
+        <div className={styles.centerSection}>
+          <Link to="/" className={styles.logoContainer}>
+            <img 
+              src="https://firebasestorage.googleapis.com/v0/b/web-de-group.firebasestorage.app/o/logos%2FLogoplateado.png?alt=media&token=44ae5d44-f901-44d8-880f-b2115e186e35" 
+              alt="DE Group Logo" 
+              className={styles.logo}
+            />
+          </Link>
+          <div className={styles.desktopNavLinks}>
+            <NavLink to="/" className={getNavLinkClass}>Inicio</NavLink>
+            <NavLink to="/productos" className={getNavLinkClass}>Productos</NavLink>
+            <NavLink to="/nosotros" className={getNavLinkClass}>Nosotros</NavLink>
+            <NavLink to="/contacto" className={getNavLinkClass}>Contacto</NavLink>
+            <NavLink to="/canal" className={getNavLinkClass}>DE Group Social</NavLink>
+          </div>
         </div>
         
+        {/* --- 3. SECCIÓN DERECHA: ACCIONES DE USUARIO --- */}
         <div className={styles.rightSection}>
           <div className={styles.navActions}>
             <div className={styles.userMenuContainer} ref={userMenuRef}>
@@ -85,7 +95,6 @@ function Navbar() {
                 <div className={styles.userDropdown}>
                   {user ? (
                     <>
-                      {/* --- 2. CAMBIO: Añadimos íconos al menú de usuario --- */}
                       <Link to="/mi-perfil" className={styles.dropdownLink} onClick={() => setUserMenuOpen(false)}>
                         <FaUserCircle /> <span>Mi Perfil</span>
                       </Link>
@@ -108,15 +117,16 @@ function Navbar() {
             </div>
             <CartWidget />
           </div>
-          
-          <div className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-          </div>
         </div>
       </nav>
 
-      {/* --- 3. CAMBIO: Menú móvil limpio y con íconos --- */}
+      {/* --- MENÚ DESPLEGABLE MÓVIL --- */}
       <div className={`${styles.mobileMenu} ${menuOpen ? styles.menuOpen : ''}`}>
+        <div className={styles.mobileMenuHeader}>
+          <button className={styles.closeButton} onClick={() => setMenuOpen(false)}>
+            <FaTimes />
+          </button>
+        </div>
         <div className={styles.mobileMenuLinks}>
             <NavLink to="/" className={getNavLinkClass} onClick={closeMenu}>
               <FaHome /> <span>Inicio</span>
@@ -134,7 +144,6 @@ function Navbar() {
               <FaHashtag /> <span>DE Group Social</span>
             </NavLink>
         </div>
-        {/* La sección de acciones y carrito se ha eliminado de aquí */}
       </div>
     </header>
   );

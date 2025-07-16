@@ -17,15 +17,36 @@
   height: 70px;
 }
 
+/* --- SECCIONES PRINCIPALES --- */
+.leftSection, .rightSection {
+  display: flex;
+  align-items: center;
+  flex: 1; /* Ocupan el espacio disponible */
+}
+
+.leftSection {
+  justify-content: flex-start;
+}
+
+.rightSection {
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.centerSection {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
 .logoContainer {
   display: flex;
   align-items: center;
   height: 100%;
-  flex-shrink: 0;
 }
 
 .logo {
-  height: 60px;
+  height: 65px;
   width: auto;
 }
 
@@ -51,16 +72,10 @@
 .activeLink { color: #f0c420; font-weight: 600; }
 .activeLink::after { width: 100%; left: 0; }
 
-.rightSection {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
 .navActions {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .userMenuContainer {
@@ -116,14 +131,9 @@
   color: #dc3545;
 }
 
+/* --- ESTILOS PARA EL MENÚ RESPONSIVE --- */
 .hamburger {
   display: none;
-  font-size: 0.9rem; 
-  color: #ffffff;
-  background: none;
-  border: none;
-  cursor: pointer;
-  z-index: 1001;
 }
 
 .mobileMenu {
@@ -135,66 +145,46 @@
     padding: 0 1rem;
   }
 
-  .nav {
-    position: relative;
-    justify-content: flex-end;
+  .rightSection {
+    gap: 0rem; /* Reduce el espacio principal a la derecha */
   }
 
-  .logoContainer {
-    position: static;
-    transform: none;
-    height: 60px;
+  .navActions {
+    gap: 0rem; /* Reduce el espacio entre el ícono de usuario y el carrito */
   }
 
-  .logo {
-    height: 60px;
-  }
-  
   .desktopNavLinks {
     display: none;
   }
 
-  /* --- INICIO DE LA CORRECCIÓN DE ALINEACIÓN Y TAMAÑO --- */
-  .rightSection {
-    gap: 0.25rem;
-    height: 100%;
-    align-items: center; /* Clave para alinear verticalmente */
-  }
-
-  .navActions {
-    display: flex;
-    align-items: center; /* Alinear usuario y carrito */
-    gap: 0.25rem;
+  .hamburger {
+    display: block;
+    color: #ffffff; /* Aseguramos que sea blanco */
+    font-size: 1.1rem;
+    cursor: pointer;
   }
 
   .userMenuButton {
-    font-size: 0.9rem; /* Tamaño final de ícono */
-    padding: 0.5rem;
+    font-size: 1.1rem;
   }
   
-  .hamburger {
-    display: block;
-    font-size: 0.9rem; /* Mismo tamaño que el de usuario */
-    padding: 0.5rem;
-  }
-  /* --- FIN DE LA CORRECCIÓN --- */
-
   .mobileMenu {
     display: flex;
     flex-direction: column;
-    padding: 80px 2rem 2rem 2rem;
+    align-items: flex-start;
+    padding: 2rem;
     box-sizing: border-box;
-    gap: 1rem;
+    gap: 1.5rem;
     background-color: rgba(20, 20, 20, 0.95);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     position: fixed;
     top: 0;
-    right: 0;
+    left: 0; /* Lo movemos a la izquierda */
     height: 100vh;
     width: 280px;
     z-index: 1000;
-    transform: translateX(100%);
+    transform: translateX(-100%); /* Lo ocultamos a la izquierda */
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
@@ -202,11 +192,26 @@
     transform: translateX(0);
   }
 
+  .mobileMenuHeader {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+  }
+
+  .closeButton {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+
   .mobileMenuLinks {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 1.2rem;
     width: 100%;
   }
 
@@ -215,5 +220,6 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+    width: 100%;
   }
 }
