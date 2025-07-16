@@ -118,6 +118,7 @@
 
 .hamburger {
   display: none;
+  font-size: 0.9rem; 
   color: #ffffff;
   background: none;
   border: none;
@@ -136,7 +137,7 @@
 
   .nav {
     position: relative;
-    justify-content: space-between;
+    justify-content: flex-end;
   }
 
   .logoContainer {
