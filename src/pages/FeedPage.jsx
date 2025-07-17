@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useChatPanel } from '../context/ChatPanelContext.jsx'; // Importamos el hook del chat
 import { Link } from 'react-router-dom';
 import { db } from '../firebase/config.js';
 import { collection, query, orderBy, onSnapshot, where, Timestamp, getDocs } from 'firebase/firestore';
@@ -20,6 +21,7 @@ import styles from './FeedPage.module.css';
 
 function FeedPage() {
   const { user } = useAuth();
+  const { isChatPanelOpen, toggleChatPanel } = useChatPanel(); // Usamos el hook
   const [posts, setPosts] = useState([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [allStories, setAllStories] = useState([]);
@@ -59,8 +61,6 @@ function FeedPage() {
   useEffect(() => {
     if (activeTab !== 'search') return;
     if (searchQuery.trim() === '') {
-      // Si la búsqueda está vacía, podríamos mostrar todos los usuarios o nada.
-      // Por ahora lo dejamos como estaba para no hacer otra llamada a la DB.
       setSearchResults(null);
       return;
     }
@@ -161,7 +161,6 @@ function FeedPage() {
           </nav>
         </header>
 
-        {/* ▼▼▼ CAMBIO EN LA LÓGICA DE CLASES Y RENDERIZADO ▼▼▼ */}
         <div className={`${styles.hubLayout} ${user ? styles.twoColumns : ''}`}>
           
           <main className={styles.mainContent}>
@@ -169,9 +168,8 @@ function FeedPage() {
             {renderTabContent()}
           </main>
 
-          {/* Ahora la columna de chats solo depende de si hay un usuario logueado */}
           {user && (
-            <aside className={styles.rightSidebar}>
+            <aside className={`${styles.rightSidebar} ${isChatPanelOpen ? styles.sidebarOpen : ''}`}>
               <div className={styles.sidebarCard}>
                 <h3>Mensajes</h3>
                 <ConversationList />
@@ -179,9 +177,12 @@ function FeedPage() {
             </aside>
           )}
         </div>
-        {/* ▲▲▲ FIN DEL CAMBIO ▲▲▲ */}
-
       </div>
+
+      {isChatPanelOpen && (
+        <div className={styles.backdrop} onClick={toggleChatPanel} />
+      )}
+
       {viewingStories && (
         <StoryViewer 
           storiesByUser={viewingStories} 

@@ -1,7 +1,7 @@
 .pageBackground {
   background-color: #f0f2f5;
-  min-height: calc(100vh - 60px);
-  padding: 2rem;
+  min-height: calc(100vh - 70px);
+  padding: 1.5rem 1rem;
 }
 
 .hubContainer {
@@ -9,20 +9,16 @@
   margin: 0 auto;
 }
 
-/* ▼▼▼ ESTILOS DEL TÍTULO MODIFICADOS PARA EL LOGO ▼▼▼ */
 .hubHeader {
-  
   margin-bottom: 2rem;
   text-align: center; 
 }
 
 .headerLogo {
-  height: 150px; /* Ajusta la altura de tu logo como prefieras */
-  width: auto; /* El ancho se ajusta automáticamente */
-  margin-bottom: -2rem;
+  height: 120px;
+  width: auto;
+  margin-bottom: -1.5rem;
 }
-/* ▲▲▲ FIN DE ESTILOS DEL TÍTULO ▲▲▲ */
-
 
 .tabNav {
   display: flex;
@@ -36,7 +32,7 @@
   padding: 1rem 0.5rem;
   border: none;
   background: none;
-  font-family: 'Poppins', sans-serif;
+  font-family: inherit;
   font-size: 1rem;
   font-weight: 600;
   color: #65676b;
@@ -64,24 +60,75 @@
   transform: scaleX(1);
 }
 
+/* Por defecto (móvil), el layout principal es un simple bloque. */
 .hubLayout {
   display: block;
 }
 
-.hubLayout.twoColumns {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 2rem;
-  align-items: flex-start;
-}
-
+/* La columna principal ocupa todo el ancho que su contenedor le permite. */
 .mainContent {
   width: 100%;
+  min-width: 0; /* Previene desbordamientos en grid/flex */
+}
+
+/* El panel de chat siempre empieza como un panel deslizable fuera de pantalla. */
+.rightSidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 280px;
+  height: 100%;
+  background-color: #fff;
+  z-index: 2000;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.15);
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.rightSidebar.sidebarOpen {
+  transform: translateX(0);
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1999;
+}
+
+/* MEDIA QUERY: Aquí es donde creamos el layout de escritorio */
+@media (min-width: 992px) {
+  .pageBackground {
+    padding: 2rem;
+  }
+  
+  /* Solo en pantallas grandes, convertimos el layout en una cuadrícula. */
+  .hubLayout.twoColumns {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+
+  /* Y restauramos la barra lateral a su estado normal. */
+  .rightSidebar {
+    position: sticky;
+    top: 80px;
+    transform: none;
+    box-shadow: none;
+    transition: none;
+  }
+
+  /* Ocultamos el fondo oscuro en escritorio. */
+  .backdrop {
+    display: none;
+  }
 }
 
 .rightSidebar .sidebarCard {
-  position: sticky;
-  top: 80px; 
   background-color: #fff;
   border-radius: 8px;
   padding: 1rem;
@@ -89,15 +136,13 @@
 }
 
 .rightSidebar h3 {
-  font-family: 'Poppins', sans-serif;
+  font-family: inherit;
   font-size: 1.1rem;
   font-weight: 700;
   padding: 0 0.5rem 0.5rem;
   border-bottom: 1px solid #e0e0e0;
   margin-bottom: 0.5rem;
 }
-
-/* --- Estilos para contenido existente --- */
 
 .postListContainer {
   display: flex;
@@ -110,8 +155,6 @@
   padding: 3rem;
   color: #65676b;
 }
-
-/* --- Estilos para la pestaña de Búsqueda --- */
 
 .searchContainer {
   background-color: #fff;

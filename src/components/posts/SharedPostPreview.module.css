@@ -1,0 +1,57 @@
+.previewLink {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    margin-top: 8px; /* Espacio entre el texto del mensaje y la tarjeta */
+  }
+  
+  .previewCard {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #f9f9f9;
+    transition: background-color 0.2s ease;
+  }
+  
+  .previewLink:hover .previewCard {
+    background-color: #f0f0f0;
+  }
+  
+  .previewImage {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    display: block;
+  }
+  
+  .previewContent {
+    padding: 12px;
+  }
+  
+  .previewCaption {
+    font-size: 0.9rem;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+    /* Truncar texto a 2 líneas */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  
+  .previewAuthor {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #65676b;
+  }
+  
+  .loadingPreview, .errorPreview {
+    padding: 12px;
+    font-size: 0.9rem;
+    color: #888;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    margin-top: 8px;
+  }

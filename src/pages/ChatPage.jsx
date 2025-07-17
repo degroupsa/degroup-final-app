@@ -9,6 +9,7 @@ import { FaPaperPlane, FaTrash } from 'react-icons/fa';
 import Avatar from '../components/ui/Avatar.jsx';
 import toast from 'react-hot-toast';
 import ConfirmationModal from '../components/ui/ConfirmationModal.jsx';
+import SharedPostPreview from '../components/posts/SharedPostPreview.jsx';
 
 function ChatPage() {
   const { chatId } = useParams();
@@ -27,20 +28,17 @@ function ChatPage() {
 
   useEffect(() => {
     if (!chatId || !currentUser?.uid) return;
-
     const messagesRef = collection(db, 'chats', chatId, 'messages');
     const q = query(messagesRef, orderBy('createdAt', 'asc'));
     const unsubscribeMessages = onSnapshot(q, (snapshot) => {
       setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
-
     const chatDocRef = doc(db, 'chats', chatId);
     const unsubscribeChatInfo = onSnapshot(chatDocRef, (docSnap) => {
       if (docSnap.exists()) {
         setChatInfo(docSnap.data());
       }
     });
-
     return () => {
       unsubscribeMessages();
       unsubscribeChatInfo();
@@ -49,10 +47,8 @@ function ChatPage() {
 
   useEffect(() => {
     if (!chatInfo || !currentUser?.uid) return;
-    
     const otherId = chatInfo.participants.find(id => id !== currentUser.uid);
     if (!otherId) return;
-
     const statusRef = ref(rtdb, 'status/' + otherId);
     const unsubscribeStatus = onValue(statusRef, (snapshot) => {
       if (snapshot.exists()) {
@@ -61,7 +57,6 @@ function ChatPage() {
         setOtherUserStatus({ isOnline: false, last_seen: null });
       }
     });
-
     return () => unsubscribeStatus();
   }, [chatInfo, currentUser?.uid]);
 
@@ -111,7 +106,7 @@ function ChatPage() {
   };
 
   if (!chatInfo) {
-    return <div>Cargando chat...</div>;
+    return <div className="loading-container">Cargando chat...</div>;
   }
 
   const otherParticipantId = chatInfo.participants.find(id => id !== currentUser.uid);
@@ -147,11 +142,14 @@ function ChatPage() {
                     <FaTrash />
                   </button>
                 )}
-                <div className={`${styles.messageBubble} ${isSender ? styles.sent : styles.received}`}>
+                <div className={`${styles.messageBubble} ${isSender ? styles.sent : styles.received} ${msg.sharedPostId ? styles.sharedPostBubble : ''}`}>
                   {msg.isDeleted ? (
                     <em className={styles.deletedText}>Este mensaje fue eliminado.</em>
                   ) : (
-                    <p>{msg.text}</p>
+                    <>
+                      {msg.text && <p>{msg.text}</p>}
+                      {msg.sharedPostId && <SharedPostPreview postId={msg.sharedPostId} />}
+                    </>
                   )}
                 </div>
               </div>
@@ -159,7 +157,6 @@ function ChatPage() {
           })}
           <div ref={messagesEndRef} />
         </main>
-        
         <footer className={styles.messageFormContainer}>
           <form onSubmit={handleSendMessage} className={styles.messageForm}>
             <input
@@ -173,16 +170,7 @@ function ChatPage() {
           </form>
         </footer>
       </div>
-
-      {isConfirmDeleteOpen && (
-        <ConfirmationModal
-          title="Eliminar Mensaje"
-          message="¿Estás seguro de que quieres eliminar este mensaje? Esta acción no se puede deshacer."
-          onConfirm={handleConfirmDelete}
-          onCancel={() => setIsConfirmDeleteOpen(false)}
-          confirmText="Sí, Eliminar"
-        />
-      )}
+      {isConfirmDeleteOpen && <ConfirmationModal title="Eliminar Mensaje" message="¿Estás seguro de que quieres eliminar este mensaje?" onConfirm={handleConfirmDelete} onCancel={() => setIsConfirmDeleteOpen(false)} confirmText="Sí, Eliminar" />}
     </>
   );
 }

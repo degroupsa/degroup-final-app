@@ -1,22 +1,23 @@
-// src/layouts/PublicLayout.jsx (CORREGIDO)
-
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar.jsx';
-import Footer from '../components/Footer.jsx'; // <-- 1. IMPORTAMOS EL FOOTER
+import Footer from '../components/Footer.jsx';
 import NavigationArrows from '../components/ui/NavigationArrows';
+import { ChatPanelProvider } from '../context/ChatPanelContext.jsx'; // 1. Importamos el Provider
 
 function PublicLayout() {
   return (
-    <div className="main-container">
-      <Navbar />
-      <main className="main-content">
-        {/* Outlet renderizará la página pública que corresponda (Inicio, Productos, etc.) */}
-        <Outlet />
-      </main>
-      <NavigationArrows />
-      <Footer /> {/* <-- 2. AÑADIMOS EL FOOTER AL FINAL */}
-    </div>
+    // 2. Envolvemos todo con el Provider
+    <ChatPanelProvider>
+      <div className="main-container">
+        <Navbar />
+        <main className="main-content">
+          <Outlet />
+        </main>
+        <NavigationArrows />
+        <Footer />
+      </div>
+    </ChatPanelProvider>
   );
 }
 

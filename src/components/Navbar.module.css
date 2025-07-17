@@ -271,3 +271,23 @@
     font-size: 1.1rem;
   }
 }
+
+/* ... (todos tus estilos existentes) ... */
+
+/* --- NUEVO ESTILO PARA EL ÍCONO DE CHAT EN MÓVIL --- */
+.mobileChatIcon {
+  display: block; /* Por defecto se muestra */
+  color: #ffffff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+}
+
+/* Ocultamos el ícono en pantallas de escritorio */
+@media (min-width: 992px) {
+  .mobileChatIcon {
+    display: none;
+  }
+}
