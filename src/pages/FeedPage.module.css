@@ -38,6 +38,15 @@
   color: #65676b;
   cursor: pointer;
   position: relative;
+  transition: all 0.2s ease;
+}
+
+.tabNav button:hover {
+  color: #1d2129;
+}
+
+.tabNav button.activeTab {
+  color: #1877f2;
 }
 
 .tabNav button::after {
@@ -52,26 +61,19 @@
   transition: transform 0.2s ease-in-out;
 }
 
-.tabNav button.activeTab {
-  color: #1877f2;
-}
-
 .tabNav button.activeTab::after {
   transform: scaleX(1);
 }
 
-/* Por defecto (móvil), el layout principal es un simple bloque. */
 .hubLayout {
   display: block;
 }
 
-/* La columna principal ocupa todo el ancho que su contenedor le permite. */
 .mainContent {
   width: 100%;
-  min-width: 0; /* Previene desbordamientos en grid/flex */
+  min-width: 0;
 }
 
-/* El panel de chat siempre empieza como un panel deslizable fuera de pantalla. */
 .rightSidebar {
   position: fixed;
   top: 0;
@@ -99,13 +101,11 @@
   z-index: 1999;
 }
 
-/* MEDIA QUERY: Aquí es donde creamos el layout de escritorio */
 @media (min-width: 992px) {
   .pageBackground {
     padding: 2rem;
   }
   
-  /* Solo en pantallas grandes, convertimos el layout en una cuadrícula. */
   .hubLayout.twoColumns {
     display: grid;
     grid-template-columns: 1fr 320px;
@@ -113,7 +113,6 @@
     align-items: flex-start;
   }
 
-  /* Y restauramos la barra lateral a su estado normal. */
   .rightSidebar {
     position: sticky;
     top: 80px;
@@ -122,7 +121,6 @@
     transition: none;
   }
 
-  /* Ocultamos el fondo oscuro en escritorio. */
   .backdrop {
     display: none;
   }
@@ -147,7 +145,7 @@
 .postListContainer {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .placeholder {
@@ -156,6 +154,73 @@
   color: #65676b;
 }
 
+/* --- ESTILOS AJUSTADOS PARA EL PROMPT DE LOGIN/REGISTRO --- */
+.loginPrompt {
+  background-color: #1f1f1f;
+  border-radius: 12px;
+  padding: 2rem; /* <-- AJUSTADO */
+  text-align: center;
+  margin-bottom: 1.5rem;
+  border: 1px solid #343a40;
+}
+
+.loginPrompt h3 {
+  margin-top: 0;
+  font-size: 1.4rem; /* <-- AJUSTADO */
+  color: #ffd000;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.loginPrompt p {
+  color: #adb5bd;
+  max-width: 450px;
+  margin: 0.75rem auto 1.5rem; /* <-- AJUSTADO */
+  line-height: 1.6;
+  font-size: 0.95rem; /* <-- AJUSTADO */
+}
+
+.promptButtons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem; /* <-- AJUSTADO */
+}
+
+.loginButton, .registerButton {
+  padding: 12px 24px; /* <-- AJUSTADO */
+  font-size: 0.9rem;  /* <-- AJUSTADO */
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+  width: 100%;
+  max-width: 320px;
+  box-sizing: border-box;
+}
+
+.loginButton {
+  background-color: #ffd000;
+  color: #121212;
+  border: 2px solid #ffd000;
+}
+.loginButton:hover {
+  background-color: #e6bb00;
+  border-color: #e6bb00;
+  transform: translateY(-2px);
+}
+
+.registerButton {
+  background-color: transparent;
+  color: #f8f9fa;
+  border: 2px solid #495057;
+}
+.registerButton:hover {
+  background-color: #343a40;
+  border-color: #f8f9fa;
+}
+
+/* --- ESTILOS PARA LA PESTAÑA DE BÚSQUEDA --- */
 .searchContainer {
   background-color: #fff;
   padding: 1.5rem;

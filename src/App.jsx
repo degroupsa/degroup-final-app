@@ -1,9 +1,6 @@
 import React from 'react';
-// --- CAMBIO 1: Quitamos "ScrollRestoration" de aquí ---
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-
-// --- CAMBIO 2: Importamos nuestro componente manual ---
 import ScrollToTop from './components/ScrollToTop.jsx';
 
 // Layouts
@@ -48,7 +45,6 @@ import './App.css';
 function App() {
   return (
     <>
-      {/* --- CAMBIO 3: Usamos nuestro componente aquí --- */}
       <ScrollToTop />
 
       <Routes>
@@ -81,7 +77,10 @@ function App() {
             <Route path="producto/:productId" element={<ProductDetailPage />} />
             <Route path="nosotros" element={<AboutPage />} />
             <Route path="contacto" element={<ContactPage />} />
+            
+            {/* La ruta del canal vuelve a ser pública */}
             <Route path="canal" element={<FeedPage />} />
+            
             <Route path="cart" element={<CartPage />} />
             <Route path="register" element={<RegisterPage />} />
             <Route path="login" element={<LoginPage />} />

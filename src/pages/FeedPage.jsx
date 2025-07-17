@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
-import { useChatPanel } from '../context/ChatPanelContext.jsx'; // Importamos el hook del chat
+import { useChatPanel } from '../context/ChatPanelContext.jsx';
 import { Link } from 'react-router-dom';
 import { db } from '../firebase/config.js';
 import { collection, query, orderBy, onSnapshot, where, Timestamp, getDocs } from 'firebase/firestore';
@@ -21,7 +21,7 @@ import styles from './FeedPage.module.css';
 
 function FeedPage() {
   const { user } = useAuth();
-  const { isChatPanelOpen, toggleChatPanel } = useChatPanel(); // Usamos el hook
+  const { isChatPanelOpen, toggleChatPanel } = useChatPanel();
   const [posts, setPosts] = useState([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [allStories, setAllStories] = useState([]);
@@ -104,7 +104,21 @@ function FeedPage() {
       case 'feed':
         return (
           <>
+            {/* Si el usuario ha iniciado sesión, ve el recuadro para crear post */}
             {user && <CreatePost />}
+
+            {/* Si el usuario NO ha iniciado sesión, ve este mensaje */}
+            {!user && (
+              <div className={styles.loginPrompt}>
+                <h3>Únete a la Conversación</h3>
+                <p>Inicia sesión o regístrate para publicar, comentar y conectar con otros miembros de la comunidad.</p>
+                <div className={styles.promptButtons}>
+                  <Link to="/login" className={styles.loginButton}>Iniciar Sesión</Link>
+                  <Link to="/register" className={styles.registerButton}>Registrarse</Link>
+                </div>
+              </div>
+            )}
+
             <div className={styles.postListContainer}>
               {loadingPosts ? <><PostSkeleton /><PostSkeleton /></> :
                posts.length === 0 ? <p className={styles.placeholder}>Todavía no hay publicaciones.</p> :

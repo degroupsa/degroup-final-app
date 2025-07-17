@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import styles from './StoryReel.module.css';
 import { FaPlus } from 'react-icons/fa';
 import CreateStoryModal from './CreateStoryModal.jsx';
-import { useAuth } from '../../context/AuthContext.jsx'; // Importamos useAuth
+import { useAuth } from '../../context/AuthContext.jsx';
 
-// Ahora recibe las historias, la función de clic y el usuario
 function StoryReel({ stories, onStoryClick }) {
-  const { user } = useAuth(); // Obtenemos el usuario para saber qué historias ha visto
+  const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Agrupamos las historias por autor
@@ -21,14 +20,16 @@ function StoryReel({ stories, onStoryClick }) {
   return (
     <>
       <div className={styles.storyReel}>
-        <div className={styles.story} onClick={() => setIsModalOpen(true)}>
-          <div className={styles.createStoryAvatar}><FaPlus /></div>
-          <span className={styles.authorName}>Crear historia</span>
-        </div>
+        {/* --- ✅ CAMBIO AQUÍ: Se añade la condición "user &&" --- */}
+        {/* El botón de crear historia solo aparece si hay un usuario logueado */}
+        {user && (
+          <div className={styles.story} onClick={() => setIsModalOpen(true)}>
+            <div className={styles.createStoryAvatar}><FaPlus /></div>
+            <span className={styles.authorName}>Crear historia</span>
+          </div>
+        )}
 
         {storiesToDisplay.map(story => {
-          // --- LÓGICA PARA VERIFICAR SI LA HISTORIA FUE VISTA ---
-          // Verificamos si TODAS las historias de este autor están en la lista de vistas del usuario
           const allStoriesFromAuthor = storiesByAuthor[story.authorId];
           const hasSeenAll = allStoriesFromAuthor.every(s => user?.viewedStories?.includes(s.id));
 
@@ -38,7 +39,6 @@ function StoryReel({ stories, onStoryClick }) {
               className={styles.story} 
               onClick={() => onStoryClick(story.authorId)}
             >
-              {/* Aplicamos una clase condicional al avatar */}
               <img 
                 src={story.authorAvatar || 'https://via.placeholder.com/60'} 
                 alt={story.authorName} 

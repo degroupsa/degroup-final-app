@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, NavLink } from 'react-router-dom';
+import { Link, useNavigate, NavLink, useLocation } from 'react-router-dom';
 import CartWidget from './CartWidget.jsx';
 import styles from './Navbar.module.css';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useChatPanel } from '../context/ChatPanelContext.jsx';
 import { 
-  FaBars, FaTimes, FaUserCircle, FaComments,
+  FaBars, FaTimes, FaUserCircle, FaComments, 
   FaHome, FaBoxOpen, FaUsers, FaEnvelope, FaGlobe,
   FaSignInAlt, FaUserPlus, FaSignOutAlt
 } from 'react-icons/fa';
@@ -15,13 +15,14 @@ const getNavLinkClass = ({ isActive }) => {
 };
 
 function Navbar() {
-  const { user, loading, logout } = useAuth();
+  const { user } = useAuth();
   const { toggleChatPanel } = useChatPanel();
   const navigate = useNavigate();
+  const location = useLocation();
+  
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
-
   const mobileMenuRef = useRef(null);
   const hamburgerRef = useRef(null);
 
@@ -72,16 +73,19 @@ function Navbar() {
     };
   }, [menuOpen]);
 
+  // --- ✅ CAMBIO EN LA CONDICIÓN ---
+  // El ícono ahora requiere que HAYA un usuario Y que la ruta sea '/canal'
+  const showChatIcon = user && location.pathname === '/canal';
+
   return (
     <header className={styles.header}>
       <nav className={styles.nav}>
-        
-        {/* --- ✅ CAMBIO AQUÍ: Se mueve el ícono de chat a esta sección --- */}
         <div className={styles.leftSection}>
           <div className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)} ref={hamburgerRef}>
             <FaBars />
           </div>
-          {user && (
+          
+          {showChatIcon && (
             <button className={styles.mobileChatIcon} onClick={toggleChatPanel} aria-label="Abrir panel de chats">
               <FaComments />
             </button>
@@ -105,7 +109,6 @@ function Navbar() {
           </div>
         </div>
         
-        {/* --- ✅ CAMBIO AQUÍ: Se quita el ícono de chat de esta sección --- */}
         <div className={styles.rightSection}>
           <div className={styles.navActions}>
             <div className={styles.userMenuContainer} ref={userMenuRef}>
