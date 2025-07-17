@@ -1,0 +1,15 @@
+/* src/components/Footer.module.css */
+
+.footer {
+    background-color: #121212; /* Un fondo oscuro consistente */
+    color: #868e96;         /* Color de texto gris y sutil */
+    text-align: center;
+    padding: 2rem 1rem;
+    margin-top: auto;        /* Esto ayuda a empujar el footer al final de la página */
+    font-size: 0.9rem;
+    border-top: 1px solid #343a40; /* Una línea sutil de separación */
+  }
+  
+  .footer p {
+    margin: 0;
+  }

@@ -2,13 +2,18 @@
 .productsContainer {
   max-width: 1200px;
   margin: 2rem auto;
-  padding: 0 2rem;
+  padding: 0 1rem; /* Ajustado para dar un poco de espacio en los bordes del móvil */
 }
 
+/* --- ✅ CAMBIOS AQUÍ --- */
 .productsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  
+  /* 1. Por defecto, creamos una cuadrícula de 2 columnas para móviles */
+  grid-template-columns: repeat(2, 1fr);
+  
+  /* 2. Reducimos el espacio entre tarjetas para que quepan mejor */
+  gap: 1rem;
 }
 
 .loadingMessage {
@@ -16,4 +21,17 @@
   color: #555;
   text-align: center;
   padding: 4rem;
+}
+
+/* --- 3. MEDIA QUERY PARA PANTALLAS MÁS GRANDES --- */
+@media (min-width: 768px) {
+  .productsContainer {
+    padding: 0 2rem; /* Restauramos el padding para desktop */
+  }
+
+  .productsGrid {
+    /* En tablets y escritorio, pasamos a 3 columnas */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem; /* Aumentamos el espacio entre tarjetas */
+  }
 }

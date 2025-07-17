@@ -1,3 +1,5 @@
+/* ProductCard.module.css (CORREGIDO) */
+
 .cardLink {
   text-decoration: none;
   color: inherit;
@@ -7,11 +9,11 @@
 
 .card {
   background-color: white;
-  border: 1px solid #ffd000; /* Borde más sutil */
-  border-radius: 12px;       /* Bordes más redondeados */
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
   overflow: hidden;
   text-align: left;
-  box-shadow: 0 14px 45px rgba(0, 0, 0, 0.9); /* Sombra más suave */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -19,13 +21,13 @@
 }
 
 .card:hover {
-  transform: translateY(-25px); /* Efecto de levantamiento más pronunciado */
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1); /* Sombra más notoria al pasar el mouse */
+  transform: translateY(-8px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
 .imageContainer {
   width: 100%;
-  height: 220px; /* Un poco más de altura para la imagen */
+  height: 220px;
   background-color: #eee;
 }
 
@@ -47,31 +49,39 @@
 }
 
 .cardContent {
-  padding: 1.5rem; /* Más espaciado interno */
+  padding: 1.5rem;
   flex-grow: 1;
 }
 
 .cardContent h3 {
   margin-top: 0;
   margin-bottom: 0.75rem;
-  color: rgb(15, 15, 15);
+  color: #212529;
   font-size: 1.2rem;
 }
 
 .cardContent p {
   font-size: 0.9rem;
-  color: #414040;
-  line-height: 1.5; /* Mejoramos la legibilidad */
+  color: #495057;
+  line-height: 1.5;
   margin-bottom: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 
+/* --- ✅ CAMBIO 1: Estilos base (móvil) para la sección de acciones --- */
 .cardActions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column; /* Apila los elementos verticalmente */
+  align-items: stretch;   /* Los estira a lo ancho */
+  gap: 1rem;              /* Espacio entre precio y botón */
+  
   padding: 1rem 1.5rem;
-  border-top: 1.5px solid #83898f;
-  margin-top: 1rem;
+  border-top: 1px solid #e9ecef;
+  margin-top: auto; /* Empuja la sección siempre hacia abajo */
 }
 
 .priceContainer {
@@ -95,6 +105,7 @@
   border-radius: 4px;
 }
 
+/* --- ✅ CAMBIO 2: Ambos botones ahora son de ancho completo en móvil --- */
 .addButton, .quoteButton {
   font-size: 0.9rem;
   font-weight: 600;
@@ -105,14 +116,23 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.2s ease;
-  width: auto; /* Ancho automático para el botón de agregar */
+  width: 100%; /* Ancho completo para un botón claro y tappable */
 }
 
 .addButton:hover, .quoteButton:hover {
   background-color: #0056b3;
-  transform: scale(1.05);
+  transform: scale(1.02); /* Un efecto de hover más sutil */
 }
 
-.quoteButton {
-  width: 100%; /* El botón de cotización ocupa todo el ancho */
+/* --- ✅ CAMBIO 3: Nueva Media Query para restaurar el diseño en Desktop --- */
+@media (min-width: 768px) {
+  .cardActions {
+    flex-direction: row; /* Vuelve a la fila horizontal */
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .addButton {
+    width: auto; /* El botón de agregar vuelve a su ancho automático */
+  }
 }

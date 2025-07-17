@@ -1,34 +1,27 @@
-/* src/App.css */
-/* Eliminamos todos los estilos de la plantilla que ya no se usan. */
-/* Dejamos solo esta clase que nos ayudará con el posicionamiento del footer. */
+/* src/App.css (CORREGIDO Y LIMPIO) */
 
+/* Estilos para el layout principal de la aplicación */
 .main-container {
-  /* Esta regla asegura que el contenido principal ocupe al menos 
-     el alto de la pantalla menos el alto aproximado de nuestro footer, 
-     evitando que el footer "flote" en páginas cortas. */
-  min-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ocupa, como mínimo, toda la altura de la pantalla */
 }
 
-/* --- Estilo para el separador con degradado --- */
+.main-content {
+  flex-grow: 1; /* Hace que el contenido principal crezca para ocupar el espacio disponible */
+}
 
+
+/* --- Estilos para los separadores con degradado (si los usas en otras partes) --- */
 .gradient-divider {
-  height: 40px; /* La altura que tendrá el degradado */
+  height: 40px;
   width: 100%;
-
-  /* El degradado empieza con un rojo semitransparente arriba y
-     se desvanece a transparente hacia abajo */
   background: linear-gradient(to bottom, rgb(73, 73, 73), transparent);
-  
-  /* Pequeño truco para que no genere un espacio extra no deseado */
   margin-bottom: -1px; 
 }
 
-/* --- Estilo para el NUEVO separador con degradado SUPERIOR --- */
 .top-gradient-divider {
-  height: 30px; /* La altura del degradado */
+  height: 30px;
   width: 100%;
-  
-  /* El degradado empieza blanco sólido arriba (para unirse con el Navbar)
-     y se desvanece a transparente hacia abajo (para unirse con la imagen) */
   background: linear-gradient(to top, rgb(73, 73, 73), transparent);
 }

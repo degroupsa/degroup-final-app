@@ -1,6 +1,9 @@
+// src/layouts/PublicLayout.jsx (CORREGIDO)
+
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar.jsx';
+import Footer from '../components/Footer.jsx'; // <-- 1. IMPORTAMOS EL FOOTER
 import NavigationArrows from '../components/ui/NavigationArrows';
 
 function PublicLayout() {
@@ -11,7 +14,8 @@ function PublicLayout() {
         {/* Outlet renderizará la página pública que corresponda (Inicio, Productos, etc.) */}
         <Outlet />
       </main>
-      <NavigationArrows /> {/* <-- Añadir componente */}
+      <NavigationArrows />
+      <Footer /> {/* <-- 2. AÑADIMOS EL FOOTER AL FINAL */}
     </div>
   );
 }

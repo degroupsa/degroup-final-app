@@ -15,13 +15,15 @@ function ItemCount({ initial = 1, onAdd }) {
   };
 
   return (
-    <div>
+    // --- CAMBIO 1: Añadimos un contenedor principal con su clase ---
+    <div className={styles.itemCountContainer}>
         <div className={styles.counter}>
-            <button onClick={decrement}>-</button>
+            <button onClick={decrement} aria-label="Disminuir cantidad">-</button>
             <span>{quantity}</span>
-            <button onClick={increment}>+</button>
+            <button onClick={increment} aria-label="Aumentar cantidad">+</button>
         </div>
-        <button className="button-primary" onClick={() => onAdd(quantity)}>
+        {/* --- CAMBIO 2: Aplicamos la nueva clase de estilo al botón --- */}
+        <button className={styles.addButton} onClick={() => onAdd(quantity)}>
             Añadir al Carrito
         </button>
     </div>
