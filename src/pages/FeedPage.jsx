@@ -95,7 +95,7 @@ function FeedPage() {
     if (userStories.length > 0) {
       const firstUnseenIndex = userStories.findIndex(story => !user?.viewedStories?.includes(story.id));
       setInitialStoryIndex(firstUnseenIndex === -1 ? 0 : firstUnseenIndex);
-      setViewingStories(userStories.reverse());
+      setViewingStories(userStories);
     }
   };
 

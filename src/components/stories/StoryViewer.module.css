@@ -41,46 +41,39 @@
   z-index: 2;
 }
 
-.progressBarContainer {
-  flex: 1;
-  height: 3px;
-  background-color: rgba(255, 255, 255, 0.3);
-  border-radius: 2px;
-  overflow: hidden;
-}
+.progressBarContainer { flex: 1; height: 3px; background-color: rgba(255, 255, 255, 0.3); border-radius: 2px; overflow: hidden; }
+.progressBar { height: 100%; background-color: white; width: 0; }
+.progressBar.filled { width: 100%; transition: none; }
+.progressBar.active { animation: fill 7s linear forwards; }
+@keyframes fill { from { width: 0%; } to { width: 100%; } }
 
-.progressBar {
-  height: 100%;
-  background-color: white;
-  width: 0;
-  transition: width 0.3s linear;
-}
-
-.progressBar.filled {
-  width: 100%;
-}
-
-.progressBar.active {
-  animation: fill 7s linear forwards;
-}
-
-@keyframes fill {
-  from { width: 0%; }
-  to { width: 100%; }
-}
-
+/* --- ✅ ESTILOS DEL HEADER REDISEÑADOS --- */
 .storyHeader {
   position: absolute;
-  top: 20px;
-  left: 10px;
-  right: 60px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+  /* El degradado para mejorar la legibilidad */
+  background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+}
+
+.authorInfo {
   display: flex;
   align-items: center;
   gap: 10px;
   color: white;
   font-weight: 500;
+  text-decoration: none;
+}
+
+.authorInfo span {
   text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
-  z-index: 2;
 }
 
 .avatar {
@@ -89,42 +82,35 @@
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
 }
 
-.storyHeader span {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
-.closeButton {
-  position: absolute;
-  top: 15px;
-  right: 10px;
+.closeButton, .deleteButton {
   background: none;
   border: none;
   color: white;
-  font-size: 1.8rem;
+  font-size: 1.2rem;
   cursor: pointer;
-  z-index: 3;
+  padding: 5px;
   text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
 }
 
 .deleteButton {
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.7);
   font-size: 1rem;
-  cursor: pointer;
-  margin-left: 10px;
+  color: rgba(255, 255, 255, 0.8);
   transition: color 0.2s;
 }
-
 .deleteButton:hover {
   color: #ed4956;
 }
 
-/* --- ESTILOS CORREGIDOS PARA LA NAVEGACIÓN --- */
+/* --- ESTILOS DE NAVEGACIÓN --- */
 .navAreaLeft, .navAreaRight {
   position: absolute;
   top: 50px;
@@ -134,11 +120,5 @@
   z-index: 1;
   cursor: pointer;
 }
-
-.navAreaLeft {
-  left: 0;
-}
-
-.navAreaRight {
-  right: 0;
-}
+.navAreaLeft { left: 0; }
+.navAreaRight { right: 0; }

@@ -291,3 +291,28 @@
     display: none;
   }
 }
+
+/* Pega este bloque completo al final de tu archivo Navbar.module.css */
+
+@media (min-width: 993px) {
+  /* 1. Ocultamos la sección izquierda (la del menú hamburguesa) en PC */
+  .leftSection {
+    display: none;
+  }
+
+  /* 2. Hacemos que la sección central (con el logo y links) ocupe el espacio y se alinee a la izquierda */
+  .centerSection {
+    flex: 1; /* Le permite crecer */
+    justify-content: flex-start;
+  }
+
+  /* 3. La sección derecha deja de ser flexible para quedarse en su sitio */
+  .rightSection {
+    flex: 0;
+  }
+
+  /* 4. Nos aseguramos de que el ícono de chat de móvil (si estuviera visible) se oculte */
+  .mobileChatIcon {
+    display: none;
+  }
+}

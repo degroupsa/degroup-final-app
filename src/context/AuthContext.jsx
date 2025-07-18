@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { auth, db, rtdb } from '../firebase/config.js'; // Importamos rtdb
+import { auth, db, rtdb } from '../firebase/config.js';
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
@@ -32,24 +32,52 @@ export const AuthProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
+  // --- ✅ ESTE ES EL BLOQUE PRINCIPAL QUE HEMOS MODIFICADO ---
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
+    let unsubscribeUserDoc; // Variable para guardar la función de limpieza de onSnapshot
+
+    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+      // Si ya hay una suscripción al documento de un usuario anterior, la limpiamos
+      if (unsubscribeUserDoc) {
+        unsubscribeUserDoc();
+      }
+
       if (firebaseUser) {
         const userDocRef = doc(db, 'users', firebaseUser.uid);
-        const docSnap = await getDoc(userDocRef);
-        if (docSnap.exists()) {
-          setUser({ ...firebaseUser, ...docSnap.data() });
-        } else {
-          setUser(firebaseUser);
-        }
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
-    return () => unsubscribeAuth();
-  }, []);
+        
+        // Creamos una suscripción en tiempo real al documento del usuario
+        unsubscribeUserDoc = onSnapshot(userDocRef, (docSnap) => {
+          if (docSnap.exists()) {
+            // Cada vez que el documento cambie en Firestore, actualizamos el estado 'user'
+            setUser({ ...firebaseUser, ...docSnap.data() });
+          } else {
+            // Esto puede pasar si el usuario se autentica pero su documento aún no se ha creado
+            setUser(firebaseUser);
+          }
+          setLoading(false);
+        }, (error) => {
+          console.error("Error al escuchar los datos del usuario:", error);
+          setUser(firebaseUser); // Aun así, mantenemos al usuario autenticado
+          setLoading(false);
+        });
 
+      } else {
+        // Si el usuario cierra sesión, reseteamos todo
+        setUser(null);
+        setLoading(false);
+      }
+    });
+
+    // Función de limpieza final
+    return () => {
+      unsubscribeAuth(); // Limpia el listener de autenticación
+      if (unsubscribeUserDoc) {
+        unsubscribeUserDoc(); // Limpia el listener del documento si existe
+      }
+    };
+  }, []); // Este efecto solo se ejecuta una vez, al montar el componente
+
+  // ... (el resto de los useEffect y funciones no cambian)
   useEffect(() => {
     if (!user) return;
 
@@ -65,7 +93,9 @@ export const AuthProvider = ({ children }) => {
     });
 
     return () => {
-      unsubscribeOnValue();
+      if (typeof unsubscribeOnValue === 'function') {
+        unsubscribeOnValue();
+      }
     };
   }, [user]);
 
