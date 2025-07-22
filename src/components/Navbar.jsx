@@ -15,7 +15,7 @@ const getNavLinkClass = ({ isActive }) => {
 };
 
 function Navbar() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { toggleChatPanel } = useChatPanel();
   const navigate = useNavigate();
   const location = useLocation();

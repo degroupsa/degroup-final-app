@@ -1,52 +1,33 @@
+/* --- ESTILOS BASE (MOBILE-FIRST) --- */
 .registerPage {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 60px); /* 60px es la altura del navbar */
-  padding: 2rem;
+  min-height: calc(100vh - 70px); /* Altura del viewport menos el navbar */
+  padding: 1rem;
   background-color: #f4f5f7;
+  box-sizing: border-box;
 }
 
 .registerContainer {
+  /* En móvil, es una sola columna */
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  max-width: 900px;
+  grid-template-columns: 1fr;
   width: 100%;
+  max-width: 450px; /* Ancho máximo para el formulario en móvil */
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
   overflow: hidden;
 }
 
+/* En móvil, ocultamos la sección de la marca para simplificar */
 .brandingSection {
-  background-color: #172b4d; /* Un color corporativo oscuro */
-  color: white;
-  padding: 1rem 2rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.logo {
-  width: 350px;
-  margin-bottom: 3.5rem;
-}
-
-.brandingSection h2 {
-  font-size: 1.8rem;
-  margin-bottom: 0.5rem;
-  color: #ffffff;
-}
-
-.brandingSection p {
-  font-size: 1rem;
-  color: #b3bac5;
+  display: none;
 }
 
 .formSection {
-  padding: 3rem 2.5rem;
+  padding: 2rem 1.5rem; /* Padding ajustado para móvil */
 }
 
 .form {
@@ -55,9 +36,11 @@
 }
 
 .form h1 {
-  font-size: 1.5rem;
-  margin-bottom: 2rem;
+  font-size: 1.8rem; /* Título más adaptado a móvil */
+  margin-top: 0;
+  margin-bottom: 1.5rem;
   color: #333;
+  text-align: center;
 }
 
 .errorMessage {
@@ -67,11 +50,12 @@
   border-radius: 5px;
   text-align: center;
   margin-bottom: 1rem;
+  font-size: 0.9rem;
 }
 
 .inputGroup {
   position: relative;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .inputIcon {
@@ -83,7 +67,8 @@
 }
 
 .inputGroup input,
-.genderSelect {
+.genderSelect,
+.locationInput { /* Añadimos la clase del input de autocompletado */
   width: 100%;
   padding: 12px 12px 12px 45px; /* Espacio para el ícono */
   border: 1px solid #ccc;
@@ -92,10 +77,14 @@
   box-sizing: border-box;
 }
 
-/* Estilo específico para el select de género */
 .genderSelect {
   color: #555;
   cursor: pointer;
+  appearance: none; /* Quita el estilo por defecto del navegador */
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 15px top 50%;
+  background-size: .65em auto;
 }
 
 .genderSelect:required:invalid {
@@ -114,7 +103,7 @@
   transition: background-color 0.2s;
 }
 
-.submitButton:hover {
+.submitButton:hover:not(:disabled) {
   background-color: #0065ff;
 }
 
@@ -129,88 +118,66 @@
   font-size: 0.9rem;
 }
 
+.redirectText a {
+  color: #0052cc;
+  font-weight: 600;
+  text-decoration: none;
+}
+.redirectText a:hover {
+  text-decoration: underline;
+}
+
 /* Estilos para el autocompletado de Google */
-.inputGroup > div { /* Target el div de react-google-places-autocomplete */
+.inputGroup > div { 
   width: 100%;
 }
-
-.conversationList {
-  border-right: 1px solid #e0e0e0;
-  height: 100%;
-  overflow-y: auto;
-  background-color: #f7f7f7;
+.locationInput {
+  padding-left: 15px !important; /* El autocompletado no usa ícono, removemos el padding izquierdo */
 }
 
-.loading, .noConvos {
-  padding: 20px;
-  text-align: center;
-  color: #888;
-  font-size: 0.9rem;
-}
+/* --- MEDIA QUERY PARA VISTA DE ESCRITORIO (PC) --- */
+@media (min-width: 992px) {
+  .registerPage {
+    padding: 2rem;
+  }
 
-.convoItem {
-  display: flex;
-  align-items: center;
-  padding: 15px;
-  gap: 15px;
-  cursor: pointer;
-  text-decoration: none;
-  border-bottom: 1px solid #e9e9e9;
-  transition: background-color 0.2s;
-  position: relative; /* Necesario para posicionar el botón de borrar */
-}
+  .registerContainer {
+    grid-template-columns: 1fr 1fr; /* Restauramos las 2 columnas */
+    max-width: 900px;
+  }
 
-.convoItem:hover {
-  background-color: #f0f0f0;
-}
+  .brandingSection {
+    display: flex; /* La volvemos a mostrar */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: #172b4d;
+    color: white;
+    padding: 2rem;
+  }
 
-.convoItem.active {
-  background-color: #eef5ff;
-  border-right: 3px solid #007bff;
-}
+  .logo {
+    width: 250px;
+    margin-bottom: 2.5rem;
+  }
 
-.convoDetails {
-  overflow: hidden;
-  flex-grow: 1;
-}
+  .brandingSection h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+  }
 
-.displayName {
-  font-weight: 600;
-  color: #333;
-}
+  .brandingSection p {
+    font-size: 1rem;
+    color: #b3bac5;
+  }
 
-.lastMessage {
-  margin: 4px 0 0;
-  font-size: 0.9rem;
-  color: #666;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+  .formSection {
+    padding: 3rem 2.5rem;
+  }
 
-/* ▼▼▼ ESTILOS PARA EL BOTÓN DE ELIMINAR ▼▼▼ */
-.deleteButton {
-  background-color: #e0e0e0;
-  color: #888;
-  border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  /* Por defecto está oculto */
-  opacity: 0;
-  transition: opacity 0.2s, background-color 0.2s;
-}
-
-/* Aparece cuando el ratón está sobre el item de la conversación */
-.convoItem:hover .deleteButton {
-  opacity: 1;
-}
-
-.deleteButton:hover {
-  background-color: #dc3545;
-  color: white;
+  .form h1 {
+    text-align: left;
+  }
 }

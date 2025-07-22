@@ -1,11 +1,30 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 
 export const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    try {
+      const localCart = localStorage.getItem('cart');
+      return localCart ? JSON.parse(localCart) : [];
+    } catch (error) {
+      console.error("Error al leer el carrito del localStorage", error);
+      return [];
+    }
+  });
+
+  // Nuevo estado para el método de pago
+  const [paymentMethod, setPaymentMethod] = useState('MercadoPago');
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('cart', JSON.stringify(cart));
+    } catch (error) {
+      console.error("Error al guardar el carrito en localStorage", error);
+    }
+  }, [cart]);
 
   const addItem = (item, quantity) => {
     if (isInCart(item.id)) {
@@ -35,18 +54,19 @@ export const CartProvider = ({ children }) => {
     return cart.reduce((total, product) => total + product.quantity, 0);
   };
 
-  // Esta es la nueva función que añadimos
   const getTotalPrice = () => {
     return cart.reduce((total, product) => total + (product.price * product.quantity), 0);
   };
 
   const contextValue = {
-    cart,
+    items: cart,
     addItem,
     removeItem,
     clearCart,
     getTotalQuantity,
-    getTotalPrice, // Y aquí la hacemos disponible para el resto de la app
+    getTotalPrice,
+    paymentMethod,
+    setPaymentMethod,
   };
 
   return (

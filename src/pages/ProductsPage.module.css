@@ -1,19 +1,17 @@
-/* src/pages/ProductsPage.module.css */
 .productsContainer {
   max-width: 1200px;
   margin: 2rem auto;
-  padding: 0 1rem; /* Ajustado para dar un poco de espacio en los bordes del móvil */
+  padding: 0 1rem;
+  /* --- Líneas añadidas para la corrección --- */
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
-/* --- ✅ CAMBIOS AQUÍ --- */
 .productsGrid {
   display: grid;
-  
-  /* 1. Por defecto, creamos una cuadrícula de 2 columnas para móviles */
-  grid-template-columns: repeat(2, 1fr);
-  
-  /* 2. Reducimos el espacio entre tarjetas para que quepan mejor */
   gap: 1rem;
+  /* Por defecto (celulares muy angostos), es 1 columna */
+  grid-template-columns: 1fr;
 }
 
 .loadingMessage {
@@ -23,15 +21,42 @@
   padding: 4rem;
 }
 
-/* --- 3. MEDIA QUERY PARA PANTALLAS MÁS GRANDES --- */
-@media (min-width: 768px) {
+/* Para celulares un poco más grandes y tablets en vertical */
+@media (min-width: 576px) {
+  .productsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Para tablets en horizontal y escritorio */
+@media (min-width: 992px) {
   .productsContainer {
-    padding: 0 2rem; /* Restauramos el padding para desktop */
+    padding: 0 2rem;
   }
 
   .productsGrid {
-    /* En tablets y escritorio, pasamos a 3 columnas */
     grid-template-columns: repeat(3, 1fr);
-    gap: 2rem; /* Aumentamos el espacio entre tarjetas */
+    gap: 2rem;
   }
+}
+
+/* --- Estilos para el recuadro informativo --- */
+.infoBox {
+  background-color: #e7f1ff;
+  border: 1px solid #b3d7ff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.infoBox h3 {
+  margin-top: 0;
+  color: #0056b3;
+}
+
+.infoBox p {
+  margin-bottom: 0;
+  color: #333;
+  line-height: 1.6;
 }
