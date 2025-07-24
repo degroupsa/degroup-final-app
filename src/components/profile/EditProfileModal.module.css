@@ -51,12 +51,26 @@
   
   .formGroup input {
     width: 100%;
-    padding: 12px 12px 12px 40px; /* Padding izquierdo para el ícono */
+    padding: 12px 12px 12px 40px;
     border: 1px solid #ced4da;
     border-radius: 5px;
     font-size: 1rem;
+    box-sizing: border-box; /* <-- LÍNEA AGREGADA */
   }
   
+  /* ... otros estilos ... */
+  
+  .formGroup textarea {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    box-sizing: border-box; /* <-- LÍNEA AGREGADA */
+  }
+      
   .buttonGroup {
     display: flex;
     justify-content: flex-end;
@@ -88,15 +102,3 @@
     color: #495057;
     border: 1px solid #dee2e6;
   }
-
-  /* ... (estilos anteriores del modal) ... */
-
-.formGroup textarea {
-  width: 100%;
-  padding: 12px 12px 12px 40px;
-  border: 1px solid #ced4da;
-  border-radius: 5px;
-  font-size: 1rem;
-  font-family: inherit; /* Para que use la misma fuente */
-  resize: vertical; /* Permite redimensionar verticalmente */
-}
