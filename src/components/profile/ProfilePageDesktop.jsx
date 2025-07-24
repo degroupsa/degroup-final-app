@@ -13,7 +13,7 @@ import EditProfileModal from './EditProfileModal';
 import PostGrid from '../posts/PostGrid';
 import OrderHistory from './OrderHistory';
 import SecuritySettings from './SecuritySettings';
-import Avatar from '../ui/Avatar.jsx';
+import Avatar from '../ui/Avatar.jsx'; 
 
 function ProfilePageDesktop() {
   const { user: currentUser, loading: authLoading } = useAuth();
