@@ -3,7 +3,6 @@ import { NavLink } from 'react-router-dom';
 import styles from './ProfileSidebar.module.css';
 import { FaUser, FaBoxOpen, FaLock, FaTh } from 'react-icons/fa';
 
-// Ahora recibe una nueva prop: 'isOwner'
 function ProfileSidebar({ activeView, setActiveView, isOwner }) {
   return (
     <aside className={styles.sidebar}>
@@ -14,7 +13,7 @@ function ProfileSidebar({ activeView, setActiveView, isOwner }) {
               className={activeView === 'details' ? styles.active : ''}
               onClick={() => setActiveView('details')}
             >
-              <FaUser /> Perfil
+              <FaUser className={styles.sidebarIcon} /> Perfil
             </button>
           </li>
           <li>
@@ -22,11 +21,9 @@ function ProfileSidebar({ activeView, setActiveView, isOwner }) {
               className={activeView === 'posts' ? styles.active : ''}
               onClick={() => setActiveView('posts')}
             >
-              <FaTh /> Publicaciones
+              <FaTh className={styles.sidebarIcon} /> Publicaciones
             </button>
           </li>
-          {/* --- Renderizado Condicional --- */}
-          {/* Solo muestra estas opciones si sos el dueño del perfil */}
           {isOwner && (
             <>
               <li>
@@ -34,7 +31,7 @@ function ProfileSidebar({ activeView, setActiveView, isOwner }) {
                   className={activeView === 'orders' ? styles.active : ''}
                   onClick={() => setActiveView('orders')}
                 >
-                  <FaBoxOpen /> Mis Compras
+                  <FaBoxOpen className={styles.sidebarIcon} /> Mis Compras
                 </button>
               </li>
               <li>
@@ -42,7 +39,7 @@ function ProfileSidebar({ activeView, setActiveView, isOwner }) {
                   className={activeView === 'security' ? styles.active : ''}
                   onClick={() => setActiveView('security')}
                 >
-                  <FaLock /> Contraseña
+                  <FaLock className={styles.sidebarIcon} /> Contraseña
                 </button>
               </li>
             </>

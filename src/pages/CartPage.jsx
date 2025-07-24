@@ -1,5 +1,6 @@
 import React from 'react';
 import { useCart } from '../context/CartContext.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './CartPage.module.css';
 import { FaTrash } from 'react-icons/fa';
@@ -7,6 +8,7 @@ import toast from 'react-hot-toast';
 
 function CartPage() {
   const { items = [], removeItem, clearCart, getTotalPrice, paymentMethod, setPaymentMethod } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleCheckout = () => {
@@ -52,14 +54,18 @@ function CartPage() {
                   {item.name}
                 </Link>
                 <p className={styles.itemQuantity}>Cantidad: {item.quantity}</p>
-                <p className={styles.itemUnitPrice}>
-                  ${new Intl.NumberFormat('es-AR').format(item.price)} c/u
-                </p>
+                {user && (
+                  <p className={styles.itemUnitPrice}>
+                    ${new Intl.NumberFormat('es-AR').format(item.price)} c/u
+                  </p>
+                )}
               </div>
               <div className={styles.itemActions}>
-                <span className={styles.itemTotal}>
-                  ${new Intl.NumberFormat('es-AR').format(item.price * item.quantity)}
-                </span>
+                {user && (
+                  <span className={styles.itemTotal}>
+                    ${new Intl.NumberFormat('es-AR').format(item.price * item.quantity)}
+                  </span>
+                )}
                 <button onClick={() => handleRemoveItem(item.id, item.name)} className={styles.removeButton}>
                   <FaTrash />
                 </button>
@@ -91,22 +97,32 @@ function CartPage() {
               </div>
             </div>
           </div>
+          
+          {user && (
+            <>
+              <div className={styles.summaryRow}>
+                <span>Subtotal</span>
+                <span>${new Intl.NumberFormat('es-AR').format(getTotalPrice())}</span>
+              </div>
+              <div className={styles.summaryRow}>
+                <span>Envío</span>
+                <span>A calcular</span>
+              </div>
+              <div className={`${styles.summaryRow} ${styles.totalRow}`}>
+                <span>Total</span>
+                <span>${new Intl.NumberFormat('es-AR').format(getTotalPrice())}</span>
+              </div>
+            </>
+          )}
 
-          <div className={styles.summaryRow}>
-            <span>Subtotal</span>
-            <span>${new Intl.NumberFormat('es-AR').format(getTotalPrice())}</span>
+          <div className={styles.summaryActions}>
+            <Link to="/productos" className={styles.continueShoppingButton}>
+              Seguir Comprando
+            </Link>
+            <button onClick={handleCheckout} className={styles.checkoutButton}>
+              Finalizar Compra
+            </button>
           </div>
-          <div className={styles.summaryRow}>
-            <span>Envío</span>
-            <span>A calcular</span>
-          </div>
-          <div className={`${styles.summaryRow} ${styles.totalRow}`}>
-            <span>Total</span>
-            <span>${new Intl.NumberFormat('es-AR').format(getTotalPrice())}</span>
-          </div>
-          <button onClick={handleCheckout} className={styles.checkoutButton}>
-            Finalizar Compra
-          </button>
           <button onClick={handleClearCart} className={styles.clearButton}>
             Vaciar Carrito
           </button>
