@@ -1,7 +1,7 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useNavigate, Link } from 'react-router-dom';
-import { useLoadScript, Autocomplete } from '@react-google-maps/api';
+import { useLoadScript } from '@react-google-maps/api';
 import styles from './RegisterPage.module.css';
 import { FaUser, FaEnvelope, FaLock, FaPhone, FaVenusMars, FaMapMarkerAlt } from 'react-icons/fa';
 
@@ -22,34 +22,50 @@ function RegisterPage() {
     password: ''
   });
   
-  // El estado de la localidad se actualizará solo al seleccionar
+  // Este estado solo guardará la dirección final seleccionada
   const [location, setLocation] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const { signup } = useAuth();
   const navigate = useNavigate();
-  const autocompleteRef = useRef(null);
-
-  const handleChange = useCallback((e) => {
-    const { name, value } = e.target;
-    setFormData(prevData => ({ ...prevData, [name]: value }));
-  }, []);
   
-  const handlePlaceChanged = useCallback(() => {
-    if (autocompleteRef.current !== null) {
-      const place = autocompleteRef.current.getPlace();
-      // Actualizamos el estado de React solo cuando se selecciona un lugar
-      setLocation(place.formatted_address || '');
-    }
-  }, []);
+  // ▼▼▼ CAMBIO PRINCIPAL: Referencia directa al input de la localidad ▼▼▼
+  const locationInputRef = useRef(null);
 
-  const handleSubmit = useCallback(async (e) => {
+  // Este useEffect se encarga de "activar" el autocompletado de Google en nuestro input
+  useEffect(() => {
+    // Solo se ejecuta si el script de Google ha cargado Y si nuestro input ya existe en la página
+    if (isLoaded && locationInputRef.current) {
+      const autocomplete = new window.google.maps.places.Autocomplete(
+        locationInputRef.current, 
+        {
+          types: ["(cities)"],
+          componentRestrictions: { country: "ar" },
+        }
+      );
+      
+      // Añadimos un "listener" que se dispara cuando el usuario selecciona una ciudad de la lista
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place && place.formatted_address) {
+          setLocation(place.formatted_address); // Guardamos la dirección completa en nuestro estado
+        }
+      });
+    }
+  }, [isLoaded]); // Se ejecuta solo una vez cuando isLoaded cambia a true
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
+    // Verificamos que se haya seleccionado una localidad del autocompletado
     if (!location) {
-      setError('Por favor, selecciona una localidad de la lista.');
+      setError('Por favor, busca y selecciona una localidad de la lista.');
       return;
     }
     if (!formData.gender) {
@@ -73,7 +89,7 @@ function RegisterPage() {
     } finally {
         setLoading(false);
     }
-  }, [formData, location, signup, navigate]);
+  };
 
   if (loadError) return "Error al cargar la API de Google Maps";
   if (!isLoaded) return "Cargando...";
@@ -99,22 +115,17 @@ function RegisterPage() {
             <div className={styles.inputGroup}><FaUser className={styles.inputIcon} /><input type="text" name="lastName" placeholder="Apellido" value={formData.lastName} onChange={handleChange} required /></div>
             <div className={styles.inputGroup}><FaPhone className={styles.inputIcon} /><input type="tel" name="phone" placeholder="Teléfono" value={formData.phone} onChange={handleChange} required /></div>
 
-            {/* ▼▼▼ CAMBIO PRINCIPAL AQUÍ ▼▼▼ */}
+            {/* ▼▼▼ CAMPO DE AUTOCOMPLETADO MANUAL ▼▼▼ */}
             <div className={styles.inputGroup}>
               <FaMapMarkerAlt className={styles.inputIcon} />
-              <Autocomplete
-                onLoad={(ref) => autocompleteRef.current = ref}
-                onPlaceChanged={handlePlaceChanged}
-                options={{ componentRestrictions: { country: "ar" }, types: ["(cities)"] }}
-              >
-                {/* Se eliminan 'value' y 'onChange' para que Google maneje el campo internamente */}
-                <input 
-                  type="text" 
-                  placeholder="Busca tu ciudad..." 
-                  required 
-                  className={styles.locationInput}
-                />
-              </Autocomplete>
+              {/* Usamos un input normal y le pasamos la referencia */}
+              <input 
+                ref={locationInputRef}
+                type="text" 
+                placeholder="Busca tu ciudad..." 
+                required 
+                className={styles.locationInput}
+              />
             </div>
             {/* ▲▲▲ FIN DEL CAMBIO ▲▲▲ */}
 
