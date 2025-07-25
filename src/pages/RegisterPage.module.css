@@ -10,24 +10,22 @@
 }
 
 .registerContainer {
-  /* En móvil, es una sola columna */
   display: grid;
   grid-template-columns: 1fr;
   width: 100%;
-  max-width: 450px; /* Ancho máximo para el formulario en móvil */
+  max-width: 450px;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
   overflow: hidden;
 }
 
-/* En móvil, ocultamos la sección de la marca para simplificar */
 .brandingSection {
   display: none;
 }
 
 .formSection {
-  padding: 2rem 1.5rem; /* Padding ajustado para móvil */
+  padding: 2rem 1.5rem;
 }
 
 .form {
@@ -36,7 +34,7 @@
 }
 
 .form h1 {
-  font-size: 1.8rem; /* Título más adaptado a móvil */
+  font-size: 1.8rem;
   margin-top: 0;
   margin-bottom: 1.5rem;
   color: #333;
@@ -64,31 +62,38 @@
   left: 15px;
   transform: translateY(-50%);
   color: #aaa;
+  pointer-events: none; /* Evita que el ícono intercepte clics */
 }
 
+/* ▼▼▼ REGLA UNIFICADA PARA TODOS LOS CAMPOS ▼▼▼ */
 .inputGroup input,
-.genderSelect,
-.locationInput { /* Añadimos la clase del input de autocompletado */
+.inputGroup select {
   width: 100%;
   padding: 12px 12px 12px 45px; /* Espacio para el ícono */
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 1rem;
   box-sizing: border-box;
+  font-family: inherit; /* Hereda la fuente del resto de la página */
+  background-color: white;
+  color: #333; /* Color de texto cuando hay un valor */
+  -webkit-appearance: none; /* Quita el estilo por defecto del navegador */
+  -moz-appearance: none;
+  appearance: none;
 }
 
-.genderSelect {
-  color: #555;
+/* Estilo para la flecha personalizada en TODOS los select */
+.inputGroup select {
   cursor: pointer;
-  appearance: none; /* Quita el estilo por defecto del navegador */
-  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236c757d%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
   background-repeat: no-repeat;
   background-position: right 15px top 50%;
   background-size: .65em auto;
 }
 
-.genderSelect:required:invalid {
-  color: #aaa;
+/* Estilo para el texto "placeholder" de los select */
+.inputGroup select:required:invalid {
+  color: #777;
 }
 
 .submitButton {
@@ -101,6 +106,7 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s;
+  margin-top: 1rem; /* Espacio extra antes del botón */
 }
 
 .submitButton:hover:not(:disabled) {
@@ -127,14 +133,6 @@
   text-decoration: underline;
 }
 
-/* Estilos para el autocompletado de Google */
-.inputGroup > div { 
-  width: 100%;
-}
-.locationInput {
-  padding-left: 15px !important; /* El autocompletado no usa ícono, removemos el padding izquierdo */
-}
-
 /* --- MEDIA QUERY PARA VISTA DE ESCRITORIO (PC) --- */
 @media (min-width: 992px) {
   .registerPage {
@@ -142,12 +140,12 @@
   }
 
   .registerContainer {
-    grid-template-columns: 1fr 1fr; /* Restauramos las 2 columnas */
+    grid-template-columns: 1fr 1fr;
     max-width: 900px;
   }
 
   .brandingSection {
-    display: flex; /* La volvemos a mostrar */
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -180,4 +178,11 @@
   .form h1 {
     text-align: left;
   }
+}
+
+/* Nuevo grid para provincia y ciudad en escritorio */
+.inputGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
 }
