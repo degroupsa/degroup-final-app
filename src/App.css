@@ -25,3 +25,8 @@
   width: 100%;
   background: linear-gradient(to top, rgb(73, 73, 73), transparent);
 }
+
+/* Fix para el autocompletado de Google Places en móviles */
+.pac-container {
+  z-index: 9999 !important;
+}

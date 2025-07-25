@@ -1,32 +1,18 @@
-/* -- INICIO DE CORRECCIÓN: Aplicamos box-sizing a los elementos clave -- */
-.loginPage, .loginContainer, .inputGroup input {
-  box-sizing: border-box;
-}
-/* -- FIN DE CORRECCIÓN -- */
-
 .loginPage {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 80vh;
   background-color: #f8f9fa;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .loginContainer {
   display: grid;
-  /* -- INICIO DE CORRECCIÓN: Grilla flexible y automática -- */
-  /*
-    Esto crea columnas que intentan medir 1fr, pero nunca serán más chicas que 350px.
-    Si no hay espacio para dos columnas de 350px, automáticamente se convierte en una sola.
-    Esto soluciona el desborde en PC en ventanas de tamaño intermedio.
-  */
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  /* -- FIN DE CORRECCIÓN -- */
   max-width: 900px;
   width: 100%;
   background-color: #ffffff;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 35px 65px rgba(0, 0, 0, 0.9);
@@ -66,33 +52,41 @@
   color: #343a40;
 }
 
+/* ▼▼▼ ZONA CORREGIDA CON FLEXBOX ▼▼▼ */
+
 .inputGroup {
-  position: relative;
+  display: flex; /* 1. Convertimos el contenedor en un flexbox */
+  align-items: center; /* 2. Alineamos verticalmente el ícono y el input */
   margin-bottom: 1.5rem;
+  border: 1px solid #ced4da; /* 3. Pasamos el borde al contenedor */
+  border-radius: 6px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: white; /* Añadimos fondo blanco por si acaso */
+}
+
+/* Nuevo estilo para cuando el input dentro del grupo tiene foco */
+.inputGroup:focus-within {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 .inputIcon {
-  position: absolute;
-  top: 50%;
-  left: 15px;
-  transform: translateY(-50%);
+  /* Ya no necesita position: absolute */
+  padding: 0 15px; /* Le damos espacio al ícono */
   color: #adb5bd;
 }
 
 .inputGroup input {
-  width: 100%;
-  padding: 0.8rem 1rem 0.8rem 2.5rem;
+  flex-grow: 1; /* 4. El input crece para ocupar todo el espacio sobrante */
+  width: 100%; /* Se puede mantener para compatibilidad, pero flex-grow hace el trabajo */
+  padding: 0.8rem 1rem 0.8rem 0; /* 5. Quitamos el padding izquierdo */
   font-size: 1rem;
-  border: 1px solid #ced4da;
-  border-radius: 6px;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  border: none; /* 6. Quitamos el borde del input */
+  outline: none; /* 7. Quitamos el outline del input */
+  background-color: transparent; /* Hacemos el fondo transparente */
 }
 
-.inputGroup input:focus {
-  outline: none;
-  border-color: #80bdff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
+/* ▲▲▲ FIN DE LA ZONA CORREGIDA ▲▲▲ */
 
 .submitButton {
   width: 100%;
@@ -145,21 +139,15 @@
   margin-bottom: 0rem;
 }
 
-/* Media Query para ajustes finos en móviles */
 @media (max-width: 768px) {
   .loginPage {
-    padding: 1rem; /* Menos padding en la página */
+    padding: 1rem;
   }
 
   .formSection {
-    padding: 2rem; /* Menos padding en el formulario */
+    padding: 2rem;
   }
 
-  /*
-    Con la nueva grilla, la sección de branding se oculta automáticamente
-    cuando no hay espacio, pero si queremos asegurarnos de que desaparezca
-    en pantallas muy chicas, podemos dejar esta regla.
-  */
   .brandingSection {
     display: none;
   }

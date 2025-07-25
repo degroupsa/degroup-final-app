@@ -1,86 +1,190 @@
 .managerContainer {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    margin-top: 2rem;
-  }
-  
-  .formContainer {
-    margin-bottom: 2rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .formContainer h3 {
-    margin-top: 0;
-  }
-  
-  .formGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-  }
-  
-  .formGrid input {
-    width: 100%;
-    padding: 0.8rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box; /* Importante para que el padding no afecte el ancho */
-  }
-  
-  .formContainer button {
-    margin-top: 1rem;
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
-    font-weight: bold;
-    color: white;
-    background-color: #28a745; /* Verde para crear */
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .productTable {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1.5rem;
-  }
-  
-  .productTable th,
-  .productTable td {
-    border-bottom: 1px solid #ddd;
-    padding: 0.8rem;
-    text-align: left;
-  }
-  
-  .productTable th {
-    background-color: #f9f9f9;
-  }
-  
-  .actionsCell button {
-    margin-right: 0.5rem;
-    padding: 0.3rem 0.6rem;
-    font-size: 0.8rem;
-    border-radius: 4px;
-    cursor: pointer;
-    border: 1px solid transparent;
-  }
-  
-  .editButton {
-    background-color: #ffc107;
-    color: #212529;
-  }
-  
-  .deleteButton {
-    background-color: #dc3545;
-    color: white;
-  }
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  margin-top: 2rem;
+}
 
-  .tableTitle {
-    text-align: center;
-    margin-top: 2rem; /* Le damos un poco de espacio arriba */
-    color: #000000;
-  }
+.formContainer {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #eee;
+}
+
+.formContainer h3 {
+  margin-top: 0;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.formGrid input, .formGrid textarea {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.formContainer button {
+  margin-top: 1rem;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  background-color: #28a745;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cancelButton {
+  margin-left: 1rem;
+  background-color: #6c757d !important;
+}
+
+.productTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+}
+
+.productTable th,
+.productTable td {
+  border-bottom: 1px solid #ddd;
+  padding: 0.8rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.productTable th {
+  background-color: #f9f9f9;
+}
+
+.tableProductImage {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.tableProductImagePlaceholder {
+  width: 50px;
+  height: 50px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: #888;
+}
+
+.actionsCell button {
+  margin-right: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.editButton {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.deleteButton {
+  background-color: #dc3545;
+  color: white;
+}
+
+.tableTitle {
+  text-align: center;
+  margin-top: 2rem;
+  color: #000000;
+}
+
+.imageManagerSection {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.imageManagerSection h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.imageGallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.thumbnailContainer {
+  position: relative;
+}
+
+.thumbnailImage {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.deleteImageIcon {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #dc3545 !important; /* <-- AÑADIR !important */
+  color: white;
+  border: 2px solid white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 0.8rem; /* Aumentamos un poco para que la X se vea bien */
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+
+.deleteImageIcon:hover {
+  transform: scale(1.1);
+}
+
+.uploadBox {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+.uploadBox label {
+  font-weight: bold;
+  color: #007bff;
+  cursor: pointer;
+}
+
+.uploadBox input[type="file"] {
+  display: none;
+}
+
+.uploadBox p {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.9rem;
+    color: #555;
+}

@@ -1,25 +1,25 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import styles from './LoginPage.module.css'; // Usaremos su propio módulo de estilos
-import { FaEnvelope, FaLock } from 'react-icons/fa'; // Importamos íconos
+import styles from './LoginPage.module.css';
+import { FaEnvelope, FaLock } from 'react-icons/fa';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); // Estado para deshabilitar el botón
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true); // Inicia el proceso de carga
+    setLoading(true);
 
     try {
       await login(email, password);
-      navigate('/admin/dashboard'); // Redirige al dashboard de admin
+      navigate('/admin/dashboard');
     } catch (err) {
       if (err.message.includes('verifica tu correo')) {
         setError('Por favor, verifica tu correo electrónico para poder iniciar sesión.');
@@ -30,20 +30,19 @@ function LoginPage() {
       }
       console.error(err);
     } finally {
-      setLoading(false); // Finaliza el proceso de carga
+      setLoading(false);
     }
   };
 
   return (
     <div className={styles.loginPage}>
       <div className={styles.loginContainer}>
-      <div className={styles.brandingSection}>
-    {/* Reemplaza 'nombre-de-tu-logo.png' por el nombre de tu archivo */}
-    <img 
-        src="https://firebasestorage.googleapis.com/v0/b/web-de-group.firebasestorage.app/o/products%2Flogo.png?alt=media&token=2192b55a-0ef5-463b-88e0-fcb888677de7" 
-        alt="Logo de la Empresa" 
-        className={styles.logo} 
-    />
+        <div className={styles.brandingSection}>
+          <img 
+              src="https://firebasestorage.googleapis.com/v0/b/web-de-group.firebasestorage.app/o/products%2Flogo.png?alt=media&token=2192b55a-0ef5-463b-88e0-fcb888677de7" 
+              alt="Logo de la Empresa" 
+              className={styles.logo} 
+          />
           <h2>Bienvenido</h2>
           <p>Accede a tu cuenta para gestionar tus compras.</p>
         </div>
