@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react'; // 1. Importamos useCallback
 import { useAuth } from '../context/AuthContext.jsx';
 import { useNavigate, Link } from 'react-router-dom';
 import { useLoadScript, Autocomplete } from '@react-google-maps/api';
@@ -30,23 +30,24 @@ function RegisterPage() {
   const navigate = useNavigate();
   const autocompleteRef = useRef(null);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  // 2. Envolvemos todas las funciones que pasamos como props en useCallback
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData(prevData => ({ ...prevData, [name]: value }));
+  }, []);
   
-  // ▼▼▼ NUEVA FUNCIÓN PARA MANEJAR LA ESCRITURA EN EL CAMPO DE CIUDAD ▼▼▼
-  const handleLocationChange = (e) => {
+  const handleLocationChange = useCallback((e) => {
     setLocation(e.target.value);
-  };
+  }, []);
   
-  const handlePlaceChanged = () => {
+  const handlePlaceChanged = useCallback(() => {
     if (autocompleteRef.current !== null) {
       const place = autocompleteRef.current.getPlace();
       setLocation(place.formatted_address || '');
     }
-  };
+  }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     setError('');
 
@@ -75,7 +76,7 @@ function RegisterPage() {
     } finally {
         setLoading(false);
     }
-  };
+  }, [formData, location, signup, navigate]); // Dependencias de la función
 
   if (loadError) return "Error al cargar la API de Google Maps";
   if (!isLoaded) return "Cargando...";
@@ -101,7 +102,6 @@ function RegisterPage() {
             <div className={styles.inputGroup}><FaUser className={styles.inputIcon} /><input type="text" name="lastName" placeholder="Apellido" value={formData.lastName} onChange={handleChange} required /></div>
             <div className={styles.inputGroup}><FaPhone className={styles.inputIcon} /><input type="tel" name="phone" placeholder="Teléfono" value={formData.phone} onChange={handleChange} required /></div>
 
-            {/* ▼▼▼ COMPONENTE DE AUTOCOMPLETADO CORREGIDO ▼▼▼ */}
             <div className={styles.inputGroup}>
               <FaMapMarkerAlt className={styles.inputIcon} />
               <Autocomplete
@@ -119,7 +119,6 @@ function RegisterPage() {
                 />
               </Autocomplete>
             </div>
-            {/* ▲▲▲ FIN DE LA CORRECCIÓN ▲▲▲ */}
 
             <div className={styles.inputGroup}><FaVenusMars className={styles.inputIcon} /><select id="gender" name="gender" value={formData.gender} onChange={handleChange} required className={styles.genderSelect}><option value="" disabled>Selecciona tu género...</option><option value="male">Masculino</option><option value="female">Femenino</option><option value="other">Prefiero no decirlo</option></select></div>
             <div className={styles.inputGroup}><FaEnvelope className={styles.inputIcon} /><input type="email" name="email" placeholder="Correo Electrónico" value={formData.email} onChange={handleChange} required /></div>
