@@ -1,12 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useNavigate, Link } from 'react-router-dom';
 import { useLoadScript } from '@react-google-maps/api';
 import styles from './RegisterPage.module.css';
 import { FaUser, FaEnvelope, FaLock, FaPhone, FaVenusMars, FaMapMarkerAlt } from 'react-icons/fa';
-
-// Importamos el nuevo componente que creamos
-import LocationAutocomplete from '../components/LocationAutocomplete.jsx';
 
 const libraries = ['places'];
 
@@ -32,15 +29,30 @@ function RegisterPage() {
   const { signup } = useAuth();
   const navigate = useNavigate();
   
+  const locationInputRef = useRef(null);
+
+  useEffect(() => {
+    if (isLoaded && locationInputRef.current) {
+      const autocomplete = new window.google.maps.places.Autocomplete(
+        locationInputRef.current, 
+        {
+          types: ["(cities)"],
+          componentRestrictions: { country: "ar" },
+        }
+      );
+      
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place && place.formatted_address) {
+          setLocation(place.formatted_address);
+        }
+      });
+    }
+  }, [isLoaded]);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  
-  // Esta función se la pasamos a nuestro nuevo componente.
-  // Se ejecutará solo cuando se seleccione una ciudad.
-  const handlePlaceSelect = useCallback((address) => {
-    setLocation(address);
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -97,16 +109,16 @@ function RegisterPage() {
             <div className={styles.inputGroup}><FaUser className={styles.inputIcon} /><input type="text" name="lastName" placeholder="Apellido" value={formData.lastName} onChange={handleChange} required /></div>
             <div className={styles.inputGroup}><FaPhone className={styles.inputIcon} /><input type="tel" name="phone" placeholder="Teléfono" value={formData.phone} onChange={handleChange} required /></div>
 
-            {/* ▼▼▼ USAMOS EL NUEVO COMPONENTE AISLADO ▼▼▼ */}
             <div className={styles.inputGroup}>
               <FaMapMarkerAlt className={styles.inputIcon} />
-              <LocationAutocomplete 
-                isLoaded={isLoaded} 
-                onPlaceSelect={handlePlaceSelect}
-                styles={styles} 
+              <input 
+                ref={locationInputRef}
+                type="text" 
+                placeholder="Busca tu ciudad..." 
+                required 
+                className={styles.locationInput}
               />
             </div>
-            {/* ▲▲▲ FIN DEL CAMBIO ▲▲▲ */}
 
             <div className={styles.inputGroup}><FaVenusMars className={styles.inputIcon} /><select id="gender" name="gender" value={formData.gender} onChange={handleChange} required className={styles.genderSelect}><option value="" disabled>Selecciona tu género...</option><option value="male">Masculino</option><option value="female">Femenino</option><option value="other">Prefiero no decirlo</option></select></div>
             <div className={styles.inputGroup}><FaEnvelope className={styles.inputIcon} /><input type="email" name="email" placeholder="Correo Electrónico" value={formData.email} onChange={handleChange} required /></div>
