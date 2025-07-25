@@ -1,9 +1,12 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useNavigate, Link } from 'react-router-dom';
 import { useLoadScript } from '@react-google-maps/api';
 import styles from './RegisterPage.module.css';
 import { FaUser, FaEnvelope, FaLock, FaPhone, FaVenusMars, FaMapMarkerAlt } from 'react-icons/fa';
+
+// Importamos el nuevo componente que creamos
+import LocationAutocomplete from '../components/LocationAutocomplete.jsx';
 
 const libraries = ['places'];
 
@@ -22,7 +25,6 @@ function RegisterPage() {
     password: ''
   });
   
-  // Este estado solo guardará la dirección final seleccionada
   const [location, setLocation] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,40 +32,20 @@ function RegisterPage() {
   const { signup } = useAuth();
   const navigate = useNavigate();
   
-  // ▼▼▼ CAMBIO PRINCIPAL: Referencia directa al input de la localidad ▼▼▼
-  const locationInputRef = useRef(null);
-
-  // Este useEffect se encarga de "activar" el autocompletado de Google en nuestro input
-  useEffect(() => {
-    // Solo se ejecuta si el script de Google ha cargado Y si nuestro input ya existe en la página
-    if (isLoaded && locationInputRef.current) {
-      const autocomplete = new window.google.maps.places.Autocomplete(
-        locationInputRef.current, 
-        {
-          types: ["(cities)"],
-          componentRestrictions: { country: "ar" },
-        }
-      );
-      
-      // Añadimos un "listener" que se dispara cuando el usuario selecciona una ciudad de la lista
-      autocomplete.addListener("place_changed", () => {
-        const place = autocomplete.getPlace();
-        if (place && place.formatted_address) {
-          setLocation(place.formatted_address); // Guardamos la dirección completa en nuestro estado
-        }
-      });
-    }
-  }, [isLoaded]); // Se ejecuta solo una vez cuando isLoaded cambia a true
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  
+  // Esta función se la pasamos a nuestro nuevo componente.
+  // Se ejecutará solo cuando se seleccione una ciudad.
+  const handlePlaceSelect = useCallback((address) => {
+    setLocation(address);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Verificamos que se haya seleccionado una localidad del autocompletado
     if (!location) {
       setError('Por favor, busca y selecciona una localidad de la lista.');
       return;
@@ -115,16 +97,13 @@ function RegisterPage() {
             <div className={styles.inputGroup}><FaUser className={styles.inputIcon} /><input type="text" name="lastName" placeholder="Apellido" value={formData.lastName} onChange={handleChange} required /></div>
             <div className={styles.inputGroup}><FaPhone className={styles.inputIcon} /><input type="tel" name="phone" placeholder="Teléfono" value={formData.phone} onChange={handleChange} required /></div>
 
-            {/* ▼▼▼ CAMPO DE AUTOCOMPLETADO MANUAL ▼▼▼ */}
+            {/* ▼▼▼ USAMOS EL NUEVO COMPONENTE AISLADO ▼▼▼ */}
             <div className={styles.inputGroup}>
               <FaMapMarkerAlt className={styles.inputIcon} />
-              {/* Usamos un input normal y le pasamos la referencia */}
-              <input 
-                ref={locationInputRef}
-                type="text" 
-                placeholder="Busca tu ciudad..." 
-                required 
-                className={styles.locationInput}
+              <LocationAutocomplete 
+                isLoaded={isLoaded} 
+                onPlaceSelect={handlePlaceSelect}
+                styles={styles} 
               />
             </div>
             {/* ▲▲▲ FIN DEL CAMBIO ▲▲▲ */}
