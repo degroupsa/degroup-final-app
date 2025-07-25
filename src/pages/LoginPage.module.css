@@ -77,13 +77,13 @@
 }
 
 .inputGroup input {
-  flex-grow: 1; /* 4. El input crece para ocupar todo el espacio sobrante */
-  width: 100%; /* Se puede mantener para compatibilidad, pero flex-grow hace el trabajo */
-  padding: 0.8rem 1rem 0.8rem 0; /* 5. Quitamos el padding izquierdo */
+  flex-grow: 1; /* Le dice al input que ocupe el espacio disponible */
+  width: 0; /* <-- CAMBIO CLAVE: Permite que el input se encoja correctamente */
+  padding: 0.8rem 1rem 0.8rem 0; /* Quitamos el padding izquierdo */
   font-size: 1rem;
-  border: none; /* 6. Quitamos el borde del input */
-  outline: none; /* 7. Quitamos el outline del input */
-  background-color: transparent; /* Hacemos el fondo transparente */
+  border: none; /* El borde está en el contenedor */
+  outline: none; /* El foco está en el contenedor */
+  background-color: transparent;
 }
 
 /* ▲▲▲ FIN DE LA ZONA CORREGIDA ▲▲▲ */
