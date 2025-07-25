@@ -94,17 +94,21 @@
    box-shadow: 0 1px 3px rgba(0,0,0,0.2)
   }
   
-  .userInfo {
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
-   margin-bottom: 40px;
-   background: linear-gradient(to right, rgba(0, 0, 0, 0.7) 40%, rgba(0, 0, 0, 0.1) 140%, transparent 100%);
-   border-radius: 0 112px 112px 0;
-   z-index: 1;
-   margin-left: -40px;
-   padding: 0px 100px 10px 70px;
-  }
+/* Reemplazá la regla .userInfo que tengas por esta */
+.userInfo {
+  display: inline-flex; /* <-- CAMBIO CLAVE: Hace que el ancho sea automático */
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 40px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7) 40%, rgba(0, 0, 0, 0.1) 140%, transparent 100%);
+  border-radius: 0 112px 112px 0;
+  z-index: 1;
+  margin-left: -40px;
+  /* Padding ajustado para ser dinámico */
+  padding: 10px 2rem 10px 70px; /* <-- Padding derecho reducido y flexible */
+  /* Límite para evitar que nombres muy largos rompan el diseño */
+  max-width: 70%; 
+}
   
   .userInfo h1 {
    margin: 0;
@@ -114,10 +118,10 @@
   }
   
   .roleTag {
-   margin: 0.5rem 0 0 0;
+   margin: 0.7rem 0 0 0;
    font-size: 0.8rem;
    font-weight: bold;
-   padding: 6px 12px;
+   padding: 5px 12px;
    border-radius: 20px;
    text-transform: uppercase;
    letter-spacing: 0.5px;
@@ -205,3 +209,51 @@
     align-items: center; /* Centra verticalmente el nombre y la etiqueta */
     gap: 1rem; /* Espacio entre el nombre y la etiqueta */
   }
+
+  /* --- ESTILOS PARA EL NUEVO MENÚ DESPLEGABLE --- */
+
+.dropdownMenu {
+  position: absolute;
+  top: 42px; /* Se posiciona justo debajo del botón de 3 puntos */
+  right: 0;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  padding: 8px 0;
+  z-index: 11;
+  width: max-content; /* El ancho se ajusta al contenido */
+  border: 1px solid #dbdbdb;
+  color: #262626; /* Color de texto oscuro para el menú */
+  text-shadow: none; /* Quitamos la sombra de texto del header */
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  white-space: nowrap; /* Evita que el texto se parta en dos líneas */
+}
+
+.dropdownItem:hover {
+  background-color: #f0f2f5; /* Color de fondo al pasar el mouse */
+}
+
+.menuButton {
+  background-color: transparent;
+  color: #8e8e8e;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.menuButton:hover {
+  background-color: #fafafa;
+}

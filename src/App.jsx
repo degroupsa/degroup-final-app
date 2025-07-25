@@ -12,6 +12,7 @@ import AdminRoute from './components/AdminRoute.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 // Páginas Públicas
+import OrderSuccessPage from './pages/OrderSuccessPage.jsx';
 import FeedPage from './pages/FeedPage.jsx';
 import HomePage from './pages/HomePage.jsx';
 import ProductsPage from './pages/ProductsPage.jsx';
@@ -72,6 +73,7 @@ function App() {
 
         {/* --- MUNDO PÚBLICO --- */}
         <Route path="/" element={<PublicLayout />}>
+        <Route path="/solicitud-enviada" element={<OrderSuccessPage />} />
             <Route index element={<HomePage />} />
             <Route path="productos" element={<ProductsPage />} />
             <Route path="producto/:productId" element={<ProductDetailPage />} />

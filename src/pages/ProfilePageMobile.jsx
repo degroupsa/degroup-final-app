@@ -50,7 +50,6 @@ function ProfilePageMobile() {
   const { user: currentUser, loading: authLoading } = useAuth();
   const { userId: paramsUserId } = useParams();
   const navigate = useNavigate();
-
   const [profileUser, setProfileUser] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -181,10 +180,24 @@ function ProfilePageMobile() {
 
   const getRoleClass = (role) => {
     switch (role) {
-      case 'concesionario': return styles.roleTagSilver;
       case 'admin': return styles.roleTagGold;
+      case 'concesionario': return styles.roleTagSilver;
       case 'cliente': return styles.roleTagBlue;
       default: return '';
+    }
+  };
+
+  // ▼▼▼ FUNCIÓN AÑADIDA/MODIFICADA ▼▼▼
+  const getRoleDisplayName = (role) => {
+    switch (role) {
+      case 'admin':
+        return 'Fábrica'; // <-- CAMBIO REALIZADO AQUÍ
+      case 'concesionario':
+        return 'Concesionario';
+      case 'cliente':
+        return 'Cliente';
+      default:
+        return role;
     }
   };
 
@@ -200,11 +213,6 @@ function ProfilePageMobile() {
   const getWebsiteUrl = (url) => {
     if (!url) return '';
     return url.startsWith('http://') || url.startsWith('https://') ? url : `https://${url}`;
-  };
-
-  const capitalize = (s) => {
-    if (typeof s !== 'string' || s.length === 0) return '';
-    return s.charAt(0).toUpperCase() + s.slice(1);
   };
   
   if (authLoading || loading) return <div className={styles.fullPageLoader}>Cargando perfil...</div>;
@@ -235,7 +243,8 @@ function ProfilePageMobile() {
       <div className={styles.stackedInfo}>
         <div className={styles.nameAndRoleContainer}>
           <h1>{profileUser.displayName || `${profileUser.name} ${profileUser.lastName}`}</h1>
-          {profileUser.role && <span className={`${styles.roleTag} ${getRoleClass(profileUser.role)}`}>{capitalize(profileUser.role)}</span>}
+          {/* ▼▼▼ LÍNEA MODIFICADA ▼▼▼ */}
+          {profileUser.role && <span className={`${styles.roleTag} ${getRoleClass(profileUser.role)}`}>{getRoleDisplayName(profileUser.role)}</span>}
         </div>
         <div className={styles.followStats}>
           <span><strong>{userPosts.length}</strong> publicaciones</span>

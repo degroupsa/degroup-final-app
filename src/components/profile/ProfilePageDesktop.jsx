@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import styles from '../../pages/ProfilePage.module.css';
@@ -6,7 +6,7 @@ import { db, storage } from '../../firebase/config.js';
 import { doc, getDoc, setDoc, collection, query, where, getDocs, orderBy, updateDoc, writeBatch, getCountFromServer, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import toast from 'react-hot-toast';
-import { FaCamera, FaGlobe, FaEdit, FaUserPlus, FaUserCheck, FaPaperPlane } from 'react-icons/fa';
+import { FaCamera, FaGlobe, FaEdit, FaUserPlus, FaUserCheck, FaPaperPlane, FaEllipsisV, FaUserEdit, FaImage } from 'react-icons/fa';
 
 import ProfileSidebar from './ProfileSidebar';
 import EditProfileModal from './EditProfileModal';
@@ -45,6 +45,7 @@ function ProfilePageDesktop() {
   const { user: currentUser, loading: authLoading } = useAuth();
   const { userId: paramsUserId } = useParams();
   const navigate = useNavigate();
+
   const [profileUser, setProfileUser] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -55,6 +56,21 @@ function ProfilePageDesktop() {
   const [followCounts, setFollowCounts] = useState({ followers: 0, following: 0 });
   const [isFollowLoading, setIsFollowLoading] = useState(false);
   const isOwner = currentUser?.uid === profileUser?.uid;
+
+  // Lógica para el menú desplegable
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const toggleMenu = () => setIsMenuOpen(prev => !prev);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuRef]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -168,18 +184,13 @@ function ProfilePageDesktop() {
       default: return '';
     }
   };
-  
-  // ▼▼▼ FUNCIÓN MODIFICADA ▼▼▼
+
   const getRoleDisplayName = (role) => {
     switch (role) {
-      case 'admin':
-        return 'Fábrica'; // <-- CAMBIO REALIZADO AQUÍ
-      case 'concesionario':
-        return 'Concesionario';
-      case 'cliente':
-        return 'Cliente';
-      default:
-        return role;
+      case 'admin': return 'Fábrica';
+      case 'concesionario': return 'Concesionario';
+      case 'cliente': return 'Cliente';
+      default: return role;
     }
   };
 
@@ -205,10 +216,18 @@ function ProfilePageDesktop() {
     <div className={styles.profilePage}>
       <div className={styles.profileHeader} style={{ backgroundImage: `url(${profileUser.coverImageUrl || ''})` }}>
         {isOwner && (
-            <>
-                <label htmlFor="coverUpload" className={styles.coverEditButton}><FaCamera /> Cambiar Portada</label>
-                <input type="file" id="coverUpload" className={styles.uploadInput} onChange={(e) => handleImageUpload(e, 'cover')} disabled={uploading.cover}/>
-            </>
+          <div className={styles.profileMenuContainer} ref={menuRef}>
+            <button onClick={toggleMenu} className={styles.menuButton}>
+              <FaEllipsisV />
+            </button>
+            {isMenuOpen && (
+              <div className={styles.dropdownMenu}>
+                <label htmlFor="coverUploadDesktop" className={styles.dropdownItem}><FaImage /> Cambiar portada</label>
+                <label htmlFor="avatarUploadDesktop" className={styles.dropdownItem}><FaCamera /> Cambiar foto</label>
+                <div onClick={() => { setIsModalOpen(true); setIsMenuOpen(false); }} className={styles.dropdownItem}><FaUserEdit /> Editar perfil</div>
+              </div>
+            )}
+          </div>
         )}
         <div className={styles.avatarContainer}>
             <div className={styles.avatarWrapper}>
@@ -218,14 +237,6 @@ function ProfilePageDesktop() {
                   gender={profileUser.gender}
                   className={styles.avatarImage}
                 />
-                {isOwner && (
-                    <>
-                        <input type="file" id="avatarUpload" className={styles.uploadInput} onChange={(e) => handleImageUpload(e, 'avatar')} disabled={uploading.avatar}/>
-                        <label htmlFor="avatarUpload" className={styles.avatarEditButton}>
-                          {uploading.avatar ? '...' : '📷'}
-                        </label>
-                    </>
-                )}
             </div>
             <div className={styles.userInfo}>
                 <div className={styles.nameAndRoleContainer}>
@@ -241,13 +252,11 @@ function ProfilePageDesktop() {
         </div>
       </div>
       
-      <div className={styles.profileActions}>
-        {isOwner ? (
-          <button onClick={() => setIsModalOpen(true)} className={styles.actionButton}>
-            <FaEdit /> Editar Perfil
-          </button>
-        ) : (
-          <>
+      <input type="file" id="coverUploadDesktop" className={styles.uploadInput} onChange={(e) => { handleImageUpload(e, 'cover'); setIsMenuOpen(false); }} disabled={uploading.cover}/>
+      <input type="file" id="avatarUploadDesktop" className={styles.uploadInput} onChange={(e) => { handleImageUpload(e, 'avatar'); setIsMenuOpen(false); }} disabled={uploading.avatar}/>
+
+      {!isOwner && (
+        <div className={styles.profileActions}>
             <button onClick={handleFollow} className={styles.actionButton} disabled={isFollowLoading}>
               {isFollowing ? <FaUserCheck /> : <FaUserPlus />}
               {isFollowing ? 'Siguiendo' : 'Seguir'}
@@ -255,9 +264,8 @@ function ProfilePageDesktop() {
             <button onClick={handleSendMessage} className={`${styles.actionButton} ${styles.secondaryButton}`}>
               <FaPaperPlane /> Mensaje
             </button>
-          </>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className={styles.profileBody}>
         <ProfileSidebar activeView={activeView} setActiveView={setActiveView} isOwner={isOwner} />

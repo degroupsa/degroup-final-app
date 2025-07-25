@@ -69,9 +69,15 @@ function CheckoutPage() {
       const ordersRef = doc(collection(db, 'orders'));
       await setDoc(ordersRef, order);
       
+      // Limpiamos el carrito
       clearCart();
-      toast.success('¡Solicitud generada con éxito! Nos contactaremos a la brevedad.', { duration: 5000 });
-      navigate('/mi-perfil');
+      // Mostramos una notificación de éxito
+      toast.success('¡Tu solicitud ha sido enviada!');
+      
+      // ▼▼▼ CAMBIO PRINCIPAL AQUÍ ▼▼▼
+      // Redirigimos a la nueva página de éxito
+      navigate('/solicitud-enviada');
+
     } catch (error) {
       console.error("Error al crear la orden: ", error);
       toast.error("Hubo un error al procesar tu solicitud.");
