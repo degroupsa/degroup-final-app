@@ -32,58 +32,43 @@ export const AuthProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // --- ✅ ESTE ES EL BLOQUE PRINCIPAL QUE HEMOS MODIFICADO ---
   useEffect(() => {
-    let unsubscribeUserDoc; // Variable para guardar la función de limpieza de onSnapshot
-
+    let unsubscribeUserDoc;
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
-      // Si ya hay una suscripción al documento de un usuario anterior, la limpiamos
       if (unsubscribeUserDoc) {
         unsubscribeUserDoc();
       }
-
       if (firebaseUser) {
         const userDocRef = doc(db, 'users', firebaseUser.uid);
-        
-        // Creamos una suscripción en tiempo real al documento del usuario
         unsubscribeUserDoc = onSnapshot(userDocRef, (docSnap) => {
           if (docSnap.exists()) {
-            // Cada vez que el documento cambie en Firestore, actualizamos el estado 'user'
             setUser({ ...firebaseUser, ...docSnap.data() });
           } else {
-            // Esto puede pasar si el usuario se autentica pero su documento aún no se ha creado
             setUser(firebaseUser);
           }
           setLoading(false);
         }, (error) => {
           console.error("Error al escuchar los datos del usuario:", error);
-          setUser(firebaseUser); // Aun así, mantenemos al usuario autenticado
+          setUser(firebaseUser);
           setLoading(false);
         });
-
       } else {
-        // Si el usuario cierra sesión, reseteamos todo
         setUser(null);
         setLoading(false);
       }
     });
-
-    // Función de limpieza final
     return () => {
-      unsubscribeAuth(); // Limpia el listener de autenticación
+      unsubscribeAuth();
       if (unsubscribeUserDoc) {
-        unsubscribeUserDoc(); // Limpia el listener del documento si existe
+        unsubscribeUserDoc();
       }
     };
-  }, []); // Este efecto solo se ejecuta una vez, al montar el componente
+  }, []);
 
-  // ... (el resto de los useEffect y funciones no cambian)
   useEffect(() => {
     if (!user) return;
-
     const myStatusRef = ref(rtdb, 'status/' + user.uid);
     const connectedRef = ref(rtdb, '.info/connected');
-
     const unsubscribeOnValue = onValue(connectedRef, (snap) => {
       if (snap.val() === true) {
         const onDisconnectRef = onDisconnect(myStatusRef);
@@ -91,7 +76,6 @@ export const AuthProvider = ({ children }) => {
         set(myStatusRef, { isOnline: true, last_seen: rtdbServerTimestamp() });
       }
     });
-
     return () => {
       if (typeof unsubscribeOnValue === 'function') {
         unsubscribeOnValue();
@@ -135,12 +119,24 @@ export const AuthProvider = ({ children }) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     const displayName = `${additionalData.name} ${additionalData.lastName}`;
+    
     await setDoc(doc(db, 'users', user.uid), {
         uid: user.uid, email: user.email, ...additionalData,
         displayName: displayName, displayName_lowercase: displayName.toLowerCase(),
         role: 'cliente', createdAt: firestoreServerTimestamp(), emailVerified: false
     });
-    await sendEmailVerification(user);
+
+    // ▼▼▼ BLOQUE CORREGIDO ▼▼▼
+    // 1. Definimos la URL de redirección en tu dominio personalizado.
+    const actionCodeSettings = {
+      url: 'https://degroup.com.ar/login',
+      handleCodeInApp: true,
+    };
+
+    // 2. Pasamos esa configuración al enviar el correo.
+    await sendEmailVerification(user, actionCodeSettings);
+    // ▲▲▲ FIN DE LA CORRECCIÓN ▲▲▲
+
     toast.success('¡Registro casi listo! Revisa tu correo para verificar la cuenta.');
     await signOut(auth);
   };
