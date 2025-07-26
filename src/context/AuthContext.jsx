@@ -5,7 +5,8 @@ import {
   signInWithEmailAndPassword, 
   signOut, 
   onAuthStateChanged,
-  sendEmailVerification
+  sendEmailVerification,
+  reload // <-- 1. Importamos la función 'reload'
 } from 'firebase/auth';
 import { 
   doc, 
@@ -107,11 +108,19 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    if (!userCredential.user.emailVerified) {
+    
+    // ▼▼▼ BLOQUE CORREGIDO ▼▼▼
+    // 2. Forzamos la recarga de los datos del usuario desde el servidor de Firebase
+    await reload(userCredential.user);
+    
+    // 3. Ahora, la propiedad emailVerified estará actualizada
+    if (!auth.currentUser.emailVerified) {
       toast.error('Por favor, verifica tu correo electrónico para poder iniciar sesión.');
       await signOut(auth);
       throw new Error('auth/email-not-verified');
     }
+    // ▲▲▲ FIN DE LA CORRECCIÓN ▲▲▲
+
     return userCredential;
   };
 
@@ -126,17 +135,13 @@ export const AuthProvider = ({ children }) => {
         role: 'cliente', createdAt: firestoreServerTimestamp(), emailVerified: false
     });
 
-    // ▼▼▼ BLOQUE CORREGIDO ▼▼▼
-    // 1. Definimos la URL de redirección en tu dominio personalizado.
     const actionCodeSettings = {
       url: 'https://degroup.com.ar/login',
       handleCodeInApp: true,
     };
 
-    // 2. Pasamos esa configuración al enviar el correo.
     await sendEmailVerification(user, actionCodeSettings);
-    // ▲▲▲ FIN DE LA CORRECCIÓN ▲▲▲
-
+    
     toast.success('¡Registro casi listo! Revisa tu correo para verificar la cuenta.');
     await signOut(auth);
   };
