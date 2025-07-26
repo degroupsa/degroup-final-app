@@ -6,7 +6,7 @@ import {
   signOut, 
   onAuthStateChanged,
   sendEmailVerification,
-  reload // <-- 1. Importamos la función 'reload'
+  reload
 } from 'firebase/auth';
 import { 
   doc, 
@@ -35,15 +35,29 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     let unsubscribeUserDoc;
+
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
       if (unsubscribeUserDoc) {
         unsubscribeUserDoc();
       }
+
       if (firebaseUser) {
         const userDocRef = doc(db, 'users', firebaseUser.uid);
+        
         unsubscribeUserDoc = onSnapshot(userDocRef, (docSnap) => {
           if (docSnap.exists()) {
-            setUser({ ...firebaseUser, ...docSnap.data() });
+            // ▼▼▼ BLOQUE CORREGIDO ▼▼▼
+            // Combinamos los datos, pero aseguramos que el estado de 'emailVerified'
+            // de Firebase Authentication tenga la última palabra.
+            const firestoreData = docSnap.data();
+            const combinedUser = {
+              ...firestoreData, // Datos de Firestore (rol, nombre, etc.)
+              uid: firebaseUser.uid, // UID de Authentication
+              email: firebaseUser.email, // Email de Authentication
+              emailVerified: firebaseUser.emailVerified, // Estado de verificación REAL
+            };
+            setUser(combinedUser);
+            // ▲▲▲ FIN DE LA CORRECCIÓN ▲▲▲
           } else {
             setUser(firebaseUser);
           }
@@ -53,11 +67,13 @@ export const AuthProvider = ({ children }) => {
           setUser(firebaseUser);
           setLoading(false);
         });
+
       } else {
         setUser(null);
         setLoading(false);
       }
     });
+
     return () => {
       unsubscribeAuth();
       if (unsubscribeUserDoc) {
@@ -66,6 +82,7 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
+  // ... (el resto de los useEffect no necesitan cambios)
   useEffect(() => {
     if (!user) return;
     const myStatusRef = ref(rtdb, 'status/' + user.uid);
@@ -108,19 +125,14 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    
-    // ▼▼▼ BLOQUE CORREGIDO ▼▼▼
-    // 2. Forzamos la recarga de los datos del usuario desde el servidor de Firebase
     await reload(userCredential.user);
     
-    // 3. Ahora, la propiedad emailVerified estará actualizada
+    // Usamos auth.currentUser que ahora está actualizado después del reload
     if (!auth.currentUser.emailVerified) {
       toast.error('Por favor, verifica tu correo electrónico para poder iniciar sesión.');
       await signOut(auth);
       throw new Error('auth/email-not-verified');
     }
-    // ▲▲▲ FIN DE LA CORRECCIÓN ▲▲▲
-
     return userCredential;
   };
 
@@ -132,7 +144,8 @@ export const AuthProvider = ({ children }) => {
     await setDoc(doc(db, 'users', user.uid), {
         uid: user.uid, email: user.email, ...additionalData,
         displayName: displayName, displayName_lowercase: displayName.toLowerCase(),
-        role: 'cliente', createdAt: firestoreServerTimestamp(), emailVerified: false
+        role: 'cliente', createdAt: firestoreServerTimestamp(), 
+        emailVerified: user.emailVerified // Guardamos el estado inicial (false)
     });
 
     const actionCodeSettings = {
