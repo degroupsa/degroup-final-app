@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { db, storage } from '../firebase/config.js';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import styles from './ProductManager.module.css';
-import { FaTrash } from 'react-icons/fa'; // <-- ESTA ES LA LÍNEA CLAVE
+import { FaTrash } from 'react-icons/fa';
 import toast from 'react-hot-toast';
+
+const ProgressBar = ({ progress }) => (
+  <div className={styles.progressBarContainer}>
+    <div className={styles.progressBar} style={{ width: `${progress}%` }}></div>
+    {progress < 100 && <span className={styles.progressText}>{Math.round(progress)}%</span>}
+  </div>
+);
 
 function ProductManager() {
   const [products, setProducts] = useState([]);
@@ -20,7 +27,7 @@ function ProductManager() {
   });
 
   const [existingImages, setExistingImages] = useState([]);
-  const [newImages, setNewImages] = useState([]);
+  const [uploadQueue, setUploadQueue] = useState([]); 
   const [imagesToDelete, setImagesToDelete] = useState([]);
 
   const productsCollectionRef = collection(db, 'products');
@@ -44,13 +51,26 @@ function ProductManager() {
 
   const handleImageChange = (e) => {
     if (e.target.files.length > 0) {
-      setNewImages(Array.from(e.target.files));
+      const files = Array.from(e.target.files);
+      const newFilesToUpload = files.map(file => ({
+        id: `${file.name}-${Date.now()}`,
+        file,
+        preview: URL.createObjectURL(file),
+        progress: 0,
+        status: 'pending',
+        url: null,
+      }));
+      setUploadQueue(prev => [...prev, ...newFilesToUpload]);
     }
+  };
+  
+  const handleRemoveFromQueue = (fileId) => {
+    setUploadQueue(prev => prev.filter(f => f.id !== fileId));
   };
 
   const handleDeleteExistingImage = (imageUrl) => {
     setExistingImages(existingImages.filter(url => url !== imageUrl));
-    setImagesToDelete([...imagesToDelete, imageUrl]);
+    setImagesToDelete(prev => [...prev, imageUrl]);
   };
   
   const resetForm = () => {
@@ -58,7 +78,7 @@ function ProductManager() {
     setIsEditing(false);
     setCurrentProductId(null);
     setExistingImages([]);
-    setNewImages([]);
+    setUploadQueue([]);
     setImagesToDelete([]);
     const fileInput = document.getElementById('imageUpload');
     if (fileInput) fileInput.value = "";
@@ -66,6 +86,7 @@ function ProductManager() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const toastId = toast.loading(isEditing ? 'Actualizando producto...' : 'Guardando producto...');
     let finalImageUrls = [...existingImages];
 
     for (const imageUrlToDelete of imagesToDelete) {
@@ -79,26 +100,58 @@ function ProductManager() {
 
     const docId = isEditing ? currentProductId : doc(collection(db, 'products')).id;
 
-    for (const imageFile of newImages) {
-      const imageRef = ref(storage, `product_images/${docId}/${Date.now()}_${imageFile.name}`);
-      await uploadBytes(imageRef, imageFile);
-      const downloadURL = await getDownloadURL(imageRef);
-      finalImageUrls.push(downloadURL);
-    }
-    
-    const productData = { ...formData, price: Number(formData.price), imageUrls: finalImageUrls };
+    const uploadPromises = uploadQueue.map(fileObj => {
+      return new Promise((resolve, reject) => {
+        if (fileObj.status === 'completed') {
+          resolve(fileObj.url);
+          return;
+        }
 
-    if (isEditing) {
-      const productDoc = doc(db, 'products', currentProductId);
-      await updateDoc(productDoc, productData);
-      toast.success('¡Producto actualizado con éxito!');
-    } else {
-      const newProductDoc = doc(db, 'products', docId);
-      await setDoc(newProductDoc, productData);
-      toast.success('¡Producto creado con éxito!');
+        const imageRef = ref(storage, `product_images/${docId}/${Date.now()}_${fileObj.file.name}`);
+        const uploadTask = uploadBytesResumable(imageRef, fileObj.file);
+
+        setUploadQueue(prev => prev.map(f => f.id === fileObj.id ? { ...f, status: 'uploading' } : f));
+
+        uploadTask.on('state_changed', 
+          (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setUploadQueue(prev => prev.map(f => f.id === fileObj.id ? { ...f, progress } : f));
+          }, 
+          (error) => {
+            console.error("Error en subida:", error);
+            setUploadQueue(prev => prev.map(f => f.id === fileObj.id ? { ...f, status: 'error' } : f));
+            reject(error);
+          }, 
+          async () => {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            setUploadQueue(prev => prev.map(f => f.id === fileObj.id ? { ...f, status: 'completed', url: downloadURL } : f));
+            resolve(downloadURL);
+          }
+        );
+      });
+    });
+
+    try {
+      const newImageUrls = await Promise.all(uploadPromises);
+      finalImageUrls.push(...newImageUrls);
+      
+      const productData = { ...formData, price: Number(formData.price), imageUrls: finalImageUrls };
+
+      if (isEditing) {
+        const productDoc = doc(db, 'products', currentProductId);
+        await updateDoc(productDoc, productData);
+        toast.success('¡Producto actualizado con éxito!', { id: toastId });
+      } else {
+        const newProductDoc = doc(db, 'products', docId);
+        await setDoc(newProductDoc, productData);
+        toast.success('¡Producto creado con éxito!', { id: toastId });
+      }
+      resetForm();
+      fetchProducts();
+    } catch (error) {
+      toast.error('Hubo un error al subir las imágenes.', { id: toastId });
+      console.error("Error en el submit:", error);
     }
-    resetForm();
-    fetchProducts();
   };
 
   const handleEdit = (product) => {
@@ -112,6 +165,7 @@ function ProductManager() {
       category: product.category || '',
     });
     setExistingImages(product.imageUrls || []);
+    setUploadQueue([]);
   };
 
   const handleDelete = async (id) => {
@@ -155,29 +209,26 @@ function ProductManager() {
           <div className={styles.imageManagerSection}>
             <h4>Imágenes del Producto</h4>
             
-            {isEditing && existingImages.length > 0 && (
-              <div className={styles.imageGallery}>
-                {existingImages.map((url, index) => (
-                  <div key={index} className={styles.thumbnailContainer}>
-                    <img src={url} alt={`Imagen ${index + 1}`} className={styles.thumbnailImage} />
-                    <button type="button" onClick={() => handleDeleteExistingImage(url)} className={styles.deleteImageIcon}>
-  X
-</button>
-                  </div>
-                ))}
-              </div>
-            )}
-            
+            <div className={styles.imageGallery}>
+              {isEditing && existingImages.map((url, index) => (
+                <div key={`existing-${index}`} className={styles.thumbnailContainer}>
+                  <img src={url} alt={`Imagen existente ${index + 1}`} className={styles.thumbnailImage} />
+                  <button type="button" onClick={() => handleDeleteExistingImage(url)} className={styles.deleteImageIcon}>X</button>
+                </div>
+              ))}
+              {uploadQueue.map(fileObj => (
+                <div key={fileObj.id} className={styles.thumbnailContainer}>
+                  <img src={fileObj.preview} alt="Previsualización" className={styles.thumbnailImage} />
+                  {fileObj.status === 'uploading' && <ProgressBar progress={fileObj.progress} />}
+                  {fileObj.status === 'error' && <div className={styles.errorOverlay}>Error</div>}
+                  <button type="button" onClick={() => handleRemoveFromQueue(fileObj.id)} className={styles.deleteImageIcon}>X</button>
+                </div>
+              ))}
+            </div>
+
             <div className={styles.uploadBox}>
-              <label htmlFor="imageUpload">{isEditing ? 'Añadir más imágenes' : 'Subir imágenes'}</label>
-              <input 
-                id="imageUpload" 
-                type="file" 
-                multiple 
-                onChange={handleImageChange} 
-                accept="image/*"
-              />
-              {newImages.length > 0 && <p>{newImages.length} nuevas imágenes seleccionadas.</p>}
+              <label htmlFor="imageUpload">Subir o añadir imágenes</label>
+              <input id="imageUpload" type="file" multiple onChange={handleImageChange} accept="image/*" />
             </div>
           </div>
           

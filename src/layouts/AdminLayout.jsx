@@ -24,8 +24,9 @@ function AdminLayout() {
       <aside className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
           <h2>Administración</h2>
+          {/* ▼▼▼ LÍNEA MODIFICADA ▼▼▼ */}
           <button onClick={toggleSidebar} className={styles.toggleButton}>
-            &larr;
+            <FaArrowLeft />
           </button>
         </div>
         <nav className={styles.nav}>
@@ -63,7 +64,7 @@ function AdminLayout() {
       <main className={styles.content}>
         <Outlet />
       </main>
-      <NavigationArrows /> {/* <-- COMPONENTE AÑADIDO AQUÍ */}
+      <NavigationArrows />
     </div>
   );
 }
