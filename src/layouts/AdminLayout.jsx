@@ -5,7 +5,7 @@ import NavigationArrows from '../components/ui/NavigationArrows';
 // Importamos los íconos que usaremos
 import { 
   FaTachometerAlt, FaWarehouse, FaSitemap, FaTruckLoading, 
-  FaBoxOpen, FaFileInvoiceDollar, FaUsers, FaArrowLeft 
+  FaBoxOpen, FaFileInvoiceDollar, FaUsers, FaArrowLeft, FaWifi
 } from 'react-icons/fa';
 
 const getNavLinkClass = ({ isActive }) => {
@@ -24,7 +24,6 @@ function AdminLayout() {
       <aside className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
           <h2>Administración</h2>
-          {/* ▼▼▼ LÍNEA MODIFICADA ▼▼▼ */}
           <button onClick={toggleSidebar} className={styles.toggleButton}>
             <FaArrowLeft />
           </button>
@@ -54,6 +53,10 @@ function AdminLayout() {
             </NavLink>
             <NavLink to="/admin/usuarios" className={getNavLinkClass} title="Usuarios">
               <FaUsers /><span>Usuarios Registrados</span>
+            </NavLink>
+            {/* ▼▼▼ ENLACE AÑADIDO ▼▼▼ */}
+            <NavLink to="/admin/en-linea" className={getNavLinkClass} title="Usuarios en Línea">
+              <FaWifi /><span>Usuarios en Línea</span>
             </NavLink>
           </ul>
         </nav>

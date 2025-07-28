@@ -46,18 +46,14 @@ export const AuthProvider = ({ children }) => {
         
         unsubscribeUserDoc = onSnapshot(userDocRef, (docSnap) => {
           if (docSnap.exists()) {
-            // ▼▼▼ BLOQUE CORREGIDO ▼▼▼
-            // Combinamos los datos, pero aseguramos que el estado de 'emailVerified'
-            // de Firebase Authentication tenga la última palabra.
             const firestoreData = docSnap.data();
             const combinedUser = {
-              ...firestoreData, // Datos de Firestore (rol, nombre, etc.)
-              uid: firebaseUser.uid, // UID de Authentication
-              email: firebaseUser.email, // Email de Authentication
-              emailVerified: firebaseUser.emailVerified, // Estado de verificación REAL
+              ...firestoreData,
+              uid: firebaseUser.uid,
+              email: firebaseUser.email,
+              emailVerified: firebaseUser.emailVerified,
             };
             setUser(combinedUser);
-            // ▲▲▲ FIN DE LA CORRECCIÓN ▲▲▲
           } else {
             setUser(firebaseUser);
           }
@@ -82,22 +78,40 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  // ... (el resto de los useEffect no necesitan cambios)
   useEffect(() => {
     if (!user) return;
+
     const myStatusRef = ref(rtdb, 'status/' + user.uid);
     const connectedRef = ref(rtdb, '.info/connected');
-    const unsubscribeOnValue = onValue(connectedRef, (snap) => {
+
+    const onConnect = onValue(connectedRef, (snap) => {
       if (snap.val() === true) {
-        const onDisconnectRef = onDisconnect(myStatusRef);
-        onDisconnectRef.set({ isOnline: false, last_seen: rtdbServerTimestamp() });
+        // Si nos desconectamos bruscamente, Firebase nos pondrá offline
+        onDisconnect(myStatusRef).set({ isOnline: false, last_seen: rtdbServerTimestamp() });
+        // Al conectarnos, nos ponemos online
         set(myStatusRef, { isOnline: true, last_seen: rtdbServerTimestamp() });
       }
     });
-    return () => {
-      if (typeof unsubscribeOnValue === 'function') {
-        unsubscribeOnValue();
+
+    // NUEVA LÓGICA: Detectar si la pestaña está activa
+    const handleVisibilityChange = () => {
+      if (!user) return; // Chequeo de seguridad
+      if (document.visibilityState === 'hidden') {
+        // Si el usuario cambia de pestaña, actualizamos el estado
+        set(myStatusRef, { isOnline: false, last_seen: rtdbServerTimestamp() });
+      } else {
+        // Si vuelve a la pestaña, nos ponemos online de nuevo
+        set(myStatusRef, { isOnline: true, last_seen: rtdbServerTimestamp() });
       }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Limpiamos los listeners al desmontar
+    return () => {
+      // La función que devuelve onValue se usa para desregistrar el callback
+      onConnect();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [user]);
 
@@ -127,7 +141,6 @@ export const AuthProvider = ({ children }) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     await reload(userCredential.user);
     
-    // Usamos auth.currentUser que ahora está actualizado después del reload
     if (!auth.currentUser.emailVerified) {
       toast.error('Por favor, verifica tu correo electrónico para poder iniciar sesión.');
       await signOut(auth);
@@ -140,12 +153,24 @@ export const AuthProvider = ({ children }) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     const displayName = `${additionalData.name} ${additionalData.lastName}`;
-    
+
+    const MALE_AVATAR_URL = 'https://firebasestorage.googleapis.com/v0/b/web-de-group.firebasestorage.app/o/profile_pictures%2Fmasculino.avif?alt=media&token=ba7079f2-eeb6-42c3-830a-1cd83e2f96e5';
+    const FEMALE_AVATAR_URL = 'https://firebasestorage.googleapis.com/v0/b/web-de-group.firebasestorage.app/o/profile_pictures%2Ffemenina.jpeg?alt=media&token=1a7789de-b516-4b5b-91d6-2f204c345152';
+
+    const profileImageUrl = additionalData.gender === 'masculino' 
+      ? MALE_AVATAR_URL 
+      : FEMALE_AVATAR_URL;
+
     await setDoc(doc(db, 'users', user.uid), {
-        uid: user.uid, email: user.email, ...additionalData,
-        displayName: displayName, displayName_lowercase: displayName.toLowerCase(),
-        role: 'cliente', createdAt: firestoreServerTimestamp(), 
-        emailVerified: user.emailVerified // Guardamos el estado inicial (false)
+        ...additionalData,
+        uid: user.uid,
+        email: user.email,
+        displayName: displayName,
+        displayName_lowercase: displayName.toLowerCase(),
+        role: 'cliente',
+        createdAt: firestoreServerTimestamp(), 
+        emailVerified: user.emailVerified,
+        profileImageUrl: profileImageUrl,
     });
 
     const actionCodeSettings = {

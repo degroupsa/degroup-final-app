@@ -40,6 +40,7 @@ import AdminBulkPriceEditorPage from './pages/admin/AdminBulkPriceEditorPage.jsx
 import AdminProductsPage from './pages/admin/AdminProductsPage.jsx';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage.jsx';
 import AdminUsersPage from './pages/admin/AdminUsersPage.jsx';
+import AdminRealtimePage from './components/admin/AdminRealtimePage.jsx';
 
 import './App.css';
 
@@ -67,36 +68,32 @@ function App() {
           <Route path="usuarios" element={<AdminUsersPage />} />
           <Route path="produccion" element={<AdminProductionPage />} />
           <Route path="precios" element={<AdminBulkPriceEditorPage />} />
+          <Route path="en-linea" element={<AdminRealtimePage />} /> {/* <-- RUTA AÑADIDA */}
           <Route path="mensajes" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} /> 
           <Route path="mensajes/:chatId" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
         </Route>
 
         {/* --- MUNDO PÚBLICO --- */}
         <Route path="/" element={<PublicLayout />}>
-        <Route path="/solicitud-enviada" element={<OrderSuccessPage />} />
-            <Route index element={<HomePage />} />
-            <Route path="productos" element={<ProductsPage />} />
-            <Route path="producto/:productId" element={<ProductDetailPage />} />
-            <Route path="nosotros" element={<AboutPage />} />
-            <Route path="contacto" element={<ContactPage />} />
-            
-            {/* La ruta del canal vuelve a ser pública */}
-            <Route path="canal" element={<FeedPage />} />
-            
-            <Route path="cart" element={<CartPage />} />
-            <Route path="register" element={<RegisterPage />} />
-            <Route path="login" element={<LoginPage />} />
-            <Route path="verify-email" element={<VerifyEmailPage />} />
-            <Route path="/registration-success" element={<RegistrationSuccessPage />} />
-            <Route path="solicitar-presupuesto" element={<QuoteRequestPage />} />
-            <Route path="checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
-            <Route path="mensajes/:chatId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
-            
-            <Route path="mi-perfil" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-            <Route path="perfil/:userId" element={<ProfilePage />} />
-            
-            <Route path="post/:postId" element={<ProtectedRoute><SinglePostPage /></ProtectedRoute>} />
-            <Route path="*" element={<h2>Página no encontrada</h2>} />
+          <Route path="/solicitud-enviada" element={<OrderSuccessPage />} />
+          <Route index element={<HomePage />} />
+          <Route path="productos" element={<ProductsPage />} />
+          <Route path="producto/:productId" element={<ProductDetailPage />} />
+          <Route path="nosotros" element={<AboutPage />} />
+          <Route path="contacto" element={<ContactPage />} />
+          <Route path="canal" element={<FeedPage />} />
+          <Route path="cart" element={<CartPage />} />
+          <Route path="register" element={<RegisterPage />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="verify-email" element={<VerifyEmailPage />} />
+          <Route path="/registration-success" element={<RegistrationSuccessPage />} />
+          <Route path="solicitar-presupuesto" element={<QuoteRequestPage />} />
+          <Route path="checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+          <Route path="mensajes/:chatId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+          <Route path="mi-perfil" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="perfil/:userId" element={<ProfilePage />} />
+          <Route path="post/:postId" element={<ProtectedRoute><SinglePostPage /></ProtectedRoute>} />
+          <Route path="*" element={<h2>Página no encontrada</h2>} />
         </Route>
       </Routes>
     </>
