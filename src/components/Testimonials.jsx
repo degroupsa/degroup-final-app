@@ -23,7 +23,7 @@ const mockTestimonials = [
     quote:
       'Excelente atención y asesoramiento. Entienden las necesidades reales del productor. Un producto local que compite con cualquiera de afuera.',
     author: 'Ana M. Silvestri',
-    location: 'Cañada de Gómez, Santa Fe',
+    location: 'Casilda, Santa Fe',
   },
 ];
 
