@@ -7,23 +7,23 @@ const mockTestimonials = [
   {
     id: 1,
     quote:
-      'Desde que instalamos los pisapalos Terrashield en la sembradora, la uniformidad en la emergencia del cultivo es notable. Un antes y un después.',
-    author: 'Juan C. Bertaina',
-    location: "Establecimiento 'La Perseverancia', Armstrong",
+      'Desde que instalamos los pisapalos Terrashield en la sembradora, notamos la diferencia en cuanto a pinchaduras por el rastrojo. El cambio fue muy notable.',
+    author: 'Sebastian Peresin',
+    location: "Villa Trinidad, Santa Fé",
   },
   {
     id: 2,
     quote:
-      'La robustez y el diseño simple de los productos de DE Group se notan en el día a día. Menos tiempo en mantenimiento y más tiempo produciendo.',
+      'La robustez y el diseño simple de los productos de DE Group se notan en el día a día. Los chicos están siempre detrás del producto para darle el correcto seguimiento Posventa.',
     author: 'Familia Gagliardi',
-    location: 'Campo en Marcos Juárez, Córdoba',
+    location: 'Las Varillas, Córdoba',
   },
   {
     id: 3,
     quote:
-      'Excelente atención y asesoramiento. Entienden las necesidades del productor de la zona. Un producto local que compite con cualquiera de afuera.',
+      'Excelente atención y asesoramiento. Entienden las necesidades reales del productor. Un producto local que compite con cualquiera de afuera.',
     author: 'Ana M. Silvestri',
-    location: 'Productora en Cañada de Gómez, Santa Fe',
+    location: 'Cañada de Gómez, Santa Fe',
   },
 ];
 
