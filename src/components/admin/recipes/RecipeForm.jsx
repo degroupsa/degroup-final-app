@@ -5,34 +5,61 @@ import toast from 'react-hot-toast';
 import { FaPlus, FaTrash, FaTimes, FaSave } from 'react-icons/fa';
 import './RecipeForm.css';
 
-// El formulario ahora recibe una prop opcional `recipeToEdit`
 const RecipeForm = ({ inventoryItems, onFormSubmit, recipeToEdit }) => {
-  const [productName, setProductName] = useState('');
-  const [productSKU, setProductSKU] = useState('');
+  const initialFormData = {
+    productName: '',
+    productSKU: '',
+    marca: '',
+    modelo: '',
+    ano: '',
+    cubiertaDelantera: '',
+    cubiertaTrasera: '',
+    largoTotal: '',
+    anchoInternoTraseras: '',
+    anchoExternoTraseras: '',
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
   const [components, setComponents] = useState([{ idPieza: '', nombrePieza: '', quantityNeeded: 1 }]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Modo de edición: !!recipeToEdit convierte el objeto en un booleano (true si existe, false si es null)
+  const [errorIndex, setErrorIndex] = useState(-1);
+
   const isEditing = !!recipeToEdit;
 
-  // --- NUEVO useEffect para llenar el formulario si estamos en modo edición ---
   useEffect(() => {
     if (isEditing) {
-      setProductName(recipeToEdit.productName);
-      setProductSKU(recipeToEdit.productSKU || '');
+      setFormData({
+        productName: recipeToEdit.productName || '',
+        productSKU: recipeToEdit.productSKU || '',
+        marca: recipeToEdit.marca || '',
+        modelo: recipeToEdit.modelo || '',
+        ano: recipeToEdit.ano || '',
+        cubiertaDelantera: recipeToEdit.cubiertaDelantera || '',
+        cubiertaTrasera: recipeToEdit.cubiertaTrasera || '',
+        largoTotal: recipeToEdit.largoTotal || '',
+        anchoInternoTraseras: recipeToEdit.anchoInternoTraseras || '',
+        anchoExternoTraseras: recipeToEdit.anchoExternoTraseras || '',
+      });
       setComponents(recipeToEdit.components || [{ idPieza: '', nombrePieza: '', quantityNeeded: 1 }]);
+    } else {
+      setFormData(initialFormData);
+      setComponents([{ idPieza: '', nombrePieza: '', quantityNeeded: 1 }]);
     }
   }, [recipeToEdit, isEditing]);
 
-
-  // El resto de la lógica (buscador, agregar/quitar componente) se mantiene igual...
-  const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [activeComponentIndex, setActiveComponentIndex] = useState(null);
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
   const handleComponentSearch = (value, index) => {
+    setErrorIndex(-1);
     const updatedComponents = [...components];
     updatedComponents[index].nombrePieza = value;
+    updatedComponents[index].idPieza = '';
     setComponents(updatedComponents);
     setActiveComponentIndex(index);
     if (value.length > 1) {
@@ -45,7 +72,7 @@ const RecipeForm = ({ inventoryItems, onFormSubmit, recipeToEdit }) => {
 
   const handleSuggestionClick = (item, index) => {
     const updatedComponents = [...components];
-    updatedComponents[index] = { ...updatedComponents[index], idPieza: item.id, nombrePieza: item.name, };
+    updatedComponents[index] = { ...updatedComponents[index], idPieza: item.id, nombrePieza: item.name };
     setComponents(updatedComponents);
     setSuggestions([]);
     setActiveComponentIndex(null);
@@ -66,11 +93,16 @@ const RecipeForm = ({ inventoryItems, onFormSubmit, recipeToEdit }) => {
     setComponents(updatedComponents);
   };
 
-  // --- handleSubmit ahora distingue entre crear y editar ---
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!productName.trim() || components.some(c => !c.idPieza || c.quantityNeeded <= 0)) {
-      toast.error("Completa el nombre del equipo y asegúrate de que todos los componentes sean válidos.");
+    if (!formData.productName.trim()) {
+      toast.error("Por favor, completa el nombre del equipo.");
+      return;
+    }
+    const invalidComponentIndex = components.findIndex(c => !c.idPieza || c.quantityNeeded <= 0);
+    if (invalidComponentIndex !== -1) {
+      toast.error(`El componente ${invalidComponentIndex + 1} está incompleto. Asegúrate de seleccionarlo de la lista.`);
+      setErrorIndex(invalidComponentIndex);
       return;
     }
 
@@ -78,35 +110,36 @@ const RecipeForm = ({ inventoryItems, onFormSubmit, recipeToEdit }) => {
     toast.loading(isEditing ? "Actualizando equipo..." : "Guardando equipo...");
 
     const recipeData = {
-      productName: productName.trim(),
-      productSKU: productSKU.trim(),
+      productName: formData.productName.trim(),
+      productSKU: formData.productSKU.trim(),
+      marca: formData.marca.trim(),
+      modelo: formData.modelo.trim(),
+      ano: formData.ano.trim(),
+      cubiertaDelantera: formData.cubiertaDelantera.trim(),
+      cubiertaTrasera: formData.cubiertaTrasera.trim(),
+      largoTotal: formData.largoTotal.trim(),
+      anchoInternoTraseras: formData.anchoInternoTraseras.trim(),
+      anchoExternoTraseras: formData.anchoExternoTraseras.trim(),
       lastUpdated: serverTimestamp(),
-      components: components.map(({ idPieza, nombrePieza, quantityNeeded }) => ({
-        idPieza, nombrePieza, quantityNeeded
-      }))
+      components: components.map(({ idPieza, nombrePieza, quantityNeeded }) => ({ idPieza, nombrePieza, quantityNeeded }))
     };
 
     try {
       let docRef;
       if (isEditing) {
-        // --- LÓGICA DE ACTUALIZACIÓN ---
         docRef = doc(db, 'productRecipes', recipeToEdit.id);
         await updateDoc(docRef, recipeData);
       } else {
-        // --- LÓGICA DE CREACIÓN (la que ya teníamos) ---
-        // Usamos el nombre del producto como ID para evitar duplicados
-        docRef = doc(db, 'productRecipes', productName.trim());
+        const safeId = formData.productName.trim().toLowerCase().replace(/\s+/g, '-').replace(/\//g, '_');
+        docRef = doc(db, 'productRecipes', safeId);
         await setDoc(docRef, recipeData);
       }
-      
       toast.dismiss();
-      toast.success(`¡Equipo "${productName.trim()}" ${isEditing ? 'actualizado' : 'guardado'} con éxito!`);
-      onFormSubmit(); // Llama a la función del padre para cerrar y refrescar
-
+      toast.success(`¡Equipo "${formData.productName.trim()}" ${isEditing ? 'actualizado' : 'guardado'}!`);
+      onFormSubmit();
     } catch (error) {
       toast.dismiss();
       toast.error("Error al guardar el equipo: " + error.message);
-      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -115,29 +148,42 @@ const RecipeForm = ({ inventoryItems, onFormSubmit, recipeToEdit }) => {
   return (
     <div className="recipe-form-overlay">
       <div className="recipe-form-container">
-        {/* El título ahora es dinámico */}
         <h2>{isEditing ? 'Editar Equipo' : 'Crear Nuevo Equipo'}</h2>
         <form onSubmit={handleSubmit}>
-          {/* El nombre del producto no se puede editar para no cambiar el ID del documento */}
           <div className="form-row">
             <div className="form-group">
               <label>Nombre del Equipo Final</label>
-              <input type="text" value={productName} onChange={(e) => setProductName(e.target.value)} required disabled={isEditing} />
+              <input type="text" value={formData.productName} onChange={(e) => setFormData({...formData, productName: e.target.value})} required disabled={isEditing} />
               {isEditing && <small>El nombre no se puede cambiar en la edición.</small>}
             </div>
             <div className="form-group">
               <label>SKU (Opcional)</label>
-              <input type="text" value={productSKU} onChange={(e) => setProductSKU(e.target.value)} />
+              <input type="text" value={formData.productSKU} onChange={(e) => setFormData({...formData, productSKU: e.target.value})} />
             </div>
           </div>
           <hr />
+          <h4>Información del Vehículo / Implemento</h4>
+          <div className="form-row">
+            <div className="form-group"><label>Marca</label><input name="marca" value={formData.marca} onChange={handleInputChange} /></div>
+            <div className="form-group"><label>Modelo</label><input name="modelo" value={formData.modelo} onChange={handleInputChange} /></div>
+            <div className="form-group"><label>Año</label><input name="ano" value={formData.ano} onChange={handleInputChange} /></div>
+          </div>
+          <div className="form-row">
+            <div className="form-group"><label>Cubierta Delantera</label><input name="cubiertaDelantera" value={formData.cubiertaDelantera} onChange={handleInputChange} /></div>
+            <div className="form-group"><label>Cubierta Trasera</label><input name="cubiertaTrasera" value={formData.cubiertaTrasera} onChange={handleInputChange} /></div>
+          </div>
+          <div className="form-row">
+            <div className="form-group"><label>Largo Total</label><input name="largoTotal" value={formData.largoTotal} onChange={handleInputChange} /></div>
+            <div className="form-group"><label>Ancho Interno (Ruedas Traseras)</label><input name="anchoInternoTraseras" value={formData.anchoInternoTraseras} onChange={handleInputChange} /></div>
+            <div className="form-group"><label>Ancho Externo (Ruedas Traseras)</label><input name="anchoExternoTraseras" value={formData.anchoExternoTraseras} onChange={handleInputChange} /></div>
+          </div>
+          <hr />
           <h4>Componentes del Equipo</h4>
-          {/* El resto del formulario es igual */}
           {components.map((component, index) => (
             <div key={index} className="component-row">
               <div className="form-group component-search-group">
                 <label>Componente {index + 1}</label>
-                <input type="text" placeholder="Busca un ítem del inventario..." value={component.nombrePieza} onChange={(e) => handleComponentSearch(e.target.value, index)} autoComplete="off" />
+                <input type="text" placeholder="Busca un ítem del inventario..." value={component.nombrePieza} onChange={(e) => handleComponentSearch(e.target.value, index)} autoComplete="off" className={errorIndex === index ? 'input-error' : ''} />
                 {suggestions.length > 0 && activeComponentIndex === index && (
                   <ul className="suggestions-list">
                     {suggestions.map(item => <li key={item.id} onClick={() => handleSuggestionClick(item, index)}>{item.name}</li>)}
@@ -161,5 +207,4 @@ const RecipeForm = ({ inventoryItems, onFormSubmit, recipeToEdit }) => {
     </div>
   );
 };
-
 export default RecipeForm;

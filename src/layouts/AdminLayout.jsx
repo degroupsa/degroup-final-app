@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { NavLink, Link, Outlet } from 'react-router-dom';
 import styles from './AdminLayout.module.css';
 import NavigationArrows from '../components/ui/NavigationArrows';
+import { auth } from '../firebase/config.js'; // <-- IMPORT AÑADIDO
+
 // Importamos los íconos que usaremos
 import { 
   FaTachometerAlt, FaWarehouse, FaSitemap, FaTruckLoading, 
@@ -14,6 +16,12 @@ const getNavLinkClass = ({ isActive }) => {
 
 function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // ▼▼▼ LÍNEA AÑADIDA PARA VERIFICACIÓN ▼▼▼
+  // Esta línea mostrará tu UID en la consola del navegador.
+  if (auth.currentUser) {
+    console.log('UID del usuario actual:', auth.currentUser.uid);
+  }
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -54,7 +62,6 @@ function AdminLayout() {
             <NavLink to="/admin/usuarios" className={getNavLinkClass} title="Usuarios">
               <FaUsers /><span>Usuarios Registrados</span>
             </NavLink>
-            {/* ▼▼▼ ENLACE AÑADIDO ▼▼▼ */}
             <NavLink to="/admin/en-linea" className={getNavLinkClass} title="Usuarios en Línea">
               <FaWifi /><span>Usuarios en Línea</span>
             </NavLink>

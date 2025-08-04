@@ -143,3 +143,9 @@
     transform: none;
     box-shadow: none;
 }
+
+/* Agrega esto al final de tu archivo RecipeForm.css */
+.input-error {
+    border: 1px solid #dc3545 !important; /* Borde rojo para el error */
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25); /* Sombra roja suave */
+  }

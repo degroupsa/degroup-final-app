@@ -5,15 +5,19 @@ import toast from 'react-hot-toast';
 import RecipeForm from '../../components/admin/recipes/RecipeForm.jsx';
 import ProduceTeamForm from '../../components/admin/recipes/ProduceTeamForm.jsx';
 import './AdminRecipesPage.css';
+// ▼▼▼ IMPORTAMOS LOS NUEVOS ÍCONOS ▼▼▼
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 const AdminRecipesPage = () => {
   const [recipes, setRecipes] = useState([]);
   const [inventoryItems, setInventoryItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false); // Un único estado para mostrar el formulario
-  const [recipeToEdit, setRecipeToEdit] = useState(null); // Estado para guardar el equipo a editar
+  const [showForm, setShowForm] = useState(false);
+  const [recipeToEdit, setRecipeToEdit] = useState(null);
   const [showProduceForm, setShowProduceForm] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
+  const [expandedRecipeId, setExpandedRecipeId] = useState(null);
+  const [expandedVehicleInfo, setExpandedVehicleInfo] = useState([]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -36,20 +40,19 @@ const AdminRecipesPage = () => {
     fetchData();
   }, [fetchData]);
 
-  // --- FUNCIONES PARA MANEJAR EL FORMULARIO ---
   const handleOpenCreateForm = () => {
-    setRecipeToEdit(null); // Nos aseguramos que no haya nada para editar
+    setRecipeToEdit(null);
     setShowForm(true);
   };
 
   const handleOpenEditForm = (recipe) => {
-    setRecipeToEdit(recipe); // Guardamos el equipo a editar
+    setRecipeToEdit(recipe);
     setShowForm(true);
   };
 
   const handleFormSubmit = () => {
     setShowForm(false);
-    setRecipeToEdit(null); // Limpiamos el estado de edición
+    setRecipeToEdit(null);
     fetchData();
   };
 
@@ -59,7 +62,6 @@ const AdminRecipesPage = () => {
   };
   
   const handleDelete = async (recipeId) => {
-    // La función handleDelete se mantiene igual
     if (!window.confirm(`¿Estás seguro de que quieres eliminar el equipo "${recipeId}"?`)) return;
     toast.loading('Eliminando...');
     try {
@@ -73,11 +75,23 @@ const AdminRecipesPage = () => {
     }
   };
 
+  const handleToggleDetails = (recipeId) => {
+    setExpandedRecipeId(prevId => (prevId === recipeId ? null : recipeId));
+  };
+
+  const handleToggleVehicleInfo = (recipeId) => {
+    setExpandedVehicleInfo(prev =>
+      prev.includes(recipeId)
+        ? prev.filter(id => id !== recipeId)
+        : [...prev, recipeId]
+    );
+  };
+
   return (
     <div className="admin-page-content">
       <div className="page-header">
         <h1 className="admin-page-title">Editor de Equipos</h1>
-        <button className="add-recipe-btn" onClick={handleOpenCreateForm}> {/* <-- Llama a la nueva función */}
+        <button className="add-recipe-btn" onClick={handleOpenCreateForm}>
             ＋ Crear Nuevo Equipo
         </button>
       </div>
@@ -86,7 +100,7 @@ const AdminRecipesPage = () => {
         <RecipeForm 
             inventoryItems={inventoryItems} 
             onFormSubmit={handleFormSubmit}
-            recipeToEdit={recipeToEdit} // <-- Pasamos el equipo a editar
+            recipeToEdit={recipeToEdit}
         />
       )}
       
@@ -101,26 +115,60 @@ const AdminRecipesPage = () => {
 
       <div className="recipes-list-container">
         {loading && <p>Cargando...</p>}
-        {!loading && recipes.map(recipe => (
-          <div key={recipe.id} className="recipe-card">
-            {/* ... (el header y el body de la tarjeta se mantienen igual) ... */}
-            <div className="recipe-card-header">
-              <h3>{recipe.productName}</h3>
-              <small>SKU: {recipe.productSKU || 'N/A'}</small>
+        {!loading && recipes.map(recipe => {
+          const isVehicleInfoExpanded = expandedVehicleInfo.includes(recipe.id);
+          return (
+            <div key={recipe.id} className="recipe-card">
+              <div className="recipe-card-header">
+                <h3>{recipe.productName}</h3>
+                <small>SKU: {recipe.productSKU || 'N/A'}</small>
+              </div>
+              
+              <div className={`recipe-card-collapsible ${expandedRecipeId === recipe.id ? 'expanded' : ''}`}>
+                <div className="recipe-card-body">
+                  <h4>Información del Vehículo:</h4>
+                  <ul className="details-list">
+                    {recipe.marca && <li><span>Marca:</span><span>{recipe.marca}</span></li>}
+                    {recipe.modelo && <li><span>Modelo:</span><span>{recipe.modelo}</span></li>}
+                    
+                    {isVehicleInfoExpanded && (
+                      <>
+                        {recipe.ano && <li><span>Año:</span><span>{recipe.ano}</span></li>}
+                        {recipe.cubiertaDelantera && <li><span>Cubierta Delantera:</span><span>{recipe.cubiertaDelantera}</span></li>}
+                        {recipe.cubiertaTrasera && <li><span>Cubierta Trasera:</span><span>{recipe.cubiertaTrasera}</span></li>}
+                        {recipe.largoTotal && <li><span>Largo Total:</span><span>{recipe.largoTotal}</span></li>}
+                        {recipe.anchoInternoTraseras && <li><span>Ancho Interno Tras.:</span><span>{recipe.anchoInternoTraseras}</span></li>}
+                        {recipe.anchoExternoTraseras && <li><span>Ancho Externo Tras.:</span><span>{recipe.anchoExternoTraseras}</span></li>}
+                      </>
+                    )}
+                  </ul>
+
+                  {/* ▼▼▼ BOTÓN MODIFICADO ▼▼▼ */}
+                  <button className="show-more-btn" onClick={() => handleToggleVehicleInfo(recipe.id)}>
+                    {isVehicleInfoExpanded ? <FaChevronUp /> : <FaChevronDown />}
+                    <span>
+                      {isVehicleInfoExpanded ? 'Ocultar información' : 'Ver más información...'}
+                    </span>
+                  </button>
+                  
+                  <h4 style={{ marginTop: '1rem' }}>Componentes ({recipe.components.length}):</h4>
+                  <ul className="component-list">
+                    {recipe.components.map((comp, index) => <li key={index}><span>{comp.nombrePieza}</span><span>x {comp.quantityNeeded}</span></li>)}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="recipe-card-actions">
+                  <button className="details-btn" onClick={() => handleToggleDetails(recipe.id)}>
+                    {expandedRecipeId === recipe.id ? 'Ocultar Detalles' : 'Ver Detalles'}
+                  </button>
+                  <button className="produce-btn" onClick={() => openProduceModal(recipe)}>Producir</button>
+                  <button className="edit-btn" onClick={() => handleOpenEditForm(recipe)}>Editar</button>
+                  <button className="delete-btn" onClick={() => handleDelete(recipe.id)}>Eliminar</button>
+              </div>
             </div>
-            <div className="recipe-card-body">
-              <h4>Componentes:</h4>
-              <ul>
-                {recipe.components.map((comp, index) => <li key={index}><span>{comp.nombrePieza}</span><span>x {comp.quantityNeeded}</span></li>)}
-              </ul>
-            </div>
-            <div className="recipe-card-actions">
-                <button className="produce-btn" onClick={() => openProduceModal(recipe)}>Producir</button>
-                <button className="edit-btn" onClick={() => handleOpenEditForm(recipe)}>Editar</button> {/* <-- Llama a la nueva función */}
-                <button className="delete-btn" onClick={() => handleDelete(recipe.id)}>Eliminar</button>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   );
