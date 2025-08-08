@@ -23,6 +23,8 @@ const AddInventoryItemForm = ({ onItemAdded }) => {
     if (isSubmitting) return;
 
     const trimmedName = formData.name.trim();
+    const trimmedSku = formData.sku.trim();
+
     if (!trimmedName || formData.stock < 0) {
       toast.error('El nombre no puede estar vacío y el stock no puede ser negativo.');
       return;
@@ -33,29 +35,39 @@ const AddInventoryItemForm = ({ onItemAdded }) => {
 
     try {
       const itemsCollectionRef = collection(db, 'inventoryItems');
-      const q = query(itemsCollectionRef, where("name", "==", trimmedName));
-      const querySnapshot = await getDocs(q);
+      let existingDoc = null;
 
-      const batch = writeBatch(db); // Usamos un batch para operaciones atómicas
+      // ▼▼▼ LÓGICA DE BÚSQUEDA MEJORADA ▼▼▼
+      // Buscamos si existe un ítem con el mismo nombre O el mismo SKU (si se proporcionó)
+      const nameQuery = query(itemsCollectionRef, where("name", "==", trimmedName));
+      const nameSnapshot = await getDocs(nameQuery);
 
-      // --- SI EL PRODUCTO YA EXISTE ---
-      if (!querySnapshot.empty) {
+      if (!nameSnapshot.empty) {
+        existingDoc = nameSnapshot.docs[0];
+      } else if (trimmedSku) {
+        const skuQuery = query(itemsCollectionRef, where("sku", "==", trimmedSku));
+        const skuSnapshot = await getDocs(skuQuery);
+        if (!skuSnapshot.empty) {
+          existingDoc = skuSnapshot.docs[0];
+        }
+      }
+
+      const batch = writeBatch(db);
+
+      if (existingDoc) {
         toast.dismiss();
-        toast('Producto existente. Agregando stock...', { icon: '🔄' });
+        toast(`Ítem existente "${existingDoc.data().name}". Agregando stock...`, { icon: '🔄' });
         
-        const existingDoc = querySnapshot.docs[0];
         const newStockTotal = (existingDoc.data().stock || 0) + formData.stock;
         
-        // 1. Actualizar el stock del producto existente
         batch.update(existingDoc.ref, { stock: newStockTotal });
 
-        // 2. Registrar solo la entrada del nuevo stock
         if (formData.stock > 0) {
             const movementRef = doc(collection(db, 'movimientosInventario'));
             batch.set(movementRef, {
                 tipo: 'entrada',
                 idPieza: existingDoc.id,
-                nombrePieza: trimmedName,
+                nombrePieza: existingDoc.data().name,
                 cantidad: formData.stock,
                 motivo: 'Adición de Stock',
                 nombreProveedor: formData.nombreProveedor || existingDoc.data().nombreProveedor || 'N/A',
@@ -64,21 +76,19 @@ const AddInventoryItemForm = ({ onItemAdded }) => {
             });
         }
       
-      // --- SI EL PRODUCTO ES NUEVO ---
       } else {
-        // 1. Crear el nuevo producto
         const newItemRef = doc(collection(db, 'inventoryItems'));
         batch.set(newItemRef, {
             ...formData,
-            name: trimmedName, // Guardamos el nombre sin espacios extra
+            name: trimmedName,
+            sku: trimmedSku,
         });
 
-        // 2. Registrar el stock inicial como una entrada
         if (formData.stock > 0) {
             const movementRef = doc(collection(db, 'movimientosInventario'));
             batch.set(movementRef, {
                 tipo: 'entrada',
-                idPieza: newItemRef.id, // Referencia al nuevo ID
+                idPieza: newItemRef.id,
                 nombrePieza: trimmedName,
                 cantidad: formData.stock,
                 motivo: 'Stock Inicial',
@@ -89,7 +99,7 @@ const AddInventoryItemForm = ({ onItemAdded }) => {
         }
       }
 
-      await batch.commit(); // Ejecutamos todas las operaciones juntas
+      await batch.commit();
       
       toast.dismiss();
       toast.success('¡Operación completada con éxito!');
@@ -108,9 +118,8 @@ const AddInventoryItemForm = ({ onItemAdded }) => {
   };
 
   return (
-    // El JSX del formulario no cambia, se mantiene exactamente igual
     <div className="add-item-form-container">
-      <h3 className="form-title">Agregar o Actualizar Ítem</h3>
+      <h3 className="form-title">Agregar o Actualizar Ítem por Nombre o SKU</h3>
       <form onSubmit={handleSubmit} className="inventory-form">
         <div className="form-grid">
           <div className="form-group">
@@ -130,7 +139,7 @@ const AddInventoryItemForm = ({ onItemAdded }) => {
             <input type="text" id="nombreProveedor" name="nombreProveedor" value={formData.nombreProveedor} onChange={handleChange} />
           </div>
           <hr style={{gridColumn: "1 / -1"}}/>
-           <p style={{gridColumn: "1 / -1", textAlign: "center", margin: "-0.5rem 0 0.5rem"}}>Si el producto es nuevo, completa estos campos:</p>
+           <p style={{gridColumn: "1 / -1", textAlign: "center", margin: "-0.5rem 0 0.5rem"}}>Si el ítem es nuevo, completa estos campos:</p>
           <div className="form-group">
             <label htmlFor="sku">SKU / Código</label>
             <input type="text" id="sku" name="sku" value={formData.sku} onChange={handleChange} />

@@ -15,10 +15,8 @@ function RealtimeUsersWidget() {
     const unsubscribe = onValue(statusRef, async (snapshot) => {
       const statuses = snapshot.val();
       if (statuses) {
-        // Límite de tiempo: consideramos "activos" a los de los últimos 2 minutos
         const twoMinutesAgo = Date.now() - 2 * 60 * 1000;
 
-        // Filtramos por isOnline Y por la marca de tiempo reciente
         const onlineUIDs = Object.keys(statuses).filter(uid => 
           statuses[uid].isOnline && statuses[uid].last_seen > twoMinutesAgo
         );
@@ -33,7 +31,7 @@ function RealtimeUsersWidget() {
             ...docSnap.data(),
             last_seen: statuses[docSnap.id].last_seen
           }));
-        
+
         setOnlineUsers(usersData);
       } else {
         setOnlineUsers([]);

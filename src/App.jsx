@@ -40,7 +40,7 @@ import AdminBulkPriceEditorPage from './pages/admin/AdminBulkPriceEditorPage.jsx
 import AdminProductsPage from './pages/admin/AdminProductsPage.jsx';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage.jsx';
 import AdminUsersPage from './pages/admin/AdminUsersPage.jsx';
-import AdminRealtimePage from './components/admin/AdminRealtimePage.jsx';
+import AdminRealtimePage from './pages/admin/AdminRealtimePage.jsx'; 
 
 import './App.css';
 
@@ -48,16 +48,29 @@ function App() {
   return (
     <>
       <ScrollToTop />
+      
+      <Toaster 
+        position="top-right"
+        containerStyle={{ zIndex: 9999 }}
+        toastOptions={{
+          style: {
+            background: '#212529',
+            color: '#f8f9fa',
+            border: '1px solid #495057',
+            padding: '16px',
+            borderRadius: '8px',
+          },
+          duration: 5000,
+          success: { style: { background: '#28a745', color: 'white' } },
+          error: { style: { background: '#dc3545', color: 'white' } },
+        }}
+      />
 
       <Routes>
         {/* --- MUNDO DE ADMINISTRACIÓN --- */}
         <Route 
           path="/admin"
-          element={
-            <AdminRoute>
-              <AdminLayout />
-            </AdminRoute>
-          }
+          element={<AdminRoute><AdminLayout /></AdminRoute>}
         > 
           <Route index element={<Navigate to="dashboard" replace />} /> 
           <Route path="dashboard" element={<AdminDashboardPage />} />
@@ -68,7 +81,7 @@ function App() {
           <Route path="usuarios" element={<AdminUsersPage />} />
           <Route path="produccion" element={<AdminProductionPage />} />
           <Route path="precios" element={<AdminBulkPriceEditorPage />} />
-          <Route path="en-linea" element={<AdminRealtimePage />} /> {/* <-- RUTA AÑADIDA */}
+          <Route path="en-linea" element={<AdminRealtimePage />} />
           <Route path="mensajes" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} /> 
           <Route path="mensajes/:chatId" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
         </Route>

@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { NavLink, Link, Outlet } from 'react-router-dom';
 import styles from './AdminLayout.module.css';
 import NavigationArrows from '../components/ui/NavigationArrows';
-import { auth } from '../firebase/config.js'; // <-- IMPORT AÑADIDO
-
 // Importamos los íconos que usaremos
 import { 
   FaTachometerAlt, FaWarehouse, FaSitemap, FaTruckLoading, 
@@ -17,11 +15,7 @@ const getNavLinkClass = ({ isActive }) => {
 function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // ▼▼▼ LÍNEA AÑADIDA PARA VERIFICACIÓN ▼▼▼
-  // Esta línea mostrará tu UID en la consola del navegador.
-  if (auth.currentUser) {
-    console.log('UID del usuario actual:', auth.currentUser.uid);
-  }
+  // La línea de "console.log" ha sido eliminada de aquí.
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);

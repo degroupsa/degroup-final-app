@@ -10,17 +10,20 @@ import ManualEgressForm from '../../components/admin/inventory/ManualEgressForm.
 import FinishedGoodsChart from '../../components/admin/inventory/FinishedGoodsChart.jsx';
 import FinishedGoodsTable from '../../components/admin/inventory/FinishedGoodsTable.jsx';
 import IndividualStockChart from '../../components/admin/inventory/IndividualStockChart.jsx';
+import InventoryAdjustmentForm from '../../components/admin/inventory/InventoryAdjustmentForm.jsx';
 import './AdminInventoryPage.css';
+import { FaPlusCircle, FaMinusCircle, FaExchangeAlt } from 'react-icons/fa';
 
 const AdminInventoryPage = () => {
   const [inventoryItems, setInventoryItems] = useState([]);
   const [movements, setMovements] = useState([]);
   const [recipes, setRecipes] = useState([]);
-  const [products, setProducts] = useState([]); // <-- Necesitamos los productos para la tabla
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEgressForm, setShowEgressForm] = useState(false);
+  const [showAdjustmentForm, setShowAdjustmentForm] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -34,7 +37,6 @@ const AdminInventoryPage = () => {
       const recipesSnapshot = await getDocs(collection(db, 'productRecipes'));
       setRecipes(recipesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       
-      // Leemos los productos para tener la información de precios
       const productsSnapshot = await getDocs(collection(db, 'products'));
       setProducts(productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
@@ -51,22 +53,50 @@ const AdminInventoryPage = () => {
     fetchData();
   }, [fetchData]);
 
-  const refreshData = () => {
-    setShowAddForm(false);
-    setShowEgressForm(false);
+  const handleAdjustmentDone = () => {
+    setShowAdjustmentForm(false);
     fetchData();
   };
 
+  const refreshData = () => {
+    setShowAddForm(false);
+    setShowEgressForm(false);
+    setShowAdjustmentForm(false);
+    fetchData();
+  };
+  
+  const closeAllForms = () => {
+    setShowAddForm(false);
+    setShowEgressForm(false);
+    setShowAdjustmentForm(false);
+  }
+
   return (
     <div className="admin-page-content">
+      {showAdjustmentForm && (
+        <InventoryAdjustmentForm 
+          inventoryItems={inventoryItems}
+          onAdjustmentDone={handleAdjustmentDone}
+          onClose={() => setShowAdjustmentForm(false)}
+        />
+      )}
+
       <div className="page-header">
         <h1 className="admin-page-title">Gestión de Inventario</h1>
         <div className="header-buttons">
-            <button className={`toggle-form-btn ${showEgressForm ? 'cancel' : 'egress'}`} onClick={() => {setShowEgressForm(!showEgressForm); setShowAddForm(false);}}>
-              {showEgressForm ? 'Cancelar' : '－ Registrar Salida Manual'}
+            <button className="action-button adjustment" onClick={() => {
+              // ▼▼▼ LÍNEA AÑADIDA PARA LA PRUEBA ▼▼▼
+              console.log('Abriendo formulario de reajuste. Ítems de inventario disponibles:', inventoryItems);
+              closeAllForms(); 
+              setShowAdjustmentForm(true); 
+            }}>
+              <FaExchangeAlt /> Reajuste de Inventario
             </button>
-            <button className={`toggle-form-btn ${showAddForm ? 'cancel' : 'add'}`} onClick={() => {setShowAddForm(!showAddForm); setShowEgressForm(false);}}>
-              {showAddForm ? 'Cancelar' : '＋ Agregar/Actualizar Materia Prima'}
+            <button className={`action-button ${showEgressForm ? 'cancel' : 'egress'}`} onClick={() => { closeAllForms(); setShowEgressForm(!showEgressForm); }}>
+              <FaMinusCircle /> {showEgressForm ? 'Cancelar' : 'Registrar Salida'}
+            </button>
+            <button className={`action-button ${showAddForm ? 'cancel' : 'add'}`} onClick={() => { closeAllForms(); setShowAddForm(!showAddForm); }}>
+              <FaPlusCircle /> {showAddForm ? 'Cancelar' : 'Agregar Ítem'}
             </button>
         </div>
       </div>
@@ -88,7 +118,6 @@ const AdminInventoryPage = () => {
                 <FinishedGoodsChart recipes={recipes} />
             </div>
             <div className="grid-card">
-                {/* --- CAMBIO FINAL: Pasamos la lista de productos a la tabla --- */}
                 <FinishedGoodsTable recipes={recipes} products={products} onActionComplete={fetchData} />
             </div>
           </div>

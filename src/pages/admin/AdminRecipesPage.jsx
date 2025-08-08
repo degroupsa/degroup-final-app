@@ -5,7 +5,6 @@ import toast from 'react-hot-toast';
 import RecipeForm from '../../components/admin/recipes/RecipeForm.jsx';
 import ProduceTeamForm from '../../components/admin/recipes/ProduceTeamForm.jsx';
 import './AdminRecipesPage.css';
-// ▼▼▼ IMPORTAMOS LOS NUEVOS ÍCONOS ▼▼▼
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 const AdminRecipesPage = () => {
@@ -16,6 +15,7 @@ const AdminRecipesPage = () => {
   const [recipeToEdit, setRecipeToEdit] = useState(null);
   const [showProduceForm, setShowProduceForm] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
+  // ▼▼▼ MANTENEMOS AMBOS ESTADOS PARA LOS DESPLEGABLES ▼▼▼
   const [expandedRecipeId, setExpandedRecipeId] = useState(null);
   const [expandedVehicleInfo, setExpandedVehicleInfo] = useState([]);
 
@@ -128,9 +128,11 @@ const AdminRecipesPage = () => {
                 <div className="recipe-card-body">
                   <h4>Información del Vehículo:</h4>
                   <ul className="details-list">
+                    {/* Mostramos siempre los primeros dos campos si existen */}
                     {recipe.marca && <li><span>Marca:</span><span>{recipe.marca}</span></li>}
                     {recipe.modelo && <li><span>Modelo:</span><span>{recipe.modelo}</span></li>}
                     
+                    {/* El resto de la información solo se muestra si está expandido */}
                     {isVehicleInfoExpanded && (
                       <>
                         {recipe.ano && <li><span>Año:</span><span>{recipe.ano}</span></li>}
@@ -142,14 +144,15 @@ const AdminRecipesPage = () => {
                       </>
                     )}
                   </ul>
-
-                  {/* ▼▼▼ BOTÓN MODIFICADO ▼▼▼ */}
-                  <button className="show-more-btn" onClick={() => handleToggleVehicleInfo(recipe.id)}>
-                    {isVehicleInfoExpanded ? <FaChevronUp /> : <FaChevronDown />}
-                    <span>
-                      {isVehicleInfoExpanded ? 'Ocultar información' : 'Ver más información...'}
-                    </span>
-                  </button>
+                  {/* El botón solo aparece si hay más de 2 datos de vehículo para mostrar */}
+                  {(recipe.ano || recipe.cubiertaDelantera || recipe.cubiertaTrasera || recipe.largoTotal || recipe.anchoInternoTraseras || recipe.anchoExternoTraseras) && (
+                    <button className="show-more-btn" onClick={() => handleToggleVehicleInfo(recipe.id)}>
+                      {isVehicleInfoExpanded ? <FaChevronUp /> : <FaChevronDown />}
+                      <span>
+                        {isVehicleInfoExpanded ? 'Ocultar información' : 'Ver más información...'}
+                      </span>
+                    </button>
+                  )}
                   
                   <h4 style={{ marginTop: '1rem' }}>Componentes ({recipe.components.length}):</h4>
                   <ul className="component-list">

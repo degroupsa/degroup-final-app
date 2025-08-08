@@ -3,8 +3,8 @@ import { db } from '../../../firebase/config';
 import { collection, doc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import './ManualEgressForm.css';
+import { FaTimes } from 'react-icons/fa'; // Importamos FaTimes por si lo usamos en el futuro
 
-// El componente ahora recibe la lista completa de items como prop
 const ManualEgressForm = ({ items, onEgressDone }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -13,15 +13,16 @@ const ManualEgressForm = ({ items, onEgressDone }) => {
   const [reason, setReason] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Función que se ejecuta cada vez que el usuario escribe en el buscador
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
-    setSelectedItem(null); // Limpiamos la selección si el usuario sigue escribiendo
+    setSelectedItem(null);
 
     if (value.length > 1) {
+      // ▼▼▼ LÓGICA DE BÚSQUEDA MEJORADA ▼▼▼
       const filteredSuggestions = items.filter(item =>
-        item.name.toLowerCase().includes(value.toLowerCase())
+        item.name.toLowerCase().includes(value.toLowerCase()) ||
+        item.sku?.toLowerCase().includes(value.toLowerCase()) // Busca también por SKU
       );
       setSuggestions(filteredSuggestions);
     } else {
@@ -29,11 +30,10 @@ const ManualEgressForm = ({ items, onEgressDone }) => {
     }
   };
 
-  // Función que se ejecuta cuando el usuario hace clic en una sugerencia
   const handleSuggestionClick = (item) => {
     setSelectedItem(item);
     setSearchTerm(item.name);
-    setSuggestions([]); // Ocultamos la lista de sugerencias
+    setSuggestions([]);
   };
 
   const handleSubmit = async (e) => {
@@ -70,7 +70,6 @@ const ManualEgressForm = ({ items, onEgressDone }) => {
       toast.dismiss();
       toast.success("¡Salida de stock registrada con éxito!");
       
-      // Limpiar formulario
       setSearchTerm('');
       setQuantity(1);
       setReason('');
@@ -90,7 +89,7 @@ const ManualEgressForm = ({ items, onEgressDone }) => {
       <h3 className="form-title">Registrar Salida Manual de Stock</h3>
       <form onSubmit={handleSubmit} className="egress-form">
         <div className="form-group search-group">
-          <label htmlFor="itemName">Buscar Producto</label>
+          <label htmlFor="itemName">Buscar Producto por Nombre o SKU</label>
           <input
             type="text"
             id="itemName"
