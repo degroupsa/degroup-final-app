@@ -1,32 +1,48 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../../firebase/config.js';
-// --- CORRECCIÓN: Añadimos 'orderBy' a la importación ---
-import { collection, getDocs, doc, updateDoc, deleteDoc, arrayUnion, runTransaction, Timestamp, query, orderBy } from 'firebase/firestore';
+// ▼▼▼ IMPORTAMOS serverTimestamp AQUÍ ▼▼▼
+import { collection, getDocs, doc, updateDoc, deleteDoc, arrayUnion, runTransaction, Timestamp, query, orderBy, writeBatch, serverTimestamp } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import styles from './AdminProductionPage.module.css';
 
 const PRODUCTION_STEPS = [
-  'Pendiente', 'En Planta', 'Corte y Plegado', 'Soldadura del Equipo', 'Preparación para Pintura', 'Pintura Inicial', 'Pintura Final', 'Control de Calidad Inicial', 'Ensamble del Equipo', 'Control de Calidad Final', 'Preparación para la Entrega', 'Listo para Retirar'
+  'Pedido Recibido',
+  'Ingreso a Planta',
+  'Corte y Plegado',
+  'En Planta', // Etapa "puerta" para el control de stock
+  'Soldadura', 
+  'Limpieza', 
+  'Pintado', 
+  'Armado', 
+  'Control de Calidad', 
+  'Finalizado'
 ];
+const STOCK_CHECK_GATE_STEP = 'En Planta';
 
 const AdminProductionPage = () => {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
+  const [recipes, setRecipes] = useState([]);
+  const [inventoryItems, setInventoryItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchAllData = useCallback(async () => {
     setLoading(true);
     try {
-      // La consulta ahora funciona porque 'orderBy' está importado
       const ordersSnapshot = await getDocs(query(collection(db, 'productionOrders'), orderBy('createdAt', 'desc')));
-      const ordersList = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setOrders(ordersList);
+      setOrders(ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
       const productsSnapshot = await getDocs(collection(db, 'products'));
       setProducts(productsSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()})));
+      
+      const recipesSnapshot = await getDocs(collection(db, 'productRecipes'));
+      setRecipes(recipesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+      const itemsSnapshot = await getDocs(collection(db, 'inventoryItems'));
+      setInventoryItems(itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
     } catch (error) {
-      toast.error("Error al cargar datos. Revisa si falta crear un índice en Firestore (ver consola).");
+      toast.error("Error al cargar datos.");
       console.error(error);
     } finally {
       setLoading(false);
@@ -38,16 +54,74 @@ const AdminProductionPage = () => {
   }, [fetchAllData]);
   
   const advanceStatus = async (order) => {
-    const { id, currentStatus, productName, quantity, productionType } = order;
+    const { id, currentStatus, quantity, recipeId, productName, productionType, trackingCode } = order;
     const currentIndex = PRODUCTION_STEPS.indexOf(currentStatus);
     if (currentIndex >= PRODUCTION_STEPS.length - 1) {
       toast.error("El equipo ya está en el último paso.");
       return;
     }
-
     const nextStatus = PRODUCTION_STEPS[currentIndex + 1];
+
+    if (nextStatus === STOCK_CHECK_GATE_STEP) {
+      toast.loading('Verificando stock para iniciar producción...');
+      
+      const recipe = recipes.find(r => r.id === recipeId);
+      if (!recipe) {
+        toast.dismiss();
+        toast.error('No se encontró la receta del equipo para verificar el stock.');
+        return;
+      }
+
+      const stockErrors = [];
+      const componentsToUpdate = [];
+      for (const component of recipe.components) {
+        const item = inventoryItems.find(i => i.id === component.idPieza);
+        const required = component.quantityNeeded * quantity;
+        if (!item || item.stock < required) {
+          stockErrors.push(`"${component.nombrePieza}" (Req: ${required}, Disp: ${item ? item.stock : 0})`);
+        } else {
+          componentsToUpdate.push({ ref: doc(db, 'inventoryItems', item.id), newStock: item.stock - required, ...component, quantityUsed: required });
+        }
+      }
+
+      if (stockErrors.length > 0) {
+        toast.dismiss();
+        toast.error('Stock insuficiente:\n' + stockErrors.join('\n'), { duration: 6000 });
+        return;
+      }
+      
+      toast.dismiss();
+      toast.loading(`Stock OK. Avanzando a "${nextStatus}" y descontando componentes...`);
+
+      try {
+        const batch = writeBatch(db);
+        componentsToUpdate.forEach(comp => {
+          batch.update(comp.ref, { stock: comp.newStock });
+          
+          const movementRef = doc(collection(db, 'movimientosInventario'));
+          batch.set(movementRef, {
+            tipo: 'salida', idPieza: comp.idPieza, nombrePieza: comp.nombrePieza,
+            cantidad: comp.quantityUsed, motivo: `Producción de ${quantity}x "${productName}" (Seguimiento: ${trackingCode})`,
+            fecha: serverTimestamp(),
+          });
+        });
+        const orderRef = doc(db, 'productionOrders', id);
+        batch.update(orderRef, {
+          currentStatus: nextStatus,
+          statusHistory: arrayUnion({ stepName: nextStatus, completed: true, updatedAt: new Date() })
+        });
+        await batch.commit();
+        toast.dismiss();
+        toast.success('Estado actualizado y stock descontado.');
+        fetchAllData();
+      } catch (error) {
+        toast.dismiss();
+        toast.error("Error al descontar stock: " + error.message);
+      }
+      return;
+    }
+
     const isLastStep = currentIndex === PRODUCTION_STEPS.length - 2;
-    
     toast.loading(`Avanzando a "${nextStatus}"...`);
 
     try {
@@ -60,11 +134,10 @@ const AdminProductionPage = () => {
       if (isLastStep) {
         await runTransaction(db, async (transaction) => {
           if (productionType === 'for_stock') {
-            const recipeRef = doc(db, 'productRecipes', productName);
-            const recipeDoc = await transaction.get(recipeRef);
+            const recipeDoc = await transaction.get(doc(db, 'productRecipes', recipeId));
             if (!recipeDoc.exists()) throw new Error("No se encontró la receta.");
             const newFinishedStock = (recipeDoc.data().stockFinished || 0) + quantity;
-            transaction.update(recipeRef, { stockFinished: newFinishedStock });
+            transaction.update(doc(db, 'productRecipes', recipeId), { stockFinished: newFinishedStock });
           } 
           else if (productionType === 'for_delivery') {
             const productInfo = products.find(p => p.name === productName);

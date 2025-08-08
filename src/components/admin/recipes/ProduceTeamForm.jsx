@@ -11,7 +11,10 @@ const generateTrackingCode = () => {
   return `${prefix}${randomNumber}`;
 };
 
-const ProduceTeamForm = ({ recipe, inventoryItems, onProductionDone, onClose }) => {
+// Definimos aquí la PRIMERA etapa del nuevo flujo
+const FIRST_PRODUCTION_STEP = 'Pedido Recibido';
+
+const ProduceTeamForm = ({ recipe, onProductionDone, onClose }) => {
   const [quantity, setQuantity] = useState(1);
   const [linkedEmail, setLinkedEmail] = useState('');
   const [estimatedDelivery, setEstimatedDelivery] = useState('');
@@ -21,95 +24,46 @@ const ProduceTeamForm = ({ recipe, inventoryItems, onProductionDone, onClose }) 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (quantity <= 0) {
-      toast.error("La cantidad a producir debe ser mayor a cero.");
+      toast.error("La cantidad debe ser mayor a cero.");
+      return;
+    }
+    if (productionType === 'for_delivery' && !linkedEmail.trim()) {
+      toast.error("Para producir para entrega, debés vincular un email de cliente.");
       return;
     }
 
     setIsProcessing(true);
-    toast.loading("Verificando stock de componentes...");
-
-    const stockErrors = [];
-    const componentsToUpdate = [];
-
-    for (const component of recipe.components) {
-      const inventoryItem = inventoryItems.find(item => item.id === component.idPieza);
-      const requiredQuantity = component.quantityNeeded * quantity;
-
-      if (!inventoryItem) {
-        stockErrors.push(`El componente "${component.nombrePieza}" no se encontró en el inventario.`);
-        continue;
-      }
-      if (inventoryItem.stock < requiredQuantity) {
-        stockErrors.push(`Stock insuficiente para "${component.nombrePieza}". Se necesitan: ${requiredQuantity}, Hay: ${inventoryItem.stock}.`);
-      }
-      
-      componentsToUpdate.push({
-        ref: doc(db, 'inventoryItems', inventoryItem.id),
-        newStock: inventoryItem.stock - requiredQuantity,
-        ...component,
-        quantityUsed: requiredQuantity
-      });
-    }
-
-    if (stockErrors.length > 0) {
-      toast.dismiss();
-      // ▼▼▼ LÓGICA MODIFICADA ▼▼▼
-      // Creamos un toast de error individual para cada mensaje.
-      stockErrors.forEach(errorMsg => {
-        toast.error(errorMsg, { duration: 6000 });
-      });
-      setIsProcessing(false);
-      return;
-    }
-    
-    toast.dismiss();
-    toast.loading("Registrando producción y actualizando stock...");
+    toast.loading("Registrando nuevo pedido...");
 
     try {
       const batch = writeBatch(db);
       const trackingCode = generateTrackingCode();
-      const creationTime = serverTimestamp();
-
+      const serverTime = serverTimestamp();
+      
       const productionOrderRef = doc(collection(db, 'productionOrders'));
       batch.set(productionOrderRef, {
+        recipeId: recipe.id, // Guardamos la referencia a la receta para el futuro control de stock
         trackingCode: trackingCode,
         productName: recipe.productName,
         productSKU: recipe.productSKU || '',
         quantity: quantity,
-        linkedUserEmail: linkedEmail.trim().toLowerCase() || '',
-        createdAt: creationTime,
-        estimatedDeliveryDate: estimatedDelivery,
+        linkedUserEmail: linkedEmail.trim().toLowerCase() || null,
+        createdAt: serverTime,
+        estimatedDeliveryDate: estimatedDelivery || null,
         productionType: productionType,
-        currentStatus: 'Pendiente',
-        statusHistory: [
-          { stepName: 'Pendiente', completed: true, updatedAt: new Date() }
-        ]
+        currentStatus: FIRST_PRODUCTION_STEP,
+        statusHistory: [{ stepName: FIRST_PRODUCTION_STEP, completed: true, updatedAt: new Date() }]
       });
-
-      for (const compToUpdate of componentsToUpdate) {
-        batch.update(compToUpdate.ref, { stock: compToUpdate.newStock });
-        
-        const movementRef = doc(collection(db, 'movimientosInventario'));
-        batch.set(movementRef, {
-          tipo: 'salida',
-          idPieza: compToUpdate.idPieza,
-          nombrePieza: compToUpdate.nombrePieza,
-          cantidad: compToUpdate.quantityUsed,
-          motivo: `Producción de ${quantity}x "${recipe.productName}" (Seguimiento: ${trackingCode})`,
-          fecha: creationTime,
-        });
-      }
-
-      await batch.commit();
       
+      await batch.commit();
       toast.dismiss();
-      toast.success(`Producción registrada con código: ${trackingCode}`);
+      toast.success(`Pedido creado con código: ${trackingCode}`);
       onProductionDone();
 
     } catch (error) {
       toast.dismiss();
-      toast.error("Error al registrar la producción: " + error.message);
-      console.error(error);
+      toast.error("Error al registrar el pedido: " + error.message);
+      console.error("Error en creación de pedido:", error);
     } finally {
       setIsProcessing(false);
     }
@@ -118,7 +72,7 @@ const ProduceTeamForm = ({ recipe, inventoryItems, onProductionDone, onClose }) 
   return (
     <div className="recipe-form-overlay">
       <div className="produce-form-container">
-        <h3><FaCogs /> Registrar Producción de Equipo</h3>
+        <h3><FaCogs /> Registrar Pedido de Equipo</h3>
         <p className="product-name">Equipo: <strong>{recipe.productName}</strong></p>
         <form onSubmit={handleSubmit} className="production-form">
           <div className="form-group production-type-selector">
@@ -126,7 +80,7 @@ const ProduceTeamForm = ({ recipe, inventoryItems, onProductionDone, onClose }) 
             <label><input type="radio" name="productionType" value="for_delivery" checked={productionType === 'for_delivery'} onChange={(e) => setProductionType(e.target.value)} />Producir para Entrega</label>
           </div>
           <div className="form-group">
-            <label htmlFor="quantity">Cantidad Producida</label>
+            <label htmlFor="quantity">Cantidad a Producir</label>
             <input type="number" id="quantity" min="1" value={quantity} onChange={(e) => setQuantity(parseInt(e.target.value, 10) || 1)} />
           </div>
           <div className="form-group">
@@ -140,7 +94,7 @@ const ProduceTeamForm = ({ recipe, inventoryItems, onProductionDone, onClose }) 
           <div className="form-actions">
             <button type="button" className="action-btn cancel-btn" onClick={onClose}>Cancelar</button>
             <button type="submit" className="action-btn submit-btn" disabled={isProcessing}>
-              {isProcessing ? 'Procesando...' : 'Confirmar Producción'}
+              {isProcessing ? 'Procesando...' : 'Confirmar Pedido'}
             </button>
           </div>
         </form>

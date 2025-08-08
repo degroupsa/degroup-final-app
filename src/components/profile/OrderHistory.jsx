@@ -1,24 +1,29 @@
-// En: src/components/profile/OrderHistory.jsx
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { db } from '../../firebase/config';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import Timeline from '../tracking/Timeline';
-import styles from './OrderHistory.module.css'; // Usaremos CSS Modules para este componente
+import styles from './OrderHistory.module.css';
 
 const PRODUCTION_STEPS = [
-  'Pendiente', 'En Planta', 'Corte y Plegado', 'Soldadura del Equipo', 'Preparación para Pintura', 'Pintura Inicial', 'Pintura Final', 'Control de Calidad Inicial', 'Ensamble del Equipo', 'Control de Calidad Final', 'Preparación para la Entrega', 'Listo para Retirar'
+  'Pedido Recibido',
+  'Ingreso a Planta',
+  'Corte y Plegado',
+  'En Planta',
+  'Soldadura', 
+  'Limpieza', 
+  'Pintado', 
+  'Armado', 
+  'Control de Calidad', 
+  'Finalizado'
 ];
 
-// Renombramos la función a OrderHistory
 function OrderHistory() {
   const { user } = useAuth();
   const [productionOrders, setProductionOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // La lógica para buscar los pedidos es idéntica
     if (user?.email) {
       const fetchProductionOrders = async () => {
         setLoading(true);
@@ -47,7 +52,7 @@ function OrderHistory() {
       {!loading && productionOrders.length === 0 && (
         <div className={styles.noOrdersFound}>
           <h2>No se encontraron pedidos en producción</h2>
-          <p>Actualmente no tienes equipos en fabricación. Cuando realices una compra, podrás ver su estado aquí.</p>
+          <p>Actualmente no tienes equipos en fabricación. Cuando realices un pedido, podrás ver su estado aquí.</p>
         </div>
       )}
 
