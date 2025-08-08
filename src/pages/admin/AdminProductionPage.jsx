@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import styles from './AdminProductionPage.module.css';
 
 const PRODUCTION_STEPS = [
-  'Pendiente', 'En Planta', 'Soldadura', 'Limpieza', 'Pintado', 'Armado', 'Control de Calidad', 'Finalizado'
+  'Pendiente', 'En Planta', 'Corte y Plegado', 'Soldadura del Equipo', 'Preparación para Pintura', 'Pintura Inicial', 'Pintura Final', 'Control de Calidad Inicial', 'Ensamble del Equipo', 'Control de Calidad Final', 'Preparación para la Entrega', 'Listo para Retirar'
 ];
 
 const AdminProductionPage = () => {

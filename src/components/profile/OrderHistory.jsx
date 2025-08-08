@@ -8,7 +8,7 @@ import Timeline from '../tracking/Timeline';
 import styles from './OrderHistory.module.css'; // Usaremos CSS Modules para este componente
 
 const PRODUCTION_STEPS = [
-  'Pendiente', 'En Planta', 'Soldadura', 'Limpieza', 'Pintado', 'Armado', 'Control de Calidad', 'Finalizado'
+  'Pendiente', 'En Planta', 'Corte y Plegado', 'Soldadura del Equipo', 'Preparación para Pintura', 'Pintura Inicial', 'Pintura Final', 'Control de Calidad Inicial', 'Ensamble del Equipo', 'Control de Calidad Final', 'Preparación para la Entrega', 'Listo para Retirar'
 ];
 
 // Renombramos la función a OrderHistory
