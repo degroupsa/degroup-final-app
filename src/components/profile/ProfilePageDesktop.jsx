@@ -6,8 +6,7 @@ import { db, storage } from '../../firebase/config.js';
 import { doc, getDoc, setDoc, collection, query, where, getDocs, orderBy, updateDoc, writeBatch, getCountFromServer, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import toast from 'react-hot-toast';
-import { FaCamera, FaGlobe, FaEdit, FaUserPlus, FaUserCheck, FaPaperPlane, FaEllipsisV, FaUserEdit, FaImage } from 'react-icons/fa';
-
+import { FaCamera, FaGlobe, FaUserPlus, FaUserCheck, FaPaperPlane, FaEllipsisV, FaUserEdit, FaImage } from 'react-icons/fa';
 import ProfileSidebar from './ProfileSidebar';
 import EditProfileModal from './EditProfileModal';
 import PostGrid from '../posts/PostGrid';
@@ -23,7 +22,10 @@ const resizeImage = (file, maxWidth, quality = 0.85) => {
       const img = new Image();
       img.src = event.target.result;
       img.onload = () => {
-        if (img.width <= maxWidth) { resolve(file); return; }
+        if (img.width <= maxWidth) {
+          resolve(file);
+          return;
+        }
         const canvas = document.createElement('canvas');
         const scaleFactor = maxWidth / img.width;
         canvas.width = maxWidth;
@@ -31,8 +33,11 @@ const resizeImage = (file, maxWidth, quality = 0.85) => {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         canvas.toBlob((blob) => {
-          if (blob) { resolve(new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() })); }
-          else { reject(new Error('Error al crear el blob de la imagen.')); }
+          if (blob) {
+            resolve(new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() }));
+          } else {
+            reject(new Error('Error al crear el blob de la imagen.'));
+          }
         }, 'image/jpeg', quality);
       };
       img.onerror = (error) => reject(error);
@@ -48,6 +53,7 @@ function ProfilePageDesktop() {
 
   const [profileUser, setProfileUser] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
+  const [productionOrders, setProductionOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState('posts');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,7 +63,6 @@ function ProfilePageDesktop() {
   const [isFollowLoading, setIsFollowLoading] = useState(false);
   const isOwner = currentUser?.uid === profileUser?.uid;
 
-  // Lógica para el menú desplegable
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const toggleMenu = () => setIsMenuOpen(prev => !prev);
@@ -75,7 +80,10 @@ function ProfilePageDesktop() {
   useEffect(() => {
     if (authLoading) return;
     const profileIdToFetch = paramsUserId || currentUser?.uid;
-    if (!profileIdToFetch) { setLoading(false); return; }
+    if (!profileIdToFetch) {
+      setLoading(false);
+      return;
+    }
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -84,24 +92,30 @@ function ProfilePageDesktop() {
         if (docSnap.exists()) {
           const fetchedUser = { uid: docSnap.id, ...docSnap.data() };
           setProfileUser(fetchedUser);
-          if (activeView === 'posts') {
-            const postsCollection = collection(db, 'posts');
-            const q = query(postsCollection, where('authorId', '==', profileIdToFetch), orderBy('createdAt', 'desc'));
-            const querySnapshot = await getDocs(q);
-            setUserPosts(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+          const postsCollection = collection(db, 'posts');
+          const qPosts = query(postsCollection, where('authorId', '==', profileIdToFetch), orderBy('createdAt', 'desc'));
+          const postsSnapshot = await getDocs(qPosts);
+          setUserPosts(postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+          
+          if (fetchedUser.email && (currentUser?.uid === fetchedUser.uid)) {
+            const qOrders = query(collection(db, 'productionOrders'), where('linkedUserEmail', '==', fetchedUser.email));
+            const ordersSnapshot = await getDocs(qOrders);
+            const ordersData = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            ordersData.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
+            setProductionOrders(ordersData);
           }
-        } else { setProfileUser(null); }
-        if (currentUser) {
-          const followersRef = collection(db, 'users', profileIdToFetch, 'followers');
-          const followingRef = collection(db, 'users', profileIdToFetch, 'following');
-          const followersSnap = await getCountFromServer(followersRef);
-          const followingSnap = await getCountFromServer(followingRef);
-          setFollowCounts({ followers: followersSnap.data().count, following: followingSnap.data().count });
+        } else {
+          setProfileUser(null);
         }
-      } catch (error) { console.error("Error al cargar datos del perfil:", error); } finally { setLoading(false); }
+      } catch (error) {
+        console.error("Error al cargar datos del perfil:", error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
-  }, [paramsUserId, currentUser?.uid, activeView, authLoading]);
+  }, [paramsUserId, currentUser?.uid, authLoading]);
 
   useEffect(() => {
     if (authLoading || !currentUser || !profileUser || isOwner) return;
@@ -132,8 +146,12 @@ function ProfilePageDesktop() {
       await batch.commit();
       setIsFollowing(!isFollowing);
       setFollowCounts(prev => ({ ...prev, followers: isFollowing ? prev.followers - 1 : prev.followers + 1 }));
-      toast.success(isFollowing ? `Dejaste de seguir a ${profileUser.displayName}` : `Ahora sigues a ${profileUser.displayName}`);
-    } catch (error) { console.error("Error al seguir/dejar de seguir:", error); toast.error("Ocurrió un error."); } finally { setIsFollowLoading(false); }
+    } catch (error) {
+      console.error("Error al seguir/dejar de seguir:", error);
+      toast.error("Ocurrió un error.");
+    } finally {
+      setIsFollowLoading(false);
+    }
   };
 
   const handleSendMessage = async () => {
@@ -143,7 +161,10 @@ function ProfilePageDesktop() {
       const chatRef = doc(db, 'chats', chatId);
       await setDoc(chatRef, { participants: [currentUser.uid, profileUser.uid], participantInfo: { [currentUser.uid]: { displayName: currentUser.displayName, profileImageUrl: currentUser.profileImageUrl || '', gender: currentUser.gender || 'female' }, [profileUser.uid]: { displayName: profileUser.displayName, profileImageUrl: profileUser.profileImageUrl || '', gender: profileUser.gender || 'female' } } }, { merge: true });
       navigate(`/mensajes/${chatId}`);
-    } catch (error) { console.error("Error al iniciar la conversación:", error); toast.error("No se pudo iniciar la conversación."); }
+    } catch (error) {
+      console.error("Error al iniciar la conversación:", error);
+      toast.error("No se pudo iniciar la conversación.");
+    }
   };
 
   const handleSaveProfile = async (updatedData) => {
@@ -173,7 +194,12 @@ function ProfilePageDesktop() {
       await updateDoc(userDocRef, { [fieldToUpdate]: photoURL });
       setProfileUser(prev => ({ ...prev, [fieldToUpdate]: photoURL }));
       toast.success('¡Imagen actualizada!', { id: toastId });
-    } catch (error) { console.error("Error al subir la imagen:", error); toast.error('No se pudo subir la imagen.', { id: toastId }); } finally { setUploading(prev => ({ ...prev, [type]: false })); }
+    } catch (error) {
+      console.error("Error al subir la imagen:", error);
+      toast.error('No se pudo subir la imagen.', { id: toastId });
+    } finally {
+      setUploading(prev => ({ ...prev, [type]: false }));
+    }
   };
 
   const getRoleClass = (role) => {
@@ -196,9 +222,8 @@ function ProfilePageDesktop() {
 
   const renderContent = () => {
     switch (activeView) {
-      case 'details': return <ProfileDetails user={profileUser} onEditClick={() => setIsModalOpen(true)} />;
       case 'posts': return <PostGrid posts={userPosts} />;
-      case 'orders': return isOwner ? <OrderHistory /> : null;
+      case 'orders': return isOwner ? <OrderHistory orders={productionOrders} loading={loading} /> : null;
       case 'security': return isOwner ? <SecuritySettings /> : null;
       default: return <PostGrid posts={userPosts} />;
     }
@@ -268,7 +293,10 @@ function ProfilePageDesktop() {
       )}
 
       <div className={styles.profileBody}>
-        <ProfileSidebar activeView={activeView} setActiveView={setActiveView} isOwner={isOwner} />
+        <aside className={styles.leftColumn}>
+          <ProfileSidebar activeView={activeView} setActiveView={setActiveView} isOwner={isOwner} />
+        </aside>
+        
         <main className={styles.contentArea}>
           <div className={styles.bioContainer}>
             {profileUser.bio && <p className={styles.bio}>{profileUser.bio}</p>}
