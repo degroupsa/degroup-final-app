@@ -29,6 +29,7 @@
   background-color: #28a745;
   z-index: 2;
   transition: width 0.4s ease;
+  width: var(--progress-percent); /* Usamos la variable para el ancho */
 }
 
 .timelineItem {
@@ -75,16 +76,11 @@
   margin-top: 0.2rem;
 }
 
-/* --- Estilos por Estado --- */
-.pending {
-  color: #6c757d; /* <-- GRIS MÁS OSCURO PARA EL TEXTO */
-}
-.pending .iconBackground {
-  border: 3px solid #adb5bd; /* <-- BORDE GRIS MÁS VISIBLE */
-}
+.pending { color: #6c757d; }
+.pending .iconBackground { border: 3px solid #adb5bd; }
 
 .completed { color: #28a745; }
-.completed .iconBackground { border: 3px solid #28a745; }
+.completed .iconBackground { border: 3px solid #28a745; color: #28a745; }
 .completed .stepName,
 .completed .stepDate {
   color: #28a745;
@@ -101,17 +97,17 @@
     to { transform: rotate(360deg); }
 }
 
-/* --- DISEÑO ADAPTABLE PARA CELULARES --- */
+/* --- DISEÑO ADAPTABLE PARA CELULARES CORREGIDO --- */
 @media (max-width: 992px) {
   .timeline::before, .progressLine {
-    top: 0;
+    top: 20px;
     left: 21px;
     right: auto;
     width: 4px;
-    height: 100%;
+    height: calc(100% - 40px); /* Ocupa el alto completo menos los radios de los íconos */
   }
   .progressLine {
-    height: 0;
+    height: var(--progress-percent); /* La altura ahora usa la variable de progreso */
   }
   .timeline {
     flex-direction: column;

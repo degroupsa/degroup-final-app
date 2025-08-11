@@ -32,14 +32,15 @@ const getStepIcon = (step) => {
 
 const Timeline = ({ history, currentStatus }) => {
   const currentStepIndex = PRODUCTION_STEPS.indexOf(currentStatus);
+  const progressPercent = (currentStepIndex / (PRODUCTION_STEPS.length - 1)) * 100;
 
   return (
     <div className={styles.timelineContainer}>
-      <div className={styles.timeline}>
-        <div 
-          className={styles.progressLine} 
-          style={{ width: `${(currentStepIndex / (PRODUCTION_STEPS.length - 1)) * 100}%` }}
-        />
+      <div 
+        className={styles.timeline} 
+        style={{ '--progress-percent': `${progressPercent}%` }} // Pasamos el progreso al CSS
+      >
+        <div className={styles.progressLine} />
         {PRODUCTION_STEPS.map((step, index) => {
           const historyEntry = (history || []).find(h => h.stepName === step);
           const isCompleted = !!historyEntry;
