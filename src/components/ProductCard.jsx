@@ -9,39 +9,34 @@ function ProductCard({ product }) {
   const { addItem } = useCart();
   const { user } = useAuth();
 
-  const handleAddItem = (e) => {
+  const handleActionClick = (e) => {
     e.stopPropagation(); 
     e.preventDefault();
     addItem(product, 1);
     
-    if (user) {
+    if (user?.role === 'concesionario') {
       toast.success(`${product.name} fue agregado al carrito!`);
     } else {
       toast.success(`${product.name} fue añadido a tu lista de cotización!`);
     }
   };
 
-  const displayPrice = user && user.role === 'concesionario' && product.priceDealer 
-    ? product.priceDealer 
-    : product.price;
-
-  const isDealerPrice = user && user.role === 'concesionario' && product.priceDealer;
-
-  // Lógica de imagen robusta
+  // Determinamos qué tipo de usuario tenemos
+  const isDealer = user?.role === 'concesionario';
+  const isRegularClient = user && !isDealer;
+  const isGuest = !user;
+  
   const thumbnailUrl = product.imageUrls && product.imageUrls.length > 0
     ? product.imageUrls[0]
-    : null; // <-- CORRECCIÓN 1: Si no hay imagen, el valor es 'null', no ""
+    : null;
 
   return (
     <Link to={`/producto/${product.id}`} className={styles.cardLink}>
       <div className={styles.card}>
         <div className={styles.imageContainer}>
-          {/* CORRECCIÓN 2: Renderizado Condicional */}
           {thumbnailUrl ? (
-            // Si tenemos una URL, mostramos la imagen
             <img src={thumbnailUrl} alt={product.name} />
           ) : (
-            // Si no, mostramos un recuadro de placeholder
             <div className={styles.imagePlaceholder}>
               <span>Sin imagen</span>
             </div>
@@ -53,19 +48,21 @@ function ProductCard({ product }) {
         </div>
         
         <div className={styles.cardActions}>
-          {user ? (
+          {isDealer ? (
+            // --- VISTA PARA CONCESIONARIO ---
             <>
               <div className={styles.priceContainer}>
-                <span className={styles.price}>${new Intl.NumberFormat('es-AR').format(displayPrice)}</span>
-                {isDealerPrice && <span className={styles.dealerLabel}>Precio Concesionario</span>}
+                <span className={styles.price}>${new Intl.NumberFormat('es-AR').format(product.priceDealer)}</span>
+                {product.price && <span className={styles.suggestedPrice}>Sugerido: ${new Intl.NumberFormat('es-AR').format(product.price)}</span>}
               </div>
-              <button onClick={handleAddItem} className={styles.addButton}>
+              <button onClick={handleActionClick} className={styles.addButton}>
                   Agregar al Carrito
               </button>
             </>
           ) : (
-            <button onClick={handleAddItem} className={styles.quoteButton}>
-              Añadir a la Cotización
+            // --- VISTA PARA CLIENTE REGISTRADO O VISITANTE ---
+            <button onClick={handleActionClick} className={styles.quoteButton}>
+              Solicitar Cotización
             </button>
           )}
         </div>

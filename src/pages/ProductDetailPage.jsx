@@ -45,27 +45,24 @@ function ProductDetailPage() {
     setActiveIndex(newIndex);
   };
 
-  const handleAddToCart = (quantity) => {
+  const handleAction = (quantity = 1) => {
     addItem(product, quantity);
-    toast.success(`${product.name} (x${quantity}) fue agregado al carrito!`);
-  };
-
-  // --- 1. Definimos la nueva función para el botón de cotización ---
-  const handleAddToQuote = () => {
-    if (!product) return;
-    addItem(product, 1); // Reutilizamos la función del contexto para añadir 1 unidad
-    toast.success(`${product.name} fue añadido a la cotización!`);
+    if (user?.role === 'concesionario') {
+      toast.success(`${product.name} (x${quantity}) fue agregado al carrito!`);
+    } else {
+      toast.success(`${product.name} fue añadido a la cotización!`);
+    }
   };
   
   if (loading) return <p style={{textAlign: 'center', padding: '4rem'}}>Cargando producto...</p>;
   if (!product) return <h2 style={{textAlign: 'center', padding: '4rem'}}>Producto no encontrado</h2>;
 
-  const displayPrice = user && user.role === 'concesionario' && product.priceDealer ? product.priceDealer : product.price;
+  const isDealer = user?.role === 'concesionario';
   
   return (
     <div className={styles.detailContainer}>
       <div className={styles.imageColumn}>
-        {product.imageUrls && product.imageUrls.length > 0 && (
+        {product.imageUrls && product.imageUrls.length > 0 ? (
           <>
             <img src={product.imageUrls[activeIndex]} alt={product.name} className={styles.mainImage} />
             
@@ -88,6 +85,8 @@ function ProductDetailPage() {
               ))}
             </div>
           </>
+        ) : (
+          <div className={styles.imagePlaceholder}><span>Sin imagen</span></div>
         )}
       </div>
       <div className={styles.infoColumn}>
@@ -95,18 +94,27 @@ function ProductDetailPage() {
         <h1>{product.name}</h1>
         <p className={styles.description}>{product.description}</p>
 
-        {user ? (
+        {isDealer ? (
+          // --- VISTA PARA CONCESIONARIO ---
           <>
-            <div className={styles.price}>
-              ${new Intl.NumberFormat('es-AR').format(displayPrice)}
+            <div className={styles.priceDisplay}>
+              <div className={styles.mainPrice}>
+                ${new Intl.NumberFormat('es-AR').format(product.priceDealer)}
+                <span className={styles.priceLabel}>Precio Concesionario</span>
+              </div>
+              {product.price && (
+                <div className={styles.suggestedPrice}>
+                  Sugerido: ${new Intl.NumberFormat('es-AR').format(product.price)}
+                </div>
+              )}
             </div>
-            <ItemCount onAdd={handleAddToCart} />
+            <ItemCount onAdd={handleAction} />
           </>
         ) : (
+          // --- VISTA PARA CLIENTE REGISTRADO O VISITANTE ---
           <div className={styles.quoteButtonContainer}>
-            {/* --- 2. Conectamos la nueva función al onClick del botón --- */}
-            <button className={styles.quoteButton} onClick={handleAddToQuote}>
-              Añadir a la Cotización
+            <button className={styles.quoteButton} onClick={() => handleAction(1)}>
+              Solicitar Cotización
             </button>
           </div>
         )}
