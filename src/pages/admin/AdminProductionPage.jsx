@@ -4,12 +4,11 @@ import { collection, getDocs, doc, updateDoc, deleteDoc, arrayUnion, runTransact
 import toast from 'react-hot-toast';
 import styles from './AdminProductionPage.module.css';
 
-// --- LISTA DE ETAPAS OFICIAL Y UNIFICADA ---
 const PRODUCTION_STEPS = [
-  'Pendiente', 'En Planta', 'Corte y Plegado', 'Proceso de Soldadura', 
-  'Proceso de limpieza', 'Pintura Inicial', 'Pintura Final', 
+  'Pendiente', 'En Planta', 'Corte y Plegado', 'Soldadura del Equipo', 
+  'Preparación para Pintura', 'Pintura Inicial', 'Pintura Final', 
   'Control de Calidad Inicial', 'Ensamble del Equipo', 'Control de Calidad Final', 
-  'Embalaje del Equipo', 'Listo para Retirar'
+  'Preparación para la Entrega', 'Listo para Retirar'
 ];
 
 const AdminProductionPage = () => {
@@ -147,6 +146,35 @@ const AdminProductionPage = () => {
       console.error(error);
     }
   };
+
+  const forceAdvanceStatus = async (order) => {
+    const { id, currentStatus } = order;
+    const currentIndex = PRODUCTION_STEPS.indexOf(currentStatus);
+    if (currentIndex >= PRODUCTION_STEPS.length - 1) {
+      toast.error("El equipo ya está en el último paso.");
+      return;
+    }
+    const nextStatus = PRODUCTION_STEPS[currentIndex + 1];
+    
+    if (!window.confirm(`¿Estás seguro de forzar el avance a "${nextStatus}" sin verificar stock?`)) return;
+
+    toast.loading(`Forzando avance a "${nextStatus}"...`);
+
+    try {
+      const orderRef = doc(db, 'productionOrders', id);
+      await updateDoc(orderRef, {
+        currentStatus: nextStatus,
+        statusHistory: arrayUnion({ stepName: nextStatus, completed: true, updatedAt: new Date() })
+      });
+      toast.dismiss();
+      toast.success("¡Estado forzado con éxito!");
+      fetchAllData();
+    } catch (error) {
+      toast.dismiss();
+      toast.error("Error al forzar el avance: " + error.message);
+      console.error(error);
+    }
+  };
   
   const handleDeleteOrder = async (orderId, trackingCode) => {
     if (!window.confirm(`¿Estás seguro de que quieres eliminar el pedido ${trackingCode}?\nEsta acción es permanente.`)) return;
@@ -214,6 +242,14 @@ const AdminProductionPage = () => {
               <div className={styles.nextStepInfo}>
                   Próximo paso: <strong>{getNextStep(order.currentStatus)}</strong>
               </div>
+              <button 
+                className={styles.forceAdvanceBtn} 
+                onClick={() => forceAdvanceStatus(order)}
+                disabled={order.currentStatus === 'Listo para Retirar'}
+                title="Avanzar sin verificar ni descontar stock"
+              >
+                Forzar Avance
+              </button>
               <button 
                 className={styles.advanceBtn} 
                 onClick={() => advanceStatus(order)}
