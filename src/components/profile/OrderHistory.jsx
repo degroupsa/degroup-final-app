@@ -65,7 +65,7 @@ function OrderHistory() {
       setLoading(false);
     }
   }, [user]);
-  
+
   if (loading) {
     return <p>Buscando tus pedidos...</p>;
   }

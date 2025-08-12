@@ -6,18 +6,25 @@ import {
 } from 'react-icons/fa';
 import styles from './Timeline.module.css';
 
+// --- LISTA DE ETAPAS OFICIAL Y UNIFICADA ---
 const PRODUCTION_STEPS = [
-  'Pendiente', 'En Planta', 'Corte y Plegado', 'Soldadura del Equipo', 
-  'Preparación para Pintura', 'Pintura Inicial', 'Pintura Final', 
-  'Control de Calidad Inicial', 'Ensamble del Equipo', 'Control de Calidad Final', 
-  'Preparación para la Entrega', 'Listo para Retirar'
+  'Pedido Recibido',
+  'Ingreso a Planta',
+  'Corte y Plegado',
+  'En Planta',
+  'Soldadura del Equipo', 
+  'Limpieza', 
+  'Pintado', 
+  'Armado', 
+  'Control de Calidad', 
+  'Finalizado'
 ];
 
 const iconMap = {
-  'pendiente': <FaClipboardCheck />, 'planta': <FaIndustry />, 'corte': <FaWrench />,
-  'soldadura': <FaWrench />, 'preparación para pintura': <FaBroom />, 'pintura inicial': <FaPaintBrush />,
-  'pintura final': <FaPaintBrush />, 'calidad inicial': <FaSearch />, 'ensamble': <FaTools />,
-  'calidad final': <FaSearch />, 'preparación para la entrega': <FaShippingFast />, 'listo para retirar': <FaFlagCheckered />,
+  'recibido': <FaClipboardCheck />, 'planta': <FaIndustry />, 'corte': <FaWrench />,
+  'soldadura': <FaWrench />, 'limpieza': <FaBroom />,
+  'pintado': <FaPaintBrush />, 'armado': <FaTools />, 'calidad': <FaSearch />,
+  'finalizado': <FaFlagCheckered />, 'entrega': <FaShippingFast />,
 };
 
 const getStepIcon = (step) => {
@@ -30,18 +37,19 @@ const getStepIcon = (step) => {
   return <FaRegCircle />;
 };
 
-const Timeline = ({ history, currentStatus }) => {
-  const currentStepIndex = PRODUCTION_STEPS.indexOf(currentStatus);
-  const progressPercent = (currentStepIndex / (PRODUCTION_STEPS.length - 1)) * 100;
+const Timeline = ({ history, currentStatus, productionSteps }) => {
+  const stepsToUse = productionSteps || PRODUCTION_STEPS;
+  const currentStepIndex = stepsToUse.indexOf(currentStatus);
+  const progressPercent = (currentStepIndex / (stepsToUse.length - 1)) * 100;
 
   return (
     <div className={styles.timelineContainer}>
       <div 
-        className={styles.timeline} 
-        style={{ '--progress-percent': `${progressPercent}%` }} // Pasamos el progreso al CSS
+        className={styles.timeline}
+        style={{ '--progress-percent': `${progressPercent}%` }}
       >
         <div className={styles.progressLine} />
-        {PRODUCTION_STEPS.map((step, index) => {
+        {stepsToUse.map((step, index) => {
           const historyEntry = (history || []).find(h => h.stepName === step);
           const isCompleted = !!historyEntry;
           const isCurrent = (step === currentStatus);
@@ -53,7 +61,7 @@ const Timeline = ({ history, currentStatus }) => {
             <div key={index} className={`${styles.timelineItem} ${statusClass}`}>
               <div className={styles.iconContainer}>
                 <div className={styles.iconBackground}>
-                  {isCurrent ? <FaSpinner /> : (isCompleted ? <FaCheckCircle /> : stepIcon)}
+                  {isCurrent ? <FaSpinner className={styles.spinnerIcon} /> : (isCompleted ? <FaCheckCircle /> : stepIcon)}
                 </div>
               </div>
               <div className={styles.contentContainer}>

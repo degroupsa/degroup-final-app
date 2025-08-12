@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../../firebase/config.js';
-// ▼▼▼ IMPORTAMOS serverTimestamp AQUÍ ▼▼▼
 import { collection, getDocs, doc, updateDoc, deleteDoc, arrayUnion, runTransaction, Timestamp, query, orderBy, writeBatch, serverTimestamp } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import styles from './AdminProductionPage.module.css';
 
+// --- LISTA DE ETAPAS OFICIAL Y UNIFICADA ---
 const PRODUCTION_STEPS = [
   'Pedido Recibido',
   'Ingreso a Planta',
