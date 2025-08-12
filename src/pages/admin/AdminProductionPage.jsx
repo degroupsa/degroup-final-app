@@ -6,18 +6,11 @@ import styles from './AdminProductionPage.module.css';
 
 // --- LISTA DE ETAPAS OFICIAL Y UNIFICADA ---
 const PRODUCTION_STEPS = [
-  'Pedido Recibido',
-  'Ingreso a Planta',
-  'Corte y Plegado',
-  'En Planta', // Etapa "puerta" para el control de stock
-  'Soldadura', 
-  'Limpieza', 
-  'Pintado', 
-  'Armado', 
-  'Control de Calidad', 
-  'Finalizado'
+  'Pendiente', 'En Planta', 'Corte y Plegado', 'Proceso de Soldadura', 
+  'Proceso de limpieza', 'Pintura Inicial', 'Pintura Final', 
+  'Control de Calidad Inicial', 'Ensamble del Equipo', 'Control de Calidad Final', 
+  'Embalaje del Equipo', 'Listo para Retirar'
 ];
-const STOCK_CHECK_GATE_STEP = 'En Planta';
 
 const AdminProductionPage = () => {
   const [orders, setOrders] = useState([]);
@@ -31,18 +24,14 @@ const AdminProductionPage = () => {
     try {
       const ordersSnapshot = await getDocs(query(collection(db, 'productionOrders'), orderBy('createdAt', 'desc')));
       setOrders(ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-
       const productsSnapshot = await getDocs(collection(db, 'products'));
       setProducts(productsSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()})));
-      
       const recipesSnapshot = await getDocs(collection(db, 'productRecipes'));
       setRecipes(recipesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-
       const itemsSnapshot = await getDocs(collection(db, 'inventoryItems'));
       setInventoryItems(itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-
     } catch (error) {
-      toast.error("Error al cargar datos.");
+      toast.error("Error al cargar datos. Revisa si falta crear un índice en Firestore (ver consola).");
       console.error(error);
     } finally {
       setLoading(false);
@@ -61,17 +50,16 @@ const AdminProductionPage = () => {
       return;
     }
     const nextStatus = PRODUCTION_STEPS[currentIndex + 1];
+    const STOCK_CHECK_GATE_STEP = 'En Planta';
 
     if (nextStatus === STOCK_CHECK_GATE_STEP) {
       toast.loading('Verificando stock para iniciar producción...');
-      
       const recipe = recipes.find(r => r.id === recipeId);
       if (!recipe) {
         toast.dismiss();
         toast.error('No se encontró la receta del equipo para verificar el stock.');
         return;
       }
-
       const stockErrors = [];
       const componentsToUpdate = [];
       for (const component of recipe.components) {
@@ -83,21 +71,17 @@ const AdminProductionPage = () => {
           componentsToUpdate.push({ ref: doc(db, 'inventoryItems', item.id), newStock: item.stock - required, ...component, quantityUsed: required });
         }
       }
-
       if (stockErrors.length > 0) {
         toast.dismiss();
         toast.error('Stock insuficiente:\n' + stockErrors.join('\n'), { duration: 6000 });
         return;
       }
-      
       toast.dismiss();
       toast.loading(`Stock OK. Avanzando a "${nextStatus}" y descontando componentes...`);
-
       try {
         const batch = writeBatch(db);
         componentsToUpdate.forEach(comp => {
           batch.update(comp.ref, { stock: comp.newStock });
-          
           const movementRef = doc(collection(db, 'movimientosInventario'));
           batch.set(movementRef, {
             tipo: 'salida', idPieza: comp.idPieza, nombrePieza: comp.nombrePieza,
@@ -120,17 +104,15 @@ const AdminProductionPage = () => {
       }
       return;
     }
-
+    
     const isLastStep = currentIndex === PRODUCTION_STEPS.length - 2;
     toast.loading(`Avanzando a "${nextStatus}"...`);
-
     try {
       const orderRef = doc(db, 'productionOrders', id);
       const updateData = {
         currentStatus: nextStatus,
         statusHistory: arrayUnion({ stepName: nextStatus, completed: true, updatedAt: new Date() })
       };
-
       if (isLastStep) {
         await runTransaction(db, async (transaction) => {
           if (productionType === 'for_stock') {
@@ -142,7 +124,6 @@ const AdminProductionPage = () => {
           else if (productionType === 'for_delivery') {
             const productInfo = products.find(p => p.name === productName);
             if (!productInfo) throw new Error("No se encontró el producto para registrar el ingreso.");
-            
             const incomeRecordRef = doc(collection(db, 'registrosFinancieros'));
             const incomeAmount = (productInfo.price || 0) * quantity;
             transaction.set(incomeRecordRef, {
@@ -236,7 +217,7 @@ const AdminProductionPage = () => {
               <button 
                 className={styles.advanceBtn} 
                 onClick={() => advanceStatus(order)}
-                disabled={order.currentStatus === 'Finalizado'}
+                disabled={order.currentStatus === 'Listo para Retirar'}
               >
                 Avanzar
               </button>

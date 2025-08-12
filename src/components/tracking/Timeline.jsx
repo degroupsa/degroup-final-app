@@ -2,29 +2,30 @@ import React from 'react';
 import { 
   FaCheckCircle, FaRegCircle, FaSpinner,
   FaClipboardCheck, FaIndustry, FaWrench, FaBroom,
-  FaPaintBrush, FaTools, FaSearch, FaShippingFast, FaFlagCheckered
+  FaPaintBrush, FaTools, FaSearch, FaShippingFast, FaFlagCheckered,
+  FaFire, FaShower, FaBox, FaSprayCan // <-- ÍCONO AÑADIDO
 } from 'react-icons/fa';
 import styles from './Timeline.module.css';
 
-// --- LISTA DE ETAPAS OFICIAL Y UNIFICADA ---
 const PRODUCTION_STEPS = [
-  'Pedido Recibido',
-  'Ingreso a Planta',
-  'Corte y Plegado',
-  'En Planta',
-  'Soldadura del Equipo', 
-  'Limpieza', 
-  'Pintado', 
-  'Armado', 
-  'Control de Calidad', 
-  'Finalizado'
+  'Pendiente', 'En Planta', 'Corte y Plegado', 'Proceso de Soldadura', 
+  'Proceso de Limpieza', 'Pintura Inicial', 'Pintura Final', 
+  'Control de Calidad Inicial', 'Ensamble del Equipo', 'Control de Calidad Final', 
+  'Embalaje del Equipo', 'Listo para Retirar'
 ];
 
 const iconMap = {
-  'recibido': <FaClipboardCheck />, 'planta': <FaIndustry />, 'corte': <FaWrench />,
-  'soldadura': <FaWrench />, 'limpieza': <FaBroom />,
-  'pintado': <FaPaintBrush />, 'armado': <FaTools />, 'calidad': <FaSearch />,
-  'finalizado': <FaFlagCheckered />, 'entrega': <FaShippingFast />,
+  'pendiente': <FaClipboardCheck />,
+  'planta': <FaIndustry />,
+  'corte': <FaWrench />,
+  'soldadura': <FaFire />,
+  'limpieza': <FaSprayCan />, // <-- ICONO CAMBIADO
+  'pintura': <FaPaintBrush />,
+  'calidad': <FaSearch />,
+  'ensamble': <FaTools />,
+  'embalaje': <FaBox />,
+  'entrega': <FaShippingFast />,
+  'retirar': <FaFlagCheckered />,
 };
 
 const getStepIcon = (step) => {

@@ -4,40 +4,14 @@ import { db } from '../../firebase/config';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import Timeline from '../tracking/Timeline';
 import styles from './OrderHistory.module.css';
-import { FaBox, FaCogs, FaShippingFast } from 'react-icons/fa';
 
-const OrderSummary = ({ orders }) => {
-  const inProductionCount = (orders || []).filter(o => o.currentStatus !== 'Finalizado' && o.currentStatus !== 'Listo para Retirar').length;
-  const readyCount = (orders || []).filter(o => o.currentStatus === 'Listo para Retirar').length;
-  const totalOrders = orders ? orders.length : 0;
-
-  return (
-    <div className={styles.summaryCard}>
-      <h4>Resumen de Pedidos</h4>
-      <div className={styles.summaryItem}>
-        <FaBox />
-        <div>
-          <span>Total de Pedidos</span>
-          <strong>{totalOrders}</strong>
-        </div>
-      </div>
-      <div className={styles.summaryItem}>
-        <FaCogs />
-        <div>
-          <span>Equipos en Producción</span>
-          <strong>{inProductionCount}</strong>
-        </div>
-      </div>
-      <div className={styles.summaryItem}>
-        <FaShippingFast />
-        <div>
-          <span>Listos para Retirar</span>
-          <strong>{readyCount}</strong>
-        </div>
-      </div>
-    </div>
-  );
-};
+// --- LISTA DE ETAPAS OFICIAL Y UNIFICADA ---
+const PRODUCTION_STEPS = [
+  'Pendiente', 'En Planta', 'Corte y Plegado', 'Proceso de Soldadura', 
+  'Proceso de limpieza', 'Pintura Inicial', 'Pintura Final', 
+  'Control de Calidad Inicial', 'Ensamble del Equipo', 'Control de Calidad Final', 
+  'Embalaje del Equipo', 'Listo para Retirar'
+];
 
 function OrderHistory() {
   const { user } = useAuth();
@@ -66,43 +40,41 @@ function OrderHistory() {
     }
   }, [user]);
 
-  if (loading) {
-    return <p>Buscando tus pedidos...</p>;
-  }
-
   return (
     <div className={styles.orderHistoryContainer}>
-      {productionOrders.length > 0 ? (
-        <>
-          <OrderSummary orders={productionOrders} />
-          <div className={styles.ordersList}>
-            {productionOrders.map(order => (
-              <div key={order.id} className={styles.productionCard}>
-                <div className={styles.productionCardHeader}>
-                  <h3>{order.productName} (x{order.quantity})</h3>
-                  <span className={styles.trackingCode}>Seguimiento: {order.trackingCode}</span>
-                </div>
-                <div className={styles.productionCardBody}>
-                  <div className={styles.infoSection}>
-                      <p><strong>Fecha de Pedido:</strong> {order.createdAt?.toDate().toLocaleDateString('es-AR')}</p>
-                      <p><strong>Entrega Estimada:</strong> {order.estimatedDeliveryDate ? new Date(order.estimatedDeliveryDate).toLocaleDateString('es-AR', { timeZone: 'UTC' }) : 'No definida'}</p>
-                  </div>
-                  <div className={styles.timelineSection}>
-                      <h4>Línea de Producción</h4>
-                      <Timeline 
-                          history={order.statusHistory || []} 
-                          currentStatus={order.currentStatus}
-                      />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
-      ) : (
+      {loading && <p>Buscando tus pedidos...</p>}
+      
+      {!loading && productionOrders.length === 0 && (
         <div className={styles.noOrdersFound}>
           <h2>No se encontraron pedidos en producción</h2>
-          <p>Actualmente no tienes equipos en fabricación.</p>
+          <p>Actualmente no tienes equipos en fabricación. Cuando realices una compra, podrás ver su estado aquí.</p>
+        </div>
+      )}
+
+      {!loading && productionOrders.length > 0 && (
+        <div className={styles.ordersList}>
+          {productionOrders.map(order => (
+            <div key={order.id} className={styles.productionCard}>
+              <div className={styles.productionCardHeader}>
+                <h3>{order.productName} (x{order.quantity})</h3>
+                <span className={styles.trackingCode}>Seguimiento: {order.trackingCode}</span>
+              </div>
+              <div className={styles.productionCardBody}>
+                <div className={styles.infoSection}>
+                    <p><strong>Fecha de Pedido:</strong> {order.createdAt.toDate().toLocaleDateString('es-AR')}</p>
+                    <p><strong>Entrega Estimada:</strong> {order.estimatedDeliveryDate ? new Date(order.estimatedDeliveryDate).toLocaleDateString('es-AR', { timeZone: 'UTC' }) : 'No definida'}</p>
+                </div>
+                <div className={styles.timelineSection}>
+                    <h4>Línea de Producción</h4>
+                    <Timeline 
+                        history={order.statusHistory} 
+                        currentStatus={order.currentStatus} 
+                        productionSteps={PRODUCTION_STEPS} 
+                    />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
