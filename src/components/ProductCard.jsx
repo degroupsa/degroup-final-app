@@ -5,6 +5,23 @@ import { useCart } from '../context/CartContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import toast from 'react-hot-toast';
 
+// --- FUNCIÓN CLAVE PARA LIMPIAR Y ACORTAR LA DESCRIPCIÓN ---
+const createShortDescription = (html, maxLength = 100) => {
+  if (!html) return '';
+
+  // 1. Crea un elemento temporal para quitar las etiquetas HTML
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+  const plainText = tempDiv.textContent || tempDiv.innerText || '';
+
+  // 2. Acorta el texto si es demasiado largo
+  if (plainText.length <= maxLength) {
+    return plainText;
+  }
+  return plainText.substr(0, maxLength) + '...';
+};
+
+
 function ProductCard({ product }) {
   const { addItem } = useCart();
   const { user } = useAuth();
@@ -23,12 +40,13 @@ function ProductCard({ product }) {
 
   // Determinamos qué tipo de usuario tenemos
   const isDealer = user?.role === 'concesionario';
-  const isRegularClient = user && !isDealer;
-  const isGuest = !user;
   
   const thumbnailUrl = product.imageUrls && product.imageUrls.length > 0
     ? product.imageUrls[0]
     : null;
+
+  // Generamos la descripción corta y limpia
+  const shortDescription = createShortDescription(product.description);
 
   return (
     <Link to={`/producto/${product.id}`} className={styles.cardLink}>
@@ -44,7 +62,8 @@ function ProductCard({ product }) {
         </div>
         <div className={styles.cardContent}>
           <h3>{product.name}</h3>
-          <p>{product.description}</p>
+          {/* AQUÍ USAMOS LA DESCRIPCIÓN CORTA Y LIMPIA */}
+          <p>{shortDescription}</p>
         </div>
         
         <div className={styles.cardActions}>

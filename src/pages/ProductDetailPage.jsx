@@ -1,3 +1,5 @@
+// src/pages/ProductDetailPage.jsx
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { db } from '../firebase/config.js';
@@ -92,7 +94,12 @@ function ProductDetailPage() {
       <div className={styles.infoColumn}>
         <span className={styles.categoryLabel}>{product.category}</span>
         <h1>{product.name}</h1>
-        <p className={styles.description}>{product.description}</p>
+        
+        {/* --- CORRECCIÓN PARA MOSTRAR HTML --- */}
+        <div 
+          className={styles.description} 
+          dangerouslySetInnerHTML={{ __html: product.description }} 
+        />
 
         {isDealer ? (
           // --- VISTA PARA CONCESIONARIO ---

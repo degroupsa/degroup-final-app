@@ -5,7 +5,6 @@ import { db } from '../../firebase/config.js';
 import { collection, getDocs, doc, updateDoc, deleteDoc, arrayUnion, runTransaction, Timestamp, query, orderBy, writeBatch, serverTimestamp } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import styles from './AdminProductionPage.module.css';
-// --- CORRECCIÓN DE RUTA ---
 import ItemDetailsModal from '../../components/admin/inventory/ItemDetailsModal.jsx'; 
 import { FaInfoCircle } from 'react-icons/fa';
 
@@ -208,7 +207,6 @@ const AdminProductionPage = () => {
 
   return (
     <div className="admin-page-content">
-      {/* Renderizamos el modal aquí */}
       <ItemDetailsModal item={selectedItemDetails} onClose={() => setSelectedItemDetails(null)} />
 
       <div className={styles.pageHeader}>
@@ -239,7 +237,6 @@ const AdminProductionPage = () => {
                 <p><strong>Entrega Estimada:</strong> {order.estimatedDeliveryDate ? new Date(order.estimatedDeliveryDate).toLocaleDateString('es-AR', { timeZone: 'UTC' }) : 'No definida'}</p>
                 <p><strong>Estado Actual:</strong> <span className={styles.statusBadge}>{order.currentStatus}</span></p>
                 
-                {/* --- NUEVA SECCIÓN DE MATERIALES --- */}
                 {recipe && (
                   <div>
                     <h5 style={{marginTop: '1rem', marginBottom: '0.5rem'}}>Materiales:</h5>

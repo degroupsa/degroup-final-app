@@ -272,3 +272,36 @@
   align-items: center;
   font-weight: bold;
 }
+/* Pega esto al final de tu archivo ProductManager.module.css */
+
+.editorWrapper {
+  /* Ocupa todo el ancho en la grilla del formulario */
+  grid-column: 1 / -1; 
+}
+
+.editorWrapper label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Contenedor para el editor en el panel de admin */
+.description-editor-container {
+  background-color: #fff;
+  color: #000;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* Ajustes para la barra de herramientas y el área de texto */
+.description-editor-container .ql-toolbar {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+.description-editor-container .ql-container {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  min-height: 250px; /* Dale una altura mínima para que sea cómodo escribir */
+  font-size: 1rem;
+}

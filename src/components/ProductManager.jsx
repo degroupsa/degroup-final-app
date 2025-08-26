@@ -1,3 +1,5 @@
+// src/components/ProductManager.jsx
+
 import React, { useState, useEffect } from 'react';
 import { db, storage } from '../firebase/config.js';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc } from 'firebase/firestore';
@@ -5,6 +7,8 @@ import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebas
 import styles from './ProductManager.module.css';
 import { FaTrash } from 'react-icons/fa';
 import toast from 'react-hot-toast';
+// --- RUTA CORREGIDA ---
+import DescriptionEditor from './admin/DescriptionEditor'; 
 
 const ProgressBar = ({ progress }) => (
   <div className={styles.progressBarContainer}>
@@ -21,10 +25,10 @@ function ProductManager() {
   
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
     price: '',
     category: '',
   });
+  const [description, setDescription] = useState('');
 
   const [existingImages, setExistingImages] = useState([]);
   const [uploadQueue, setUploadQueue] = useState([]); 
@@ -74,7 +78,8 @@ function ProductManager() {
   };
   
   const resetForm = () => {
-    setFormData({ name: '', description: '', price: '', category: '' });
+    setFormData({ name: '', price: '', category: '' });
+    setDescription('');
     setIsEditing(false);
     setCurrentProductId(null);
     setExistingImages([]);
@@ -135,7 +140,7 @@ function ProductManager() {
       const newImageUrls = await Promise.all(uploadPromises);
       finalImageUrls.push(...newImageUrls);
       
-      const productData = { ...formData, price: Number(formData.price), imageUrls: finalImageUrls };
+      const productData = { ...formData, price: Number(formData.price), description: description, imageUrls: finalImageUrls };
 
       if (isEditing) {
         const productDoc = doc(db, 'products', currentProductId);
@@ -160,10 +165,10 @@ function ProductManager() {
     setCurrentProductId(product.id);
     setFormData({
       name: product.name || '',
-      description: product.description || '',
       price: product.price || '',
       category: product.category || '',
     });
+    setDescription(product.description || ''); 
     setExistingImages(product.imageUrls || []);
     setUploadQueue([]);
   };
@@ -203,7 +208,14 @@ function ProductManager() {
             <input name="name" value={formData.name} onChange={handleInputChange} placeholder="Nombre del Producto" required />
             <input name="category" value={formData.category} onChange={handleInputChange} placeholder="Categoría" required />
             <input name="price" value={formData.price} onChange={handleInputChange} placeholder="Precio" type="number" required />
-            <textarea name="description" value={formData.description} onChange={handleInputChange} placeholder="Descripción" required rows="3" />
+            
+            <div className={styles.editorWrapper}>
+                <label>Descripción de Producto</label>
+                <DescriptionEditor 
+                    value={description}
+                    onChange={setDescription}
+                />
+            </div>
           </div>
 
           <div className={styles.imageManagerSection}>
