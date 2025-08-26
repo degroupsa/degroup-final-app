@@ -1,6 +1,8 @@
+// src/pages/admin/AdminInventoryPage.jsx
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../../firebase/config.js';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, writeBatch } from 'firebase/firestore';
 import KPIWidgets from '../../components/admin/inventory/KPIWidgets.jsx';
 import CategoryStockChart from '../../components/admin/inventory/CategoryStockChart.jsx';
 import ItemsListTable from '../../components/admin/inventory/ItemsListTable.jsx';
@@ -11,8 +13,10 @@ import FinishedGoodsChart from '../../components/admin/inventory/FinishedGoodsCh
 import FinishedGoodsTable from '../../components/admin/inventory/FinishedGoodsTable.jsx';
 import IndividualStockChart from '../../components/admin/inventory/IndividualStockChart.jsx';
 import InventoryAdjustmentForm from '../../components/admin/inventory/InventoryAdjustmentForm.jsx';
-import './AdminInventoryPage.css';
-import { FaPlusCircle, FaMinusCircle, FaExchangeAlt } from 'react-icons/fa';
+import ConfirmationModal from '../../components/admin/inventory/ConfirmationModal.jsx'; // <-- NUEVA IMPORTACIÓN
+import styles from './AdminInventoryPage.module.css'; 
+import { FaPlusCircle, FaMinusCircle, FaExchangeAlt, FaTrashAlt } from 'react-icons/fa'; // <-- NUEVO ÍCONO
+import { toast } from 'react-hot-toast';
 
 const AdminInventoryPage = () => {
   const [inventoryItems, setInventoryItems] = useState([]);
@@ -24,6 +28,7 @@ const AdminInventoryPage = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEgressForm, setShowEgressForm] = useState(false);
   const [showAdjustmentForm, setShowAdjustmentForm] = useState(false);
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false); // <-- NUEVO ESTADO PARA EL MODAL
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -53,6 +58,34 @@ const AdminInventoryPage = () => {
     fetchData();
   }, [fetchData]);
 
+  // --- NUEVA FUNCIÓN PARA REINICIAR EL INVENTARIO ---
+  const handleResetInventory = async () => {
+    toast.loading('Reiniciando inventario...');
+    try {
+      const itemsRef = collection(db, 'inventoryItems');
+      const movementsRef = collection(db, 'movimientosInventario');
+
+      const itemsSnapshot = await getDocs(itemsRef);
+      const movementsSnapshot = await getDocs(movementsRef);
+
+      const batch = writeBatch(db);
+
+      itemsSnapshot.forEach(doc => batch.delete(doc.ref));
+      movementsSnapshot.forEach(doc => batch.delete(doc.ref));
+
+      await batch.commit();
+
+      toast.dismiss();
+      toast.success('¡Inventario reiniciado con éxito!');
+      setIsResetModalOpen(false);
+      fetchData(); // Refrescamos los datos para ver todo vacío
+    } catch (err) {
+      toast.dismiss();
+      toast.error('No se pudo reiniciar el inventario.');
+      console.error("Error al reiniciar inventario:", err);
+    }
+  };
+
   const handleAdjustmentDone = () => {
     setShowAdjustmentForm(false);
     fetchData();
@@ -73,6 +106,17 @@ const AdminInventoryPage = () => {
 
   return (
     <div className="admin-page-content">
+      {/* --- RENDERIZADO DEL MODAL --- */}
+      <ConfirmationModal
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        onConfirm={handleResetInventory}
+        title="¿Estás seguro?"
+      >
+        <p>Esta acción eliminará <strong>TODOS</strong> los ítems y movimientos del inventario de forma permanente.</p>
+        <p><strong>Esta acción no se puede deshacer.</strong></p>
+      </ConfirmationModal>
+
       {showAdjustmentForm && (
         <InventoryAdjustmentForm 
           inventoryItems={inventoryItems}
@@ -81,21 +125,19 @@ const AdminInventoryPage = () => {
         />
       )}
 
-      <div className="page-header">
+      <div className={styles['page-header']}>
         <h1 className="admin-page-title">Gestión de Inventario</h1>
-        <div className="header-buttons">
-            <button className="action-button adjustment" onClick={() => {
-              // ▼▼▼ LÍNEA AÑADIDA PARA LA PRUEBA ▼▼▼
-              console.log('Abriendo formulario de reajuste. Ítems de inventario disponibles:', inventoryItems);
-              closeAllForms(); 
-              setShowAdjustmentForm(true); 
-            }}>
+        <div className={styles['header-buttons']}>
+            <button className={`${styles['action-button']} ${styles.reset}`} onClick={() => setIsResetModalOpen(true)}>
+              <FaTrashAlt /> Reiniciar Inventario
+            </button>
+            <button className={`${styles['action-button']} ${styles.adjustment}`} onClick={() => { closeAllForms(); setShowAdjustmentForm(true); }}>
               <FaExchangeAlt /> Reajuste de Inventario
             </button>
-            <button className={`action-button ${showEgressForm ? 'cancel' : 'egress'}`} onClick={() => { closeAllForms(); setShowEgressForm(!showEgressForm); }}>
+            <button className={`${styles['action-button']} ${showEgressForm ? styles.cancel : styles.egress}`} onClick={() => { closeAllForms(); setShowEgressForm(!showEgressForm); }}>
               <FaMinusCircle /> {showEgressForm ? 'Cancelar' : 'Registrar Salida'}
             </button>
-            <button className={`action-button ${showAddForm ? 'cancel' : 'add'}`} onClick={() => { closeAllForms(); setShowAddForm(!showAddForm); }}>
+            <button className={`${styles['action-button']} ${showAddForm ? styles.cancel : styles.add}`} onClick={() => { closeAllForms(); setShowAddForm(!showAddForm); }}>
               <FaPlusCircle /> {showAddForm ? 'Cancelar' : 'Agregar Ítem'}
             </button>
         </div>
@@ -110,32 +152,19 @@ const AdminInventoryPage = () => {
       {!loading && !error && (
         <>
           <KPIWidgets items={inventoryItems} movements={movements} />
-          
-          <h2 className="section-title">Dashboard Equipos Terminados</h2>
-          <div className="dashboard-grid">
-            <div className="grid-card">
-                <h3 className="card-title">Stock Disponible por Equipo</h3>
-                <FinishedGoodsChart recipes={recipes} />
-            </div>
-            <div className="grid-card">
-                <FinishedGoodsTable recipes={recipes} products={products} onActionComplete={fetchData} />
-            </div>
+          <h2 className={styles['section-title']}>Dashboard Equipos Terminados</h2>
+          <div className={styles['dashboard-grid']}>
+            <div className={styles['grid-card']}><h3 className={styles['card-title']}>Stock Disponible por Equipo</h3><FinishedGoodsChart recipes={recipes} /></div>
+            <div className={styles['grid-card']}><FinishedGoodsTable recipes={recipes} products={products} onActionComplete={fetchData} /></div>
           </div>
-
-          <hr className="section-divider" />
-
-          <h2 className="section-title">Dashboard Materia Prima</h2>
-          <div className="dashboard-grid">
-            <div className="grid-card"><h3 className="card-title">Stock por Categoría</h3><CategoryStockChart items={inventoryItems} /></div>
-            <div className="grid-card"><h3 className="card-title">Rankings Clave</h3><Rankings items={inventoryItems} movements={movements} /></div>
+          <hr className={styles['section-divider']} />
+          <h2 className={styles['section-title']}>Dashboard Materia Prima</h2>
+          <div className={styles['dashboard-grid']}>
+            <div className={styles['grid-card']}><h3 className={styles['card-title']}>Stock por Categoría</h3><CategoryStockChart items={inventoryItems} /></div>
+            <div className={styles['grid-card']}><h3 className={styles['card-title']}>Rankings Clave</h3><Rankings items={inventoryItems} movements={movements} /></div>
           </div>
-          <div className="full-width-card">
-            <ItemsListTable items={inventoryItems} />
-          </div>
-          
-          <div className="full-width-card">
-            <IndividualStockChart items={inventoryItems} />
-          </div>
+          <div className={styles['full-width-card']}><ItemsListTable items={inventoryItems} /></div>
+          <div className={styles['full-width-card']}><IndividualStockChart items={inventoryItems} /></div>
         </>
       )}
     </div>

@@ -1,20 +1,56 @@
+// src/components/admin/inventory/AddInventoryItemForm.jsx
+
 import React, { useState } from 'react';
-import { db } from '../../../firebase/config';
-import { collection, addDoc, query, where, getDocs, updateDoc, serverTimestamp, writeBatch, doc } from 'firebase/firestore';
-import toast from 'react-hot-toast';
-import './AddInventoryItemForm.css';
+import { db } from '../../../firebase/config'; // Ajusta la ruta a tu config de Firebase
+import { collection, addDoc, query, where, getDocs, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
+import { toast } from 'react-hot-toast';
+import styles from '../../../pages/admin/AdminInventoryPage.module.css';
+
+// Función para generar un ID corto y único
+const generateShortUUID = () => {
+  return (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase();
+};
 
 const AddInventoryItemForm = ({ onItemAdded }) => {
-  const [formData, setFormData] = useState({
-    name: '', sku: '', type: '', stock: 0, stockMinimo: 0, costoPorUnidad: 0, unit: 'Unidades', nombreProveedor: '',
-  });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    stock: 0,
+    costoPorUnidad: 0,
+    nombreProveedor: '',
+    // Campos para ítems nuevos
+    category: '',
+    stockMinimo: 0,
+    unit: 'unidades',
+    specifications: {}, // Aquí guardaremos forma y dimensiones
+  });
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
+    
+    // Si se cambia la categoría, reseteamos las especificaciones
+    if (name === 'category') {
+        setFormData(prev => ({
+            ...prev,
+            [name]: value,
+            specifications: {} // Limpia las dimensiones anteriores
+        }));
+    } else {
+        setFormData(prev => ({
+          ...prev,
+          [name]: type === 'number' ? parseFloat(value) || 0 : value,
+        }));
+    }
+  };
+  
+  const handleSpecificationChange = (e) => {
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'number' ? parseFloat(value) || 0 : value,
+      specifications: {
+        ...prev.specifications,
+        [name]: value,
+      },
     }));
   };
 
@@ -23,10 +59,8 @@ const AddInventoryItemForm = ({ onItemAdded }) => {
     if (isSubmitting) return;
 
     const trimmedName = formData.name.trim();
-    const trimmedSku = formData.sku.trim();
-
     if (!trimmedName || formData.stock < 0) {
-      toast.error('El nombre no puede estar vacío y el stock no puede ser negativo.');
+      toast.error('El nombre no puede estar vacío y el stock a agregar no puede ser negativo.');
       return;
     }
 
@@ -35,68 +69,61 @@ const AddInventoryItemForm = ({ onItemAdded }) => {
 
     try {
       const itemsCollectionRef = collection(db, 'inventoryItems');
-      let existingDoc = null;
-
-      // ▼▼▼ LÓGICA DE BÚSQUEDA MEJORADA ▼▼▼
-      // Buscamos si existe un ítem con el mismo nombre O el mismo SKU (si se proporcionó)
       const nameQuery = query(itemsCollectionRef, where("name", "==", trimmedName));
       const nameSnapshot = await getDocs(nameQuery);
-
-      if (!nameSnapshot.empty) {
-        existingDoc = nameSnapshot.docs[0];
-      } else if (trimmedSku) {
-        const skuQuery = query(itemsCollectionRef, where("sku", "==", trimmedSku));
-        const skuSnapshot = await getDocs(skuQuery);
-        if (!skuSnapshot.empty) {
-          existingDoc = skuSnapshot.docs[0];
-        }
-      }
-
+      
+      const existingDoc = nameSnapshot.empty ? null : nameSnapshot.docs[0];
       const batch = writeBatch(db);
+      
+      // --- CORRECCIÓN: Declaramos la variable aquí para que sea accesible en todo el bloque ---
+      let newItemRef = null;
 
-      if (existingDoc) {
+      if (existingDoc) { // --- LÓGICA PARA ÍTEM EXISTENTE ---
         toast.dismiss();
         toast(`Ítem existente "${existingDoc.data().name}". Agregando stock...`, { icon: '🔄' });
         
         const newStockTotal = (existingDoc.data().stock || 0) + formData.stock;
-        
         batch.update(existingDoc.ref, { stock: newStockTotal });
 
-        if (formData.stock > 0) {
-            const movementRef = doc(collection(db, 'movimientosInventario'));
-            batch.set(movementRef, {
-                tipo: 'entrada',
-                idPieza: existingDoc.id,
-                nombrePieza: existingDoc.data().name,
-                cantidad: formData.stock,
-                motivo: 'Adición de Stock',
-                nombreProveedor: formData.nombreProveedor || existingDoc.data().nombreProveedor || 'N/A',
-                costoUnitarioEnElMomento: formData.costoPorUnidad,
-                fecha: serverTimestamp(),
-            });
+      } else { // --- LÓGICA PARA ÍTEM NUEVO ---
+        if (!formData.category) {
+            throw new Error('Debes seleccionar una categoría para un ítem nuevo.');
         }
-      
-      } else {
-        const newItemRef = doc(collection(db, 'inventoryItems'));
-        batch.set(newItemRef, {
-            ...formData,
-            name: trimmedName,
-            sku: trimmedSku,
-        });
 
-        if (formData.stock > 0) {
-            const movementRef = doc(collection(db, 'movimientosInventario'));
-            batch.set(movementRef, {
-                tipo: 'entrada',
-                idPieza: newItemRef.id,
-                nombrePieza: trimmedName,
-                cantidad: formData.stock,
-                motivo: 'Stock Inicial',
-                nombreProveedor: formData.nombreProveedor || 'N/A',
-                costoUnitarioEnElMomento: formData.costoPorUnidad,
-                fecha: serverTimestamp(),
-            });
-        }
+        const categoryCode = formData.category.substring(0, 3).toUpperCase();
+        const nameCode = trimmedName.replace(/\s+/g, '').substring(0, 6).toUpperCase();
+        const uniqueId = generateShortUUID();
+        const itemCode = `${categoryCode}-${nameCode}-${uniqueId}`;
+        
+        // Asignamos la referencia a la variable que declaramos antes
+        newItemRef = doc(collection(db, 'inventoryItems'));
+        batch.set(newItemRef, {
+            name: trimmedName,
+            itemCode: itemCode,
+            category: formData.category,
+            stock: formData.stock,
+            stockMinimo: formData.stockMinimo,
+            unit: formData.unit,
+            specifications: formData.specifications,
+            costoPorUnidad: formData.costoPorUnidad,
+            nombreProveedor: formData.nombreProveedor || 'N/A',
+            createdAt: serverTimestamp(),
+        });
+      }
+
+      if (formData.stock > 0) {
+        const movementRef = doc(collection(db, 'movimientosInventario'));
+        batch.set(movementRef, {
+            tipo: 'entrada',
+            // Ahora 'newItemRef' es accesible aquí sin problemas
+            idPieza: existingDoc ? existingDoc.id : newItemRef.id,
+            nombrePieza: trimmedName,
+            cantidad: formData.stock,
+            motivo: existingDoc ? 'Adición de Stock' : 'Stock Inicial',
+            nombreProveedor: formData.nombreProveedor || 'N/A',
+            costoUnitarioEnElMomento: formData.costoPorUnidad,
+            fecha: serverTimestamp(),
+        });
       }
 
       await batch.commit();
@@ -104,60 +131,181 @@ const AddInventoryItemForm = ({ onItemAdded }) => {
       toast.dismiss();
       toast.success('¡Operación completada con éxito!');
       setFormData({
-        name: '', sku: '', type: '', stock: 0, stockMinimo: 0, costoPorUnidad: 0, unit: 'Unidades', nombreProveedor: '',
+        name: '', stock: 0, costoPorUnidad: 0, nombreProveedor: '', category: '', stockMinimo: 0, unit: 'unidades', specifications: {},
       });
       onItemAdded();
 
     } catch (error) {
       toast.dismiss();
-      toast.error('Error en el proceso: ' + error.message);
+      toast.error(error.message || 'Error en el proceso.');
       console.error("Error al procesar: ", error);
     } finally {
       setIsSubmitting(false);
     }
   };
+  
+  const renderDimensionFields = () => {
+    const { shape } = formData.specifications;
 
-  return (
-    <div className="add-item-form-container">
-      <h3 className="form-title">Agregar o Actualizar Ítem por Nombre o SKU</h3>
-      <form onSubmit={handleSubmit} className="inventory-form">
-        <div className="form-grid">
-          <div className="form-group">
-            <label htmlFor="name">Nombre del Producto</label>
-            <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required />
+    switch (shape) {
+      case 'cuadrado':
+      case 'rectangular':
+        return (
+          <>
+            <div className={styles.formGroup}>
+              <label>Ancho (mm)</label>
+              <input type="number" step="any" name="width" onChange={handleSpecificationChange} placeholder="80" />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Alto (mm)</label>
+              <input type="number" step="any" name="height" onChange={handleSpecificationChange} placeholder="80" />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Espesor (mm)</label>
+              <input type="number" step="any" name="thickness" onChange={handleSpecificationChange} placeholder="3.2" />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Largo (mm)</label>
+              <input type="number" step="any" name="length" onChange={handleSpecificationChange} placeholder="6000" />
+            </div>
+          </>
+        );
+      case 'redondo':
+        return (
+          <>
+            <div className={styles.formGroup}>
+              <label>Diámetro (mm)</label>
+              <input type="number" step="any" name="diameter" onChange={handleSpecificationChange} placeholder="25.4" />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Espesor (mm)</label>
+              <input type="number" step="any" name="thickness" onChange={handleSpecificationChange} placeholder="1.6" />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Largo (mm)</label>
+              <input type="number" step="any" name="length" onChange={handleSpecificationChange} placeholder="6000" />
+            </div>
+          </>
+        );
+      case 'otro':
+        return (
+          <>
+            <div className={styles.formGroup}>
+              <label>Ancho (mm)</label>
+              <input type="number" step="any" name="width" onChange={handleSpecificationChange} />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Alto (mm)</label>
+              <input type="number" step="any" name="height" onChange={handleSpecificationChange} />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Diámetro (mm)</label>
+              <input type="number" step="any" name="diameter" onChange={handleSpecificationChange} />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Espesor (mm)</label>
+              <input type="number" step="any" name="thickness" onChange={handleSpecificationChange} />
+            </div>
+             <div className={styles.formGroup}>
+              <label>Largo (mm)</label>
+              <input type="number" step="any" name="length" onChange={handleSpecificationChange} />
+            </div>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+  
+  const renderConditionalFields = () => {
+    if (formData.category === 'hierro') {
+      return (
+        <div className={styles.conditionalSection}>
+          <div className={styles.formGroup}>
+            <label>Forma del Hierro</label>
+            <select name="shape" value={formData.specifications.shape || ''} onChange={handleSpecificationChange} required>
+              <option value="" disabled>Selecciona una forma...</option>
+              <option value="cuadrado">Cuadrado</option>
+              <option value="rectangular">Rectangular</option>
+              <option value="redondo">Redondo</option>
+              <option value="otro">Otro</option>
+            </select>
           </div>
-          <div className="form-group">
-            <label htmlFor="stock">Stock a AGREGAR</label>
-            <input type="number" id="stock" name="stock" value={formData.stock} onChange={handleChange} />
-          </div>
-          <div className="form-group">
-            <label htmlFor="costoPorUnidad">Costo por Unidad (para esta entrada)</label>
-            <input type="number" id="costoPorUnidad" name="costoPorUnidad" step="0.01" value={formData.costoPorUnidad} onChange={handleChange} required/>
-          </div>
-          <div className="form-group">
-            <label htmlFor="nombreProveedor">Proveedor (Opcional)</label>
-            <input type="text" id="nombreProveedor" name="nombreProveedor" value={formData.nombreProveedor} onChange={handleChange} />
-          </div>
-          <hr style={{gridColumn: "1 / -1"}}/>
-           <p style={{gridColumn: "1 / -1", textAlign: "center", margin: "-0.5rem 0 0.5rem"}}>Si el ítem es nuevo, completa estos campos:</p>
-          <div className="form-group">
-            <label htmlFor="sku">SKU / Código</label>
-            <input type="text" id="sku" name="sku" value={formData.sku} onChange={handleChange} />
-          </div>
-          <div className="form-group">
-            <label htmlFor="type">Categoría</label>
-            <input type="text" id="type" name="type" value={formData.type} onChange={handleChange} />
-          </div>
-          <div className="form-group">
-            <label htmlFor="stockMinimo">Stock Mínimo</label>
-            <input type="number" id="stockMinimo" name="stockMinimo" value={formData.stockMinimo} onChange={handleChange} />
-          </div>
-           <div className="form-group">
-            <label htmlFor="unit">Unidad de Medida</label>
-            <input type="text" id="unit" name="unit" value={formData.unit} onChange={handleChange} />
+          <div className={styles.dimensionsGrid}>
+            {renderDimensionFields()}
           </div>
         </div>
-        <button type="submit" className="submit-btn" disabled={isSubmitting}>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div className={styles.formCard}>
+      <h2 className={styles.formTitle}>Agregar o Actualizar Ítem por Nombre</h2>
+      <form onSubmit={handleSubmit}>
+        <div className={styles.formGroup}>
+          <label>Nombre del Producto</label>
+          <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+        </div>
+        <div className={styles.formGroup}>
+          <label>Stock a AGREGAR</label>
+          <input type="number" step="any" name="stock" value={formData.stock} onChange={handleChange} />
+        </div>
+        
+        <div className={styles.formGroup}>
+          <label>Costo por Unidad (para esta entrada)</label>
+          <div className={styles.currencyInput}>
+            <span>$</span>
+            <input 
+              type="number" 
+              step="0.01" 
+              name="costoPorUnidad" 
+              value={formData.costoPorUnidad} 
+              onChange={handleChange} 
+              required
+              placeholder="0.00"
+            />
+          </div>
+        </div>
+        
+        <div className={styles.formGroup}>
+          <label>Proveedor (Opcional)</label>
+          <input type="text" name="nombreProveedor" value={formData.nombreProveedor} onChange={handleChange} />
+        </div>
+        
+        <hr />
+        <p style={{textAlign: "center", margin: "-0.5rem 0 0.5rem"}}>Si el ítem es nuevo, completa estos campos:</p>
+
+        <div className={styles.formGroup}>
+          <label>Categoría</label>
+          <select name="category" value={formData.category} onChange={handleChange}>
+            <option value="" disabled>Selecciona una categoría...</option>
+            <option value="hierro">Hierro / Acero</option>
+            <option value="tornilleria">Tornillería</option>
+            <option value="pintura">Pintura</option>
+            <option value="consumible">Consumible</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        
+        {renderConditionalFields()}
+        
+        <div className={styles.formGroup}>
+          <label>Stock Mínimo</label>
+          <input type="number" step="any" name="stockMinimo" value={formData.stockMinimo} onChange={handleChange} />
+        </div>
+        <div className={styles.formGroup}>
+          <label>Unidad de Medida</label>
+          <select name="unit" value={formData.unit} onChange={handleChange}>
+            <option value="unidades">Unidades</option>
+            <option value="metros">Metros</option>
+            <option value="kg">Kilogramos</option>
+            <option value="litros">Litros</option>
+          </select>
+        </div>
+        
+        <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
           {isSubmitting ? 'Procesando...' : 'Procesar'}
         </button>
       </form>

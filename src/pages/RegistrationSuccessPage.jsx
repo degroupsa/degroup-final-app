@@ -1,21 +1,32 @@
+// src/pages/RegistrationSuccessPage.jsx
+
 import React from 'react';
 import { Link } from 'react-router-dom';
-// Reutilizaremos los estilos de VerifyEmailPage para consistencia
-import styles from './VerifyEmailPage.module.css'; 
+import { FaEnvelopeOpenText } from 'react-icons/fa'; // Un ícono más descriptivo
+import styles from './RegistrationSuccessPage.module.css'; // Importamos los nuevos estilos
 
 function RegistrationSuccessPage() {
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
-        <h1 className={styles.success}>¡Registro casi listo!</h1>
-        <p>
-          Hemos enviado un enlace de verificación a tu correo electrónico.
+    <div className={styles.successPage}>
+      <div className={styles.successContainer}>
+        <div className={styles.iconContainer}>
+          <FaEnvelopeOpenText />
+        </div>
+        
+        <h1 className={styles.title}>¡Solo un paso más!</h1>
+        
+        <p className={styles.instructions}>
+          Hemos enviado un correo electrónico a tu casilla.
+          <br />
+          Para activar tu cuenta, por favor haz clic en el <strong>enlace de verificación</strong> que encontrarás dentro.
         </p>
-        <p>
-          Por favor, revisa tu bandeja de entrada (y la carpeta de spam) y haz clic en el enlace para activar tu cuenta.
-        </p>
-        <Link to="/login" className={styles.button}>
-          Volver a Iniciar Sesión
+
+        <div className={styles.spamNote}>
+          <p><strong>¿No lo encuentras?</strong> Revisa tu bandeja de correo no deseado (spam).</p>
+        </div>
+        
+        <Link to="/login" className={styles.loginButton}>
+          Volver a Inicio de Sesión
         </Link>
       </div>
     </div>

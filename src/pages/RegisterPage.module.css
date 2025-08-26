@@ -176,3 +176,21 @@
     text-align: left;
   }
 }
+
+/* Agrega esto al final de tu archivo RegisterPage.module.css */
+
+.googleAutocompleteInput {
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: #333; /* O el color de texto que uses */
+  font-size: 1rem; /* Asegúrate de que coincida con tus otros inputs */
+  padding: 0;
+  margin: 0;
+}
+
+/* Estilo para el texto del placeholder */
+.googleAutocompleteInput::part(input) {
+  color: #888; /* Color del placeholder */
+}

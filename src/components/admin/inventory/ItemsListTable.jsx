@@ -1,39 +1,63 @@
+// src/components/admin/inventory/ItemsListTable.jsx
+
 import React from 'react';
-import './InventoryTables.css'; // Crearemos este archivo para los estilos de las tablas
+import styles from '../../../pages/admin/AdminInventoryPage.module.css';
 
 const ItemsListTable = ({ items }) => {
-  if (items.length === 0) {
-    return <p>No hay ítems en el inventario.</p>;
+  if (!items || items.length === 0) {
+    return <p>No hay ítems en el inventario para mostrar.</p>;
   }
 
-  // Ordenamos los items por nombre para consistencia
-  const sortedItems = [...items].sort((a, b) => a.name.localeCompare(b.name));
+  const sortedItems = [...items].sort((a, b) => (a.createdAt?.toDate() < b.createdAt?.toDate() ? 1 : -1));
 
   return (
-    <div className="table-container">
-      <h3 className="table-title centeredTitle">Listado de Productos Actuales</h3>
-      <table className="inventory-table">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Categoría</th>
-            <th>Stock Actual</th>
-            <th>Stock Mínimo</th>
-            <th>Costo/Unidad</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedItems.map(item => (
-            <tr key={item.id} className={item.stock < item.stockMinimo ? 'low-stock-row' : ''}>
-              <td>{item.name}</td>
-              <td>{item.type}</td>
-              <td>{item.stock.toLocaleString()}</td>
-              <td>{item.stockMinimo.toLocaleString()}</td>
-              <td>${item.costoPorUnidad.toFixed(2)}</td>
+    <div className={styles.listCard}>
+      <h3 className={styles.listTitle}>Listado Completo de Materia Prima</h3>
+      <div style={{ overflowX: 'auto' }}>
+        <table className={styles.inventoryTable}>
+          <thead>
+            <tr>
+              <th>Código de Ítem</th>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Stock Actual</th>
+              <th>Especificaciones</th>
+              <th>Stock Mínimo</th>
+              <th>Costo/Unidad</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sortedItems.map(item => (
+              <tr key={item.id} className={item.stock < item.stockMinimo ? styles.lowStockRow : ''}>
+                <td>
+                  <span className={styles.itemCode}>{item.itemCode || 'N/A'}</span>
+                </td>
+                <td>{item.name}</td>
+                <td>{item.category}</td>
+                <td>{`${item.stock} ${item.unit || ''}`}</td>
+                <td>
+                  {/* --- CORRECCIÓN: Formato mejorado para especificaciones --- */}
+                  {item.specifications && Object.keys(item.specifications).length > 0
+                    ? (
+                      <ul className={styles.specList}>
+                        {Object.entries(item.specifications).map(([key, value]) => (
+                          <li key={key}>
+                            <strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong>
+                            <span>{value}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )
+                    : 'N/A'
+                  }
+                </td>
+                <td>{item.stockMinimo}</td>
+                <td>${(item.costoPorUnidad || 0).toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

@@ -79,48 +79,42 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !user.uid) return;
 
     const myStatusRef = ref(rtdb, 'status/' + user.uid);
     const connectedRef = ref(rtdb, '.info/connected');
 
     const onConnect = onValue(connectedRef, (snap) => {
       if (snap.val() === true) {
-        // Si nos desconectamos bruscamente, Firebase nos pondrá offline
         onDisconnect(myStatusRef).set({ isOnline: false, last_seen: rtdbServerTimestamp() });
-        // Al conectarnos, nos ponemos online
         set(myStatusRef, { isOnline: true, last_seen: rtdbServerTimestamp() });
       }
     });
 
-    // NUEVA LÓGICA: Detectar si la pestaña está activa
     const handleVisibilityChange = () => {
-      if (!user) return; // Chequeo de seguridad
+      if (!user || !user.uid) return;
       if (document.visibilityState === 'hidden') {
-        // Si el usuario cambia de pestaña, actualizamos el estado
         set(myStatusRef, { isOnline: false, last_seen: rtdbServerTimestamp() });
       } else {
-        // Si vuelve a la pestaña, nos ponemos online de nuevo
         set(myStatusRef, { isOnline: true, last_seen: rtdbServerTimestamp() });
       }
     };
     
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // Limpiamos los listeners al desmontar
     return () => {
-      // La función que devuelve onValue se usa para desregistrar el callback
       onConnect();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [user]);
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !user.uid) {
       setNotifications([]);
       setUnreadCount(0);
       return;
     }
+
     const notificationsRef = collection(db, 'notifications');
     const q = query(
       notificationsRef,
@@ -133,7 +127,10 @@ export const AuthProvider = ({ children }) => {
       const unread = userNotifications.filter(n => !n.read).length;
       setNotifications(userNotifications);
       setUnreadCount(unread);
+    }, (error) => {
+        console.error("Error al obtener notificaciones:", error);
     });
+
     return () => unsubscribe();
   }, [user]);
 
@@ -149,6 +146,7 @@ export const AuthProvider = ({ children }) => {
     return userCredential;
   };
 
+  // --- FUNCIÓN SIGNUP CORREGIDA ---
   const signup = async (email, password, additionalData) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
@@ -181,8 +179,14 @@ export const AuthProvider = ({ children }) => {
     await sendEmailVerification(user, actionCodeSettings);
     
     toast.success('¡Registro casi listo! Revisa tu correo para verificar la cuenta.');
-    await signOut(auth);
+
+    // CORRECCIÓN: Usamos un setTimeout para darle tiempo a la navegación
+    // de completarse ANTES de que el cierre de sesión cause errores.
+    setTimeout(() => {
+        signOut(auth);
+    }, 500); // Una pausa de medio segundo es más que suficiente.
   };
+  // --- FIN DE LA CORRECCIÓN ---
 
   const logout = () => signOut(auth);
 

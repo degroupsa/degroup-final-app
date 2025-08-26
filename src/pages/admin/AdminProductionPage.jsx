@@ -1,8 +1,13 @@
+// src/pages/admin/AdminProductionPage.jsx
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../../firebase/config.js';
 import { collection, getDocs, doc, updateDoc, deleteDoc, arrayUnion, runTransaction, Timestamp, query, orderBy, writeBatch, serverTimestamp } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import styles from './AdminProductionPage.module.css';
+// --- CORRECCIÓN DE RUTA ---
+import ItemDetailsModal from '../../components/admin/inventory/ItemDetailsModal.jsx'; 
+import { FaInfoCircle } from 'react-icons/fa';
 
 const PRODUCTION_STEPS = [
   'Pendiente', 'En Planta', 'Corte y Plegado', 'Soldadura del Equipo', 
@@ -17,6 +22,7 @@ const AdminProductionPage = () => {
   const [recipes, setRecipes] = useState([]);
   const [inventoryItems, setInventoryItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedItemDetails, setSelectedItemDetails] = useState(null);
 
   const fetchAllData = useCallback(async () => {
     setLoading(true);
@@ -30,7 +36,7 @@ const AdminProductionPage = () => {
       const itemsSnapshot = await getDocs(collection(db, 'inventoryItems'));
       setInventoryItems(itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     } catch (error) {
-      toast.error("Error al cargar datos. Revisa si falta crear un índice en Firestore (ver consola).");
+      toast.error("Error al cargar datos.");
       console.error(error);
     } finally {
       setLoading(false);
@@ -41,6 +47,8 @@ const AdminProductionPage = () => {
     fetchAllData();
   }, [fetchAllData]);
   
+  const findItemDetails = (itemId) => inventoryItems.find(item => item.id === itemId);
+
   const advanceStatus = async (order) => {
     const { id, currentStatus, quantity, recipeId, productName, productionType, trackingCode } = order;
     const currentIndex = PRODUCTION_STEPS.indexOf(currentStatus);
@@ -196,8 +204,13 @@ const AdminProductionPage = () => {
     return currentIndex < PRODUCTION_STEPS.length - 1 ? PRODUCTION_STEPS[currentIndex + 1] : 'Ninguno';
   };
 
+  const getRecipeForOrder = (order) => recipes.find(r => r.id === order.recipeId);
+
   return (
     <div className="admin-page-content">
+      {/* Renderizamos el modal aquí */}
+      <ItemDetailsModal item={selectedItemDetails} onClose={() => setSelectedItemDetails(null)} />
+
       <div className={styles.pageHeader}>
         <h1 className="admin-page-title">Seguimiento de Producción</h1>
       </div>
@@ -207,59 +220,55 @@ const AdminProductionPage = () => {
         {!loading && orders.length === 0 && (
           <div style={{textAlign: 'center', padding: '2rem', backgroundColor: '#fff', borderRadius: '8px'}}>
             <h3>No hay pedidos de producción activos.</h3>
-            <p>Puedes crear uno desde la sección "Editor de Equipos".</p>
           </div>
         )}
-        {!loading && orders.map(order => (
-          <div key={order.id} className={styles.orderCard}>
-            <div className={styles.orderCardHeader}>
-              <div>
-                <h4>{order.productName} (x{order.quantity})</h4>
-                <small>SKU: {order.productSKU || 'N/A'}</small>
+        {!loading && orders.map(order => {
+          const recipe = getRecipeForOrder(order);
+          return (
+            <div key={order.id} className={styles.orderCard}>
+              <div className={styles.orderCardHeader}>
+                <div><h4>{order.productName} (x{order.quantity})</h4><small>SKU: {order.productSKU || 'N/A'}</small></div>
+                <div className={styles.headerRight}>
+                  {order.productionType && (<span className={`${styles.productionTypeBadge} ${styles[order.productionType]}`}>{order.productionType === 'for_stock' ? 'Para Stock' : 'Para Entrega'}</span>)}
+                  <span className={styles.trackingCode}>{order.trackingCode}</span>
+                  <button className={styles.deleteOrderBtn} onClick={() => handleDeleteOrder(order.id, order.trackingCode)} title="Eliminar pedido">&times;</button>
+                </div>
               </div>
-              <div className={styles.headerRight}>
-                {order.productionType && (
-                    <span className={`${styles.productionTypeBadge} ${styles[order.productionType]}`}>
-                        {order.productionType === 'for_stock' ? 'Para Stock' : 'Para Entrega'}
-                    </span>
+              <div className={styles.orderCardBody}>
+                <p><strong>Cliente:</strong> {order.linkedUserEmail || 'Sin cliente'}</p>
+                <p><strong>Entrega Estimada:</strong> {order.estimatedDeliveryDate ? new Date(order.estimatedDeliveryDate).toLocaleDateString('es-AR', { timeZone: 'UTC' }) : 'No definida'}</p>
+                <p><strong>Estado Actual:</strong> <span className={styles.statusBadge}>{order.currentStatus}</span></p>
+                
+                {/* --- NUEVA SECCIÓN DE MATERIALES --- */}
+                {recipe && (
+                  <div>
+                    <h5 style={{marginTop: '1rem', marginBottom: '0.5rem'}}>Materiales:</h5>
+                    <table className={styles.materialsTable}>
+                      <tbody>
+                        {recipe.components.map((comp, idx) => (
+                          <tr key={idx}>
+                            <td>{comp.nombrePieza}</td>
+                            <td>{comp.quantityNeeded * order.quantity} un.</td>
+                            <td>
+                              <button className={styles.detailsBtn} onClick={() => setSelectedItemDetails(findItemDetails(comp.idPieza))}>
+                                <FaInfoCircle /> Detalles
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 )}
-                <span className={styles.trackingCode}>{order.trackingCode}</span>
-                <button 
-                    className={styles.deleteOrderBtn} 
-                    onClick={() => handleDeleteOrder(order.id, order.trackingCode)} 
-                    title="Eliminar pedido de producción"
-                >
-                    &times;
-                </button>
+              </div>
+              <div className={styles.orderCardActions}>
+                <div className={styles.nextStepInfo}>Próximo paso: <strong>{getNextStep(order.currentStatus)}</strong></div>
+                <button className={styles.forceAdvanceBtn} onClick={() => forceAdvanceStatus(order)} disabled={order.currentStatus === 'Listo para Retirar'} title="Avanzar sin verificar stock">Forzar Avance</button>
+                <button className={styles.advanceBtn} onClick={() => advanceStatus(order)} disabled={order.currentStatus === 'Listo para Retirar'}>Avanzar</button>
               </div>
             </div>
-            <div className={styles.orderCardBody}>
-              <p><strong>Cliente:</strong> {order.linkedUserEmail || 'Sin cliente'}</p>
-              <p><strong>Entrega Estimada:</strong> {order.estimatedDeliveryDate ? new Date(order.estimatedDeliveryDate).toLocaleDateString('es-AR', { timeZone: 'UTC' }) : 'No definida'}</p>
-              <p><strong>Estado Actual:</strong> <span className={styles.statusBadge}>{order.currentStatus}</span></p>
-            </div>
-            <div className={styles.orderCardActions}>
-              <div className={styles.nextStepInfo}>
-                  Próximo paso: <strong>{getNextStep(order.currentStatus)}</strong>
-              </div>
-              <button 
-                className={styles.forceAdvanceBtn} 
-                onClick={() => forceAdvanceStatus(order)}
-                disabled={order.currentStatus === 'Listo para Retirar'}
-                title="Avanzar sin verificar ni descontar stock"
-              >
-                Forzar Avance
-              </button>
-              <button 
-                className={styles.advanceBtn} 
-                onClick={() => advanceStatus(order)}
-                disabled={order.currentStatus === 'Listo para Retirar'}
-              >
-                Avanzar
-              </button>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   );
