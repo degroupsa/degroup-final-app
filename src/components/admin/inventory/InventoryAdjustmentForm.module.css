@@ -101,3 +101,32 @@ border-left: none;
 background-color: #007bff;
 color: white;
 }
+
+/* ... Pega esto al final de tu archivo InventoryAdjustmentForm.module.css ... */
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.currencyInput {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.currencyInput span {
+  padding: 0.75rem 0 0.75rem 0.75rem;
+  color: #495057;
+  font-size: 1rem;
+}
+
+.currencyInput input {
+  border: none;
+  outline: none;
+  box-shadow: none;
+  padding-left: 0.5rem;
+}

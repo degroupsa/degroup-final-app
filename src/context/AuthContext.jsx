@@ -1,3 +1,5 @@
+// src/context/AuthContext.jsx
+
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { auth, db, rtdb } from '../firebase/config.js';
 import { 
@@ -18,7 +20,9 @@ import {
   where, 
   orderBy, 
   limit, 
-  onSnapshot
+  onSnapshot,
+  addDoc, // <-- Importamos addDoc
+  Timestamp // <-- Importamos Timestamp
 } from 'firebase/firestore';
 import { ref, onValue, set, onDisconnect, serverTimestamp as rtdbServerTimestamp } from "firebase/database";
 import toast from 'react-hot-toast';
@@ -146,7 +150,6 @@ export const AuthProvider = ({ children }) => {
     return userCredential;
   };
 
-  // --- FUNCIÓN SIGNUP CORREGIDA ---
   const signup = async (email, password, additionalData) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
@@ -179,18 +182,33 @@ export const AuthProvider = ({ children }) => {
     await sendEmailVerification(user, actionCodeSettings);
     
     toast.success('¡Registro casi listo! Revisa tu correo para verificar la cuenta.');
-
-    // CORRECCIÓN: Usamos un setTimeout para darle tiempo a la navegación
-    // de completarse ANTES de que el cierre de sesión cause errores.
+    
     setTimeout(() => {
         signOut(auth);
-    }, 500); // Una pausa de medio segundo es más que suficiente.
+    }, 500);
   };
-  // --- FIN DE LA CORRECCIÓN ---
+
+  // --- NUEVA FUNCIÓN PARA REGISTROS FINANCIEROS ---
+  const createFinancialRecord = async (recordData) => {
+    if (!recordData.amount || !recordData.concept || !recordData.type) {
+        throw new Error("Faltan datos para el registro financiero.");
+    }
+    try {
+        const financialCollectionRef = collection(db, 'registrosFinancieros');
+        await addDoc(financialCollectionRef, {
+            ...recordData,
+            date: Timestamp.now(), // Usamos el timestamp de Firestore
+        });
+    } catch (error) {
+        console.error("Error al crear registro financiero:", error);
+        toast.error("No se pudo crear el registro financiero.");
+        throw error; 
+    }
+  };
 
   const logout = () => signOut(auth);
 
-  const value = { user, loading, notifications, unreadCount, signup, login, logout };
+  const value = { user, loading, notifications, unreadCount, signup, login, logout, createFinancialRecord };
 
   return (
     <AuthContext.Provider value={value}>

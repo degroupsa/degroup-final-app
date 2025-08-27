@@ -31,7 +31,7 @@
 .header-buttons {
   display: flex;
   gap: 1rem;
-  flex-wrap: wrap; /* Para que los botones se ajusten en pantallas pequeñas */
+  flex-wrap: wrap;
 }
 .section-title {
   margin-top: 3rem;
@@ -69,41 +69,18 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
-.action-button.add {
-  background-color: #007bff; /* Azul */
-}
-.action-button.add:hover {
-  background-color: #0056b3;
-}
-.action-button.egress {
-  background-color: #dc3545; /* Rojo */
-}
-.action-button.egress:hover {
-  background-color: #c82333;
-}
-.action-button.adjustment {
-  background-color: #ffc107; /* Naranja/Amarillo */
-  color: #212529;
-}
-.action-button.adjustment:hover {
-  background-color: #e0a800;
-}
-.action-button.cancel {
-  background-color: #6c757d; /* Gris */
-}
-.action-button.cancel:hover {
-  background-color: #5a6268;
-}
+.action-button.add { background-color: #007bff; }
+.action-button.add:hover { background-color: #0056b3; }
+.action-button.egress { background-color: #dc3545; }
+.action-button.egress:hover { background-color: #c82333; }
+.action-button.adjustment { background-color: #ffc107; color: #212529; }
+.action-button.adjustment:hover { background-color: #e0a800; }
+.action-button.cancel { background-color: #6c757d; }
+.action-button.cancel:hover { background-color: #5a6268; }
+.action-button.reset { background-color: #6c757d; }
+.action-button.reset:hover { background-color: #5a6268; }
 
-/* --- Estilos para el Botón de Reinicio --- */
-.action-button.reset {
-  background-color: #6c757d;
-}
-.action-button.reset:hover {
-  background-color: #5a6268;
-}
-
-/* --- Estilos para el Modal de Confirmación --- */
+/* --- Estilos para el Modal --- */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -141,7 +118,7 @@
 .modalActions .action-button.egress:hover { background-color: #c82333; border-color: #c82333; }
 
 
-/* --- ESTILOS PARA EL FORMULARIO INTELIGENTE --- */
+/* --- ESTILOS PARA EL FORMULARIO --- */
 .formCard {
   background-color: #ffffff;
   border-radius: 12px;
@@ -207,7 +184,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   color: #fff;
-  background-color: #28a745; /* Verde para 'Procesar' */
+  background-color: #28a745;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -243,6 +220,7 @@
 .inventoryTable {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed; /* Importante para que los anchos funcionen */
 }
 
 .inventoryTable th, .inventoryTable td {
@@ -250,7 +228,20 @@
   text-align: left;
   border-bottom: 1px solid #e2e8f0;
   vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+
+/* Anchos de las columnas */
+.colCode { width: 12%; }
+.colName { width: 28%; white-space: normal; } /* Permitimos que el nombre ocupe varias líneas */
+.colCategory { width: 10%; }
+.colStock { width: 10%; }
+.colSpecs { width: 20%; white-space: normal; } /* Permitimos que las especificaciones ocupen varias líneas */
+.colStockMin { width: 10%; }
+.colCost { width: 10%; }
+
 
 .inventoryTable th {
   font-weight: 600;
@@ -267,11 +258,11 @@
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
   font-size: 0.9rem;
-  white-space: nowrap;
 }
 
 .lowStockRow {
-  background-color: #fff5f5;
+  background-color: #fff5f5 !important;
+  color: #c53030;
 }
 
 .specList {
@@ -319,11 +310,9 @@
   font-weight: 600;
 }
 
-/* --- ▼▼▼ CORRECCIÓN CLAVE ▼▼▼ --- */
-/* Hacemos esta regla más específica para que anule los estilos de .formGroup input */
 .currencyInput input {
   width: 100%;
-  border: none !important; /* Usamos !important para asegurar la anulación */
+  border: none !important;
   box-shadow: none !important;
   outline: none !important;
   padding-left: 0.5rem;
@@ -336,3 +325,15 @@
   margin: 0;
 }
 
+
+/* --- Estilos para la sección de costo --- */
+.costSection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+  border: 1px solid #e9ecef;
+}

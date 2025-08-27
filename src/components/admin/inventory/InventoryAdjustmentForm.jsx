@@ -1,3 +1,5 @@
+// src/components/admin/inventory/InventoryAdjustmentForm.jsx
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { db } from '../../../firebase/config';
 import { collection, doc, writeBatch, serverTimestamp } from 'firebase/firestore';
@@ -9,6 +11,7 @@ const InventoryAdjustmentForm = ({ inventoryItems, onAdjustmentDone, onClose }) 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
   const [newStock, setNewStock] = useState('');
+  const [newCost, setNewCost] = useState(''); // <-- NUEVO ESTADO PARA EL COSTO
   const [reason, setReason] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   
@@ -43,35 +46,50 @@ const InventoryAdjustmentForm = ({ inventoryItems, onAdjustmentDone, onClose }) 
   const handleSelect = (item) => {
     setSelectedItem(item);
     setNewStock(item.stock);
+    setNewCost(item.costoPorUnidad || 0); // <-- CARGAMOS EL COSTO ACTUAL
     setSearchTerm(item.name);
   };
   
   const handleSubmit = async (e) => {
-    e.preventDefault(); // <-- LA LÍNEA QUE FALTABA
+    e.preventDefault();
     
-    if (!selectedItem || newStock === '' || !reason.trim()) {
-      toast.error('Por favor, selecciona un ítem, ingresa el nuevo stock y un motivo.');
+    if (!selectedItem || newStock === '' || newCost === '' || !reason.trim()) {
+      toast.error('Por favor, completa todos los campos: ítem, nuevo stock, nuevo costo y motivo.');
       return;
     }
     setIsProcessing(true);
     toast.loading('Procesando ajuste...');
     const newStockValue = parseInt(newStock, 10);
-    if (isNaN(newStockValue)) {
-        toast.error('El nuevo stock debe ser un número válido.');
+    const newCostValue = parseFloat(newCost);
+
+    if (isNaN(newStockValue) || isNaN(newCostValue)) {
+        toast.error('El stock y el costo deben ser números válidos.');
         setIsProcessing(false);
         return;
     }
+
     const stockDifference = newStockValue - selectedItem.stock;
     const movementType = stockDifference > 0 ? 'entrada' : 'salida';
     try {
       const batch = writeBatch(db);
       const itemRef = doc(db, 'inventoryItems', selectedItem.id);
-      batch.update(itemRef, { stock: newStockValue });
-      const movementRef = doc(collection(db, 'movimientosInventario'));
-      batch.set(movementRef, {
-        tipo: movementType, idPieza: selectedItem.id, nombrePieza: selectedItem.name,
-        cantidad: Math.abs(stockDifference), motivo: `Ajuste manual: ${reason}`, fecha: serverTimestamp(),
+      
+      // ACTUALIZAMOS TANTO EL STOCK COMO EL COSTO
+      batch.update(itemRef, { 
+        stock: newStockValue,
+        costoPorUnidad: newCostValue
       });
+      
+      // Solo registramos movimiento si el stock cambió
+      if (stockDifference !== 0) {
+        const movementRef = doc(collection(db, 'movimientosInventario'));
+        batch.set(movementRef, {
+          tipo: movementType, idPieza: selectedItem.id, nombrePieza: selectedItem.name,
+          cantidad: Math.abs(stockDifference), motivo: `Ajuste manual: ${reason}`, fecha: serverTimestamp(),
+          costoUnitarioEnElMomento: newCostValue // Guardamos el costo en el momento del movimiento
+        });
+      }
+
       await batch.commit();
       toast.dismiss();
       toast.success('¡Ajuste de inventario realizado!');
@@ -125,11 +143,21 @@ const InventoryAdjustmentForm = ({ inventoryItems, onAdjustmentDone, onClose }) 
           {selectedItem && (
             <>
               <div className={styles.selectedItemInfo}>
-                Ítem seleccionado: <strong>{selectedItem.name}</strong> (Stock actual: {selectedItem.stock})
+                Ítem: <strong>{selectedItem.name}</strong> | Stock actual: {selectedItem.stock} | Costo actual: ${selectedItem.costoPorUnidad || 0}
               </div>
-              <div className={styles.formGroup}>
-                <label>Nuevo Stock Total</label>
-                <input type="number" value={newStock} onChange={(e) => setNewStock(e.target.value)} required />
+              <div className={styles.formGrid}>
+                <div className={styles.formGroup}>
+                  <label>Nuevo Stock Total</label>
+                  <input type="number" step="any" value={newStock} onChange={(e) => setNewStock(e.target.value)} required />
+                </div>
+                {/* --- NUEVO CAMPO PARA EL COSTO --- */}
+                <div className={styles.formGroup}>
+                  <label>Nuevo Costo por Unidad</label>
+                  <div className={styles.currencyInput}>
+                    <span>$</span>
+                    <input type="number" step="0.01" value={newCost} onChange={(e) => setNewCost(e.target.value)} required />
+                  </div>
+                </div>
               </div>
               <div className={styles.formGroup}>
                 <label>Motivo del Ajuste</label>
