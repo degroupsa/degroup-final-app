@@ -7,7 +7,7 @@ const mockTestimonials = [
   {
     id: 1,
     quote:
-      'Desde que instalamos los pisapalos Terrashield en la sembradora, notamos la diferencia en cuanto a pinchaduras por el rastrojo. El cambio fue muy notable.',
+      'En nuestro caso, el Terrashield 600 está colocado en una sembradora Giorgi de granos gruesos y Funcionó muy bien. Me llamó mucho la atención el cómo se adapta muy bien a la sembradora, sin necesidad de soldar o perforar algo. Respecto al equipo de DE Group, muy buena predisposición a consultas/dudas, abiertos a sugerencias, etc. En resumen general, funcionó muy bien y la protección que le da a las cubiertas se nota. Esta campaña se han colocado cubiertas nuevas y se nota un maltrato mucho menor por parte de los distintos rastrojos.',
     author: 'Sebastian Peresin',
     location: "Villa Trinidad, Santa Fé",
   },
