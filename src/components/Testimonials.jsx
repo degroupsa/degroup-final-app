@@ -14,9 +14,9 @@ const mockTestimonials = [
   {
     id: 2,
     quote:
-      'La robustez y el diseño simple de los productos de DE Group se notan en el día a día. Los chicos están siempre detrás del producto para darle el correcto seguimiento Posventa.',
-    author: 'Familia Gagliardi',
-    location: 'Las Varillas, Córdoba',
+      'Buen equipo. Construcción sencilla, de alta calidad y Fácil vinculación con el tractor. Los chicos de la empresa, siempre muy atentos a responder cualquier consulta Antes y Después de la compra.',
+    author: 'Claudio Collino',
+    location: 'Campo López, Córdoba',
   },
   {
     id: 3,
