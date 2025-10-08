@@ -13,7 +13,7 @@ const mockTestimonials = [
   },
   {
     id: 2,
-    quote:
+    quote: 
       'Buen equipo. Construcción sencilla, de alta calidad y Fácil vinculación con el tractor. Los chicos de la empresa, siempre muy atentos a responder cualquier consulta Antes y Después de la compra.',
     author: 'Claudio Collino',
     location: 'Campo López, Córdoba',
