@@ -1,62 +1,399 @@
-.financialContainer {
-  background-color: white;
+/* src/components/FinancialManager.module.css */
+
+.sectionDivider {
+  border: none;
+  height: 1px;
+  background-color: #dfe6e9;
+  margin: 3rem 0;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  color: #2c3e50;
+}
+
+/* --- ESTILOS PARA HITOS --- */
+.milestonesGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: -1rem; /* Acercarlo a los KPIs de arriba */
+  margin-bottom: 3rem;
+}
+.milestoneCard {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  text-align: center;
+}
+.milestoneCard h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #7f8c8d;
+  font-size: 1rem;
+}
+.milestoneValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #27ae60; /* Verde ingreso por defecto */
+  margin: 0;
+}
+.milestoneDate {
+  display: block;
+  font-weight: 500;
+  color: #34495e;
+  margin-top: 0.5rem;
+}
+.milestoneConcept {
+  display: block;
+  font-size: 0.9rem;
+  color: #95a5a6;
+  margin-top: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- ESTILOS MEJORADOS PARA GRÁFICOS --- */
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.chartCard {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.chartCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+
+.chartCard h3 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #34495e;
+}
+
+.noDataText {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 200px;
+  color: #95a5a6;
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+.labelValue {
+  font-size: 1rem;
+  font-weight: 600;
+  fill: #2c3e50;
+}
+
+/* --- ESTILOS PARA EL REGISTRO MANUAL Y AJUSTE DE SALDO --- */
+.manualRecordContainer {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* El formulario principal ocupa más espacio */
+  gap: 2rem;
+  align-items: flex-start;
+}
+.manualRecordCard {
+  background-color: #fff;
+  border-radius: 12px;
   padding: 2rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+.manualRecordGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  align-items: end; 
+  margin-bottom: 1.5rem;
+}
+
+/* --- ESTILOS PARA EL FORMULARIO DE AJUSTE DE SALDO --- */
+.initialBalanceCard {
+  background-color: #fff9e6; /* Un amarillo suave para destacarlo */
+  border: 1px solid #ffeeba;
+}
+.initialBalanceCard h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.initialBalanceCard p {
+  font-size: 0.9rem;
+  color: #856404;
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+}
+.infoIcon {
+  color: #856404;
+  cursor: help;
+}
+.balanceButton {
+  background-color: #ffc107; /* Amarillo */
+  color: #212529;
+}
+.balanceButton:hover {
+  background-color: #e0a800;
+}
+
+
+/* --- Estilos para el Gestor de Cheques y otros componentes --- */
+.chequeManagerGrid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.chequeFormCard, .chequeSummaryCard, .backupCard {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.formGroup label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #34495e;
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #bdc3c7;
   border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  font-size: 1rem;
+  box-sizing: border-box; 
 }
 
-.financialContainer h2 {
-margin-top: 0;
-text-align: center;
+.submitButton {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: #3498db;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.submitButton:hover {
+  background-color: #2980b9;
 }
 
-.form {
-display: flex;
-flex-direction: column;
-gap: 1rem;
+.monthlySummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.formRow {
-display: grid;
-grid-template-columns: 1fr 1fr 2fr 1fr;
-gap: 1rem;
-align-items: center;
+.summaryBox {
+  background-color: #ecf0f1;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
 }
 
-.form input, .form select {
-padding: 0.8rem;
-border-radius: 5px;
-border: 1px solid \#ddd;
+.summaryBox h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  color: #7f8c8d;
 }
 
-.form button {
-padding: 0.8rem;
-font-size: 1rem;
-font-weight: bold;
-color: white;
-background-color: \#007bff;
-border: none;
-border-radius: 5px;
-cursor: pointer;
-transition: background-color 0.2s;
-}
-.form button:hover {
-background-color: \#0056b3;
+.summaryBox p {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
 }
 
-.recordsTable {
-width: 100%;
-margin-top: 2rem;
-border-collapse: collapse;
-}
-.recordsTable th, .recordsTable td {
-padding: 0.8rem;
-text-align: left;
-border-bottom: 1px solid \#eee;
-}
-.recordsTable th {
-background-color: \#f8f9fa;
+.chequeTable {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.incomeText { color: \#28a745; }
-.expenseText { color: \#dc3545; }
+.chequeTable th, .chequeTable td {
+  padding: 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid #dfe6e9;
+}
+
+.chequeTable th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: #7f8c8d;
+}
+
+.statusSelect {
+  padding: 0.4rem 0.6rem;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  font-weight: 600;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 0.65em auto;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+}
+.status-pendiente { background-color: #ffeeba; color: #856404; }
+.status-para_cobrar { background-color: #cce5ff; color: #004085; }
+.status-cobrado { background-color: #d4edda; color: #155724; }
+.incomeText { color: #27ae60; font-weight: 500; }
+.expenseText { color: #c0392b; font-weight: 500; }
+
+/* --- Estilos para el Exportador de Datos --- */
+.exporterGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+.exportButton { display: flex; align-items: center; justify-content: center; gap: 0.8rem; padding: 0.8rem 1rem; font-size: 1rem; font-weight: 600; border: 2px solid #95a5a6; color: #95a5a6; background-color: transparent; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+.exportButton:hover { background-color: #95a5a6; color: white; }
+.exportButton:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* --- ESTILOS PARA EL HISTORIAL Y MODAL DE EDICIÓN --- */
+.historyCard {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+.historyTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+.historyTable th, .historyTable td {
+  padding: 0.9rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ecf0f1;
+}
+.historyTable th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: #7f8c8d;
+}
+.editButton {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid #3498db;
+  color: #3498db;
+  background-color: transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.editButton:hover {
+  background-color: #3498db;
+  color: white;
+}
+
+.editModalOverlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1050; backdrop-filter: blur(4px);
+}
+.editModalContent {
+  background: white; padding: 2.5rem; border-radius: 12px;
+  width: 90%; max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.editModalContent h2 {
+  margin-top: 0;
+  text-align: center;
+  color: #2c3e50;
+}
+.editModalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.editModalActions button {
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+}
+.editModalActions button:first-child { /* Cancelar */
+  background-color: #ecf0f1;
+  color: #7f8c8d;
+  border: 1px solid #bdc3c7;
+}
+.editModalActions button:last-child { /* Guardar */
+  background-color: #27ae60;
+  color: white;
+}
+
+/* --- ESTILOS PARA LA PAGINACIÓN --- */
+.paginationControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ecf0f1;
+}
+.pageInfo {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #7f8c8d;
+}
+.paginationButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #bdc3c7;
+  background-color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.paginationButton:hover:not(:disabled) {
+  background-color: #f8f9fa;
+}
+.paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* --- Responsive --- */
+@media (max-width: 992px) {
+  .chequeManagerGrid, .chartsGrid, .milestonesGrid { grid-template-columns: 1fr; }
+  .manualRecordContainer { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .monthlySummaryGrid { grid-template-columns: 1fr; }
+  .manualRecordGrid { grid-template-columns: 1fr; }
+}
+
