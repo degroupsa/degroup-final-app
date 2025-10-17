@@ -1,17 +1,22 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../../firebase/config.js';
-import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, where, Timestamp } from 'firebase/firestore';
 import { Bar, Doughnut, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import toast from 'react-hot-toast';
 import KPI from '../../components/dashboard/KPI.jsx';
 import LatestOrdersTable from '../../components/dashboard/LatestOrdersTable.jsx';
-import { FaDollarSign, FaShoppingCart, FaUsers, FaWarehouse, FaRegChartBar, FaChartPie } from 'react-icons/fa';
+import { FaDollarSign, FaShoppingCart, FaUsers, FaWarehouse, FaRegChartBar, FaChartPie, FaBalanceScale, FaFileInvoiceDollar, FaCashRegister } from 'react-icons/fa'; // <-- Ícono añadido
 import QuoteRequestsWidget from '../../components/QuoteRequestsWidget.jsx';
 import FinancialManager from '../../components/FinancialManager.jsx';
 import styles from './AdminDashboardPage.module.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
+
+// Helper para formatear moneda sin decimales
+const formatCurrency = (value) => {
+    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(value || 0);
+};
 
 function AdminDashboardPage() {
   const [dashboardData, setDashboardData] = useState(null);
@@ -20,7 +25,7 @@ function AdminDashboardPage() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [ordersSnap, productsSnap, usersSnap, inventorySnap, recipesSnap, recordsSnap, productionSnap] = await Promise.all([
+      const [ordersSnap, productsSnap, usersSnap, inventorySnap, recipesSnap, recordsSnap, productionSnap, checksSnap] = await Promise.all([
         getDocs(query(collection(db, 'orders'), orderBy('createdAt', 'desc'))),
         getDocs(collection(db, 'products')),
         getDocs(collection(db, 'users')),
@@ -28,19 +33,21 @@ function AdminDashboardPage() {
         getDocs(collection(db, 'productRecipes')),
         getDocs(collection(db, 'registrosFinancieros')),
         getDocs(collection(db, 'productionOrders')),
+        getDocs(query(collection(db, 'pendingChecks'), where('status', '!=', 'cobrado'))),
       ]);
 
       const orders = ordersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      console.log("Órdenes encontradas por la consulta del Dashboard:", orders);
-      const products = productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const products = productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })); // <-- NECESARIO
       const users = usersSnap.docs;
       const inventoryItems = inventorySnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       const recipes = recipesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       const financialRecords = recordsSnap.docs.map(doc => doc.data());
-      const productionOrders = productionSnap.docs.map(doc => doc.data());
+      const productionOrders = productionSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })); // <-- NECESARIO
+      const pendingChecks = checksSnap.docs.map(doc => doc.data());
 
       const manualIncome = financialRecords.filter(r => r.type === 'ingreso').reduce((sum, r) => sum + (r.amount || 0), 0);
       const totalExpense = financialRecords.filter(r => r.type === 'gasto').reduce((sum, r) => sum + (r.amount || 0), 0);
+      const balance = manualIncome - totalExpense;
       const totalOrders = orders.length;
       const totalRevenueFromOrders = orders.reduce((sum, order) => sum + (order.total || 0), 0);
       const averageOrderValue = totalOrders > 0 ? totalRevenueFromOrders / totalOrders : 0;
@@ -55,6 +62,27 @@ function AdminDashboardPage() {
       }, 0);
       const totalInventoryValue = inventoryValue + finishedGoodsValue;
 
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+      const checksToCollectThisMonth = pendingChecks.filter(cheque => {
+          const dueDate = cheque.fechaCobro.toDate();
+          return dueDate >= startOfMonth && dueDate <= endOfMonth;
+        }).reduce((sum, cheque) => sum + cheque.monto, 0);
+
+      // --- NUEVO CÁLCULO DE INGRESOS POR VENTAS DE PRODUCCIÓN ---
+      const totalSalesRevenue = productionOrders
+        .filter(order => order.productionType === 'for_delivery')
+        .reduce((sum, order) => {
+          // Busca el producto correspondiente en la lista de productos
+          const productInfo = products.find(p => p.name === order.productName);
+          // Si encuentra el producto y tiene precio, lo suma
+          const price = productInfo ? (productInfo.price || 0) : 0;
+          return sum + (price * (order.quantity || 0));
+        }, 0);
+      // --- FIN DEL CÁLCULO ---
+
+      // ... (resto de tu lógica de gráficos sin cambios) ...
       const salesByMonth = {};
       const monthLabels = [];
       const today = new Date();
@@ -99,7 +127,17 @@ function AdminDashboardPage() {
       const topProductsByQuantityChart = { labels: topProductsByQuantity.map(([name,]) => name), datasets: [{ label: 'Unidades Vendidas', data: topProductsByQuantity.map(([, qty]) => qty), backgroundColor: '#198754' }] };
 
       setDashboardData({
-        kpis: { totalIncome: manualIncome, totalExpense, totalOrders, totalCustomers, totalInventoryValue, averageOrderValue },
+        kpis: { 
+            totalIncome: manualIncome, 
+            totalSalesRevenue, // <-- Añadido
+            totalExpense, 
+            balance,
+            totalOrders, 
+            totalCustomers, 
+            totalInventoryValue, 
+            averageOrderValue,
+            checksToCollect: checksToCollectThisMonth
+        },
         charts: { monthlySalesChart, productionStatusChart: productionStatusChartData, topCustomersChart, expenseChart, topProductsByQuantityChart },
         latestOrders: orders.slice(0, 5)
       });
@@ -128,11 +166,14 @@ function AdminDashboardPage() {
       {loading ? <p>Cargando y calculando datos...</p> : dashboardData && (
         <>
           <div className={styles.kpiGrid}>
-            <KPI title="Ingresos (Manuales)" value={`$${dashboardData.kpis.totalIncome?.toLocaleString('es-AR')}`} icon={<FaDollarSign />} color="#198754" />
-            <KPI title="Gastos Totales" value={`$${dashboardData.kpis.totalExpense?.toLocaleString('es-AR')}`} icon={<FaRegChartBar />} color="#dc3545" />
+            <KPI title="Ingresos por Ventas" value={formatCurrency(dashboardData.kpis.totalSalesRevenue)} icon={<FaCashRegister />} color="#20c997" />
+            <KPI title="Ingresos (Manuales)" value={formatCurrency(dashboardData.kpis.totalIncome)} icon={<FaDollarSign />} color="#198754" />
+            <KPI title="Gastos Totales" value={formatCurrency(dashboardData.kpis.totalExpense)} icon={<FaRegChartBar />} color="#dc3545" />
+            <KPI title="Balance" value={formatCurrency(dashboardData.kpis.balance)} icon={<FaBalanceScale />} color={dashboardData.kpis.balance >= 0 ? "#0d6efd" : "#dc3545"} />
+            <KPI title="Cheques a Cobrar (Mes)" value={formatCurrency(dashboardData.kpis.checksToCollect)} icon={<FaFileInvoiceDollar />} color="#6f42c1" />
             <KPI title="Total de Órdenes" value={dashboardData.kpis.totalOrders} icon={<FaShoppingCart />} color="#0d6efd" />
-            <KPI title="Ticket Promedio" value={`$${dashboardData.kpis.averageOrderValue?.toLocaleString('es-AR', {maximumFractionDigits: 0})}`} icon={<FaChartPie />} color="#17a2b8" />
-            <KPI title="Valor del Inventario" value={`$${dashboardData.kpis.totalInventoryValue?.toLocaleString('es-AR')}`} icon={<FaWarehouse />} color="#fd7e14" />
+            <KPI title="Ticket Promedio" value={formatCurrency(dashboardData.kpis.averageOrderValue)} icon={<FaChartPie />} color="#17a2b8" />
+            <KPI title="Valor del Inventario" value={formatCurrency(dashboardData.kpis.totalInventoryValue)} icon={<FaWarehouse />} color="#fd7e14" />
             <KPI title="Clientes Registrados" value={dashboardData.kpis.totalCustomers} icon={<FaUsers />} color="#6f42c1" />
           </div>
 

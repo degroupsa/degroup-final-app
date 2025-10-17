@@ -1,5 +1,7 @@
+// src/components/dashboard/KPI.jsx
+
 import React from 'react';
-import styles from './KPI.module.css';
+import styles from './KPI.module.css'; // Importa su propio módulo de estilos
 
 // Recibe un título, un valor, un ícono y un color
 const KPI = ({ title, value, icon, color }) => {
