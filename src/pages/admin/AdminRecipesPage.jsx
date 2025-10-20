@@ -7,27 +7,42 @@ import ProduceTeamForm from '../../components/admin/recipes/ProduceTeamForm.jsx'
 import './AdminRecipesPage.css';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
+// Helper para formatear moneda
+const formatCurrency = (value) => {
+    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(value || 0);
+};
+
 const AdminRecipesPage = () => {
   const [recipes, setRecipes] = useState([]);
   const [inventoryItems, setInventoryItems] = useState([]);
+  const [products, setProducts] = useState([]); // <-- NUEVO ESTADO PARA PRODUCTOS
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [recipeToEdit, setRecipeToEdit] = useState(null);
   const [showProduceForm, setShowProduceForm] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
-  // ▼▼▼ MANTENEMOS AMBOS ESTADOS PARA LOS DESPLEGABLES ▼▼▼
   const [expandedRecipeId, setExpandedRecipeId] = useState(null);
   const [expandedVehicleInfo, setExpandedVehicleInfo] = useState([]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const recipesSnapshot = await getDocs(collection(db, 'productRecipes'));
+      // Cargamos todas las colecciones necesarias a la vez
+      const [recipesSnapshot, itemsSnapshot, productsSnapshot] = await Promise.all([
+        getDocs(collection(db, 'productRecipes')),
+        getDocs(collection(db, 'inventoryItems')),
+        getDocs(collection(db, 'products')), // <-- NUEVO FETCH
+      ]);
+
       const recipesList = recipesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setRecipes(recipesList);
-      const itemsSnapshot = await getDocs(collection(db, 'inventoryItems'));
+      
       const itemsList = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setInventoryItems(itemsList);
+
+      const productsList = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setProducts(productsList); // <-- GUARDAMOS LOS PRODUCTOS
+
     } catch (error) {
       console.error("Error al cargar datos: ", error);
       toast.error("No se pudieron cargar los datos.");
@@ -61,8 +76,8 @@ const AdminRecipesPage = () => {
     setShowProduceForm(true);
   };
   
-  const handleDelete = async (recipeId) => {
-    if (!window.confirm(`¿Estás seguro de que quieres eliminar el equipo "${recipeId}"?`)) return;
+  const handleDelete = async (recipeId, recipeName) => {
+    if (!window.confirm(`¿Estás seguro de que quieres eliminar el equipo "${recipeName}"?`)) return;
     toast.loading('Eliminando...');
     try {
       await deleteDoc(doc(db, 'productRecipes', recipeId));
@@ -117,10 +132,20 @@ const AdminRecipesPage = () => {
         {loading && <p>Cargando...</p>}
         {!loading && recipes.map(recipe => {
           const isVehicleInfoExpanded = expandedVehicleInfo.includes(recipe.id);
+          // --- NUEVO: Buscamos el precio del producto ---
+          const productInfo = products.find(p => p.name === recipe.productName);
+          const salePrice = productInfo ? productInfo.price : null;
+
           return (
             <div key={recipe.id} className="recipe-card">
               <div className="recipe-card-header">
-                <h3>{recipe.productName}</h3>
+                <div>
+                  <h3>{recipe.productName}</h3>
+                  {/* --- Mostramos el precio si existe --- */}
+                  {salePrice !== null && (
+                    <span className="recipe-price">{formatCurrency(salePrice)}</span>
+                  )}
+                </div>
                 <small>SKU: {recipe.productSKU || 'N/A'}</small>
               </div>
               
@@ -128,11 +153,9 @@ const AdminRecipesPage = () => {
                 <div className="recipe-card-body">
                   <h4>Información del Vehículo:</h4>
                   <ul className="details-list">
-                    {/* Mostramos siempre los primeros dos campos si existen */}
                     {recipe.marca && <li><span>Marca:</span><span>{recipe.marca}</span></li>}
                     {recipe.modelo && <li><span>Modelo:</span><span>{recipe.modelo}</span></li>}
                     
-                    {/* El resto de la información solo se muestra si está expandido */}
                     {isVehicleInfoExpanded && (
                       <>
                         {recipe.ano && <li><span>Año:</span><span>{recipe.ano}</span></li>}
@@ -144,7 +167,6 @@ const AdminRecipesPage = () => {
                       </>
                     )}
                   </ul>
-                  {/* El botón solo aparece si hay más de 2 datos de vehículo para mostrar */}
                   {(recipe.ano || recipe.cubiertaDelantera || recipe.cubiertaTrasera || recipe.largoTotal || recipe.anchoInternoTraseras || recipe.anchoExternoTraseras) && (
                     <button className="show-more-btn" onClick={() => handleToggleVehicleInfo(recipe.id)}>
                       {isVehicleInfoExpanded ? <FaChevronUp /> : <FaChevronDown />}
@@ -167,7 +189,7 @@ const AdminRecipesPage = () => {
                   </button>
                   <button className="produce-btn" onClick={() => openProduceModal(recipe)}>Producir</button>
                   <button className="edit-btn" onClick={() => handleOpenEditForm(recipe)}>Editar</button>
-                  <button className="delete-btn" onClick={() => handleDelete(recipe.id)}>Eliminar</button>
+                  <button className="delete-btn" onClick={() => handleDelete(recipe.id, recipe.productName)}>Eliminar</button>
               </div>
             </div>
           )
@@ -178,3 +200,4 @@ const AdminRecipesPage = () => {
 };
 
 export default AdminRecipesPage;
+

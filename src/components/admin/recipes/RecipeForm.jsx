@@ -9,6 +9,7 @@ const RecipeForm = ({ inventoryItems, onFormSubmit, recipeToEdit }) => {
   const initialFormData = {
     productName: '',
     productSKU: '',
+    price: '', // <-- NUEVO CAMPO
     marca: '',
     modelo: '',
     ano: '',
@@ -31,6 +32,7 @@ const RecipeForm = ({ inventoryItems, onFormSubmit, recipeToEdit }) => {
       setFormData({
         productName: recipeToEdit.productName || '',
         productSKU: recipeToEdit.productSKU || '',
+        price: recipeToEdit.price || '', // <-- CARGAMOS EL PRECIO
         marca: recipeToEdit.marca || '',
         modelo: recipeToEdit.modelo || '',
         ano: recipeToEdit.ano || '',
@@ -95,8 +97,8 @@ const RecipeForm = ({ inventoryItems, onFormSubmit, recipeToEdit }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.productName.trim()) {
-      toast.error("Por favor, completa el nombre del equipo.");
+    if (!formData.productName.trim() || !formData.price) {
+      toast.error("Por favor, completa el nombre y el precio de venta del equipo.");
       return;
     }
     const invalidComponentIndex = components.findIndex(c => !c.idPieza || c.quantityNeeded <= 0);
@@ -112,6 +114,7 @@ const RecipeForm = ({ inventoryItems, onFormSubmit, recipeToEdit }) => {
     const recipeData = {
       productName: formData.productName.trim(),
       productSKU: formData.productSKU.trim(),
+      price: Number(formData.price), // <-- GUARDAMOS EL PRECIO COMO NÚMERO
       marca: formData.marca.trim(),
       modelo: formData.modelo.trim(),
       ano: formData.ano.trim(),
@@ -159,6 +162,20 @@ const RecipeForm = ({ inventoryItems, onFormSubmit, recipeToEdit }) => {
             <div className="form-group">
               <label>SKU (Opcional)</label>
               <input type="text" value={formData.productSKU} onChange={(e) => setFormData({...formData, productSKU: e.target.value})} />
+            </div>
+             {/* --- NUEVO CAMPO DE PRECIO --- */}
+            <div className="form-group">
+              <label htmlFor="price">Precio de Venta</label>
+              <input
+                type="number"
+                step="0.01"
+                id="price"
+                name="price"
+                value={formData.price || ''}
+                onChange={handleInputChange}
+                placeholder="Ej: 3900000"
+                required 
+              />
             </div>
           </div>
           <hr />

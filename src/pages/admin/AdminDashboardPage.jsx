@@ -6,7 +6,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import toast from 'react-hot-toast';
 import KPI from '../../components/dashboard/KPI.jsx';
 import LatestOrdersTable from '../../components/dashboard/LatestOrdersTable.jsx';
-import { FaDollarSign, FaShoppingCart, FaUsers, FaWarehouse, FaRegChartBar, FaChartPie, FaBalanceScale, FaFileInvoiceDollar, FaCashRegister } from 'react-icons/fa'; // <-- Ícono añadido
+import { FaDollarSign, FaShoppingCart, FaUsers, FaWarehouse, FaRegChartBar, FaChartPie, FaBalanceScale, FaFileInvoiceDollar, FaCashRegister } from 'react-icons/fa';
 import QuoteRequestsWidget from '../../components/QuoteRequestsWidget.jsx';
 import FinancialManager from '../../components/FinancialManager.jsx';
 import styles from './AdminDashboardPage.module.css';
@@ -25,9 +25,9 @@ function AdminDashboardPage() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [ordersSnap, productsSnap, usersSnap, inventorySnap, recipesSnap, recordsSnap, productionSnap, checksSnap] = await Promise.all([
+      // Optimizamos las peticiones
+      const [ordersSnap, usersSnap, inventorySnap, recipesSnap, recordsSnap, productionSnap, checksSnap] = await Promise.all([
         getDocs(query(collection(db, 'orders'), orderBy('createdAt', 'desc'))),
-        getDocs(collection(db, 'products')),
         getDocs(collection(db, 'users')),
         getDocs(collection(db, 'inventoryItems')),
         getDocs(collection(db, 'productRecipes')),
@@ -37,21 +37,24 @@ function AdminDashboardPage() {
       ]);
 
       const orders = ordersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const products = productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })); // <-- NECESARIO
       const users = usersSnap.docs;
       const inventoryItems = inventorySnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const recipes = recipesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const recipes = recipesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })); // Contiene los precios de venta
       const financialRecords = recordsSnap.docs.map(doc => doc.data());
-      const productionOrders = productionSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })); // <-- NECESARIO
+      const productionOrders = productionSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       const pendingChecks = checksSnap.docs.map(doc => doc.data());
 
+      // --- CÁLCULOS DE KPI ---
       const manualIncome = financialRecords.filter(r => r.type === 'ingreso').reduce((sum, r) => sum + (r.amount || 0), 0);
       const totalExpense = financialRecords.filter(r => r.type === 'gasto').reduce((sum, r) => sum + (r.amount || 0), 0);
       const balance = manualIncome - totalExpense;
+      
       const totalOrders = orders.length;
       const totalRevenueFromOrders = orders.reduce((sum, order) => sum + (order.total || 0), 0);
       const averageOrderValue = totalOrders > 0 ? totalRevenueFromOrders / totalOrders : 0;
+      
       const totalCustomers = users.filter(u => u.data().role === 'cliente' || u.data().role === 'concesionario').length;
+      
       const inventoryValue = inventoryItems.reduce((sum, item) => sum + ((parseFloat(item.stock) || 0) * (parseFloat(item.costoPorUnidad) || 0)), 0);
       const finishedGoodsValue = recipes.reduce((sum, recipe) => {
         const recipeCost = (recipe.components || []).reduce((cost, comp) => {
@@ -70,14 +73,13 @@ function AdminDashboardPage() {
           return dueDate >= startOfMonth && dueDate <= endOfMonth;
         }).reduce((sum, cheque) => sum + cheque.monto, 0);
 
-      // --- NUEVO CÁLCULO DE INGRESOS POR VENTAS DE PRODUCCIÓN ---
+      // --- CÁLCULO DE INGRESOS POR VENTAS CORREGIDO Y DEFINITIVO ---
       const totalSalesRevenue = productionOrders
         .filter(order => order.productionType === 'for_delivery')
         .reduce((sum, order) => {
-          // Busca el producto correspondiente en la lista de productos
-          const productInfo = products.find(p => p.name === order.productName);
-          // Si encuentra el producto y tiene precio, lo suma
-          const price = productInfo ? (productInfo.price || 0) : 0;
+          // Buscamos la receta (que ahora tiene el precio)
+          const recipeInfo = recipes.find(r => r.id === order.recipeId);
+          const price = recipeInfo ? (recipeInfo.price || 0) : 0;
           return sum + (price * (order.quantity || 0));
         }, 0);
       // --- FIN DEL CÁLCULO ---
@@ -129,7 +131,7 @@ function AdminDashboardPage() {
       setDashboardData({
         kpis: { 
             totalIncome: manualIncome, 
-            totalSalesRevenue, // <-- Añadido
+            totalSalesRevenue,
             totalExpense, 
             balance,
             totalOrders, 
@@ -223,3 +225,4 @@ function AdminDashboardPage() {
 }
 
 export default AdminDashboardPage;
+

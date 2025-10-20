@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { db } from '../../../firebase/config';
-import { collection, doc, writeBatch, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, writeBatch, serverTimestamp, getDocs, query, where } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import { FaCogs } from 'react-icons/fa';
 import './ProduceTeamForm.css';
@@ -11,7 +11,6 @@ const generateTrackingCode = () => {
   return `${prefix}${randomNumber}`;
 };
 
-// Definimos aquí la PRIMERA etapa del nuevo flujo
 const FIRST_PRODUCTION_STEP = 'Pedido Recibido';
 
 const ProduceTeamForm = ({ recipe, onProductionDone, onClose }) => {
@@ -20,6 +19,16 @@ const ProduceTeamForm = ({ recipe, onProductionDone, onClose }) => {
   const [estimatedDelivery, setEstimatedDelivery] = useState('');
   const [productionType, setProductionType] = useState('for_stock');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    // Cargamos la lista de productos para buscar el precio
+    const fetchProducts = async () => {
+      const productsSnapshot = await getDocs(collection(db, 'products'));
+      setProducts(productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    };
+    fetchProducts();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,23 +45,40 @@ const ProduceTeamForm = ({ recipe, onProductionDone, onClose }) => {
     toast.loading("Registrando nuevo pedido...");
 
     try {
+      // --- LÓGICA PARA OBTENER EL PRECIO DE VENTA ---
+      let unitSalePrice = 0;
+      if (productionType === 'for_delivery') {
+        const productInfo = products.find(p => p.name === recipe.productName);
+        if (productInfo && productInfo.price) {
+          unitSalePrice = productInfo.price;
+        } else {
+          toast.dismiss();
+          toast.error(`No se encontró un precio de venta para "${recipe.productName}" en "Productos Publicados".`);
+          setIsProcessing(false);
+          return;
+        }
+      }
+      // --- FIN DE LA LÓGICA DE PRECIOS ---
+
       const batch = writeBatch(db);
       const trackingCode = generateTrackingCode();
-      const serverTime = serverTimestamp();
       
       const productionOrderRef = doc(collection(db, 'productionOrders'));
       batch.set(productionOrderRef, {
-        recipeId: recipe.id, // Guardamos la referencia a la receta para el futuro control de stock
+        recipeId: recipe.id,
         trackingCode: trackingCode,
         productName: recipe.productName,
         productSKU: recipe.productSKU || '',
         quantity: quantity,
         linkedUserEmail: linkedEmail.trim().toLowerCase() || null,
-        createdAt: serverTime,
+        createdAt: serverTimestamp(),
         estimatedDeliveryDate: estimatedDelivery || null,
         productionType: productionType,
         currentStatus: FIRST_PRODUCTION_STEP,
-        statusHistory: [{ stepName: FIRST_PRODUCTION_STEP, completed: true, updatedAt: new Date() }]
+        statusHistory: [{ stepName: FIRST_PRODUCTION_STEP, completed: true, updatedAt: new Date() }],
+        // --- GUARDAMOS EL PRECIO EN LA ORDEN ---
+        unitSalePrice: unitSalePrice,
+        totalSaleValue: unitSalePrice * quantity,
       });
       
       await batch.commit();
@@ -104,3 +130,4 @@ const ProduceTeamForm = ({ recipe, onProductionDone, onClose }) => {
 };
 
 export default ProduceTeamForm;
+
