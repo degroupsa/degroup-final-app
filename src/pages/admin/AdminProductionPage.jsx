@@ -1,27 +1,48 @@
 // src/pages/admin/AdminProductionPage.jsx
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { db } from '../../firebase/config.js';
 import { collection, getDocs, doc, updateDoc, deleteDoc, arrayUnion, runTransaction, Timestamp, query, orderBy, writeBatch, serverTimestamp } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import styles from './AdminProductionPage.module.css';
 import ItemDetailsModal from '../../components/admin/inventory/ItemDetailsModal.jsx'; 
-import { FaInfoCircle } from 'react-icons/fa';
+import ProductionLogModal from '../../components/admin/production/ProductionLogModal.jsx';
+// --- CAMBIO: Añadimos EditProductionOrderModal y más iconos ---
+import EditProductionOrderModal from '../../components/admin/production/EditProductionOrderModal.jsx';
+import { FaInfoCircle, FaClipboardList, FaTrash, FaChevronDown, FaChevronUp, FaExclamationTriangle, FaSearch, FaPencilAlt } from 'react-icons/fa';
+// --- FIN CAMBIO ---
 
+// --- CAMBIO: Añadimos 'Entregado' al final ---
 const PRODUCTION_STEPS = [
   'Pendiente', 'En Planta', 'Corte y Plegado', 'Soldadura del Equipo', 
   'Preparación para Pintura', 'Pintura Inicial', 'Pintura Final', 
   'Control de Calidad Inicial', 'Ensamble del Equipo', 'Control de Calidad Final', 
-  'Preparación para la Entrega', 'Listo para Retirar'
-];
+  'Preparación para la Entrega', 'Listo para Retirar', 'Entregado'
+]; 
+// --- FIN CAMBIO ---
 
 const AdminProductionPage = () => {
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState([]); // Lista original de Firebase
   const [products, setProducts] = useState([]);
   const [recipes, setRecipes] = useState([]);
   const [inventoryItems, setInventoryItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedItemDetails, setSelectedItemDetails] = useState(null);
+
+  const [isLogModalOpen, setIsLogModalOpen] = useState(false);
+  const [selectedOrderForLog, setSelectedOrderForLog] = useState(null);
+  
+  // --- CAMBIO: Estado para el nuevo modal de Edición ---
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedOrderForEdit, setSelectedOrderForEdit] = useState(null);
+  // --- FIN CAMBIO ---
+
+  const [expandedMaterials, setExpandedMaterials] = useState(new Set());
+
+  // --- CAMBIO: Nuevos estados para el buscador y la lista colapsable ---
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showCompleted, setShowCompleted] = useState(false);
+  // --- FIN CAMBIO ---
 
   const fetchAllData = useCallback(async () => {
     setLoading(true);
@@ -46,19 +67,80 @@ const AdminProductionPage = () => {
     fetchAllData();
   }, [fetchAllData]);
   
+  // --- CAMBIO: Lógica de filtrado y separación de listas ---
+  const filteredOrders = useMemo(() => {
+    const lowerSearch = searchTerm.toLowerCase();
+    if (!lowerSearch) {
+      return orders;
+    }
+    return orders.filter(order => {
+      const productName = order.productName || '';
+      const clientName = order.linkedClientName || '';
+      const trackingCode = order.trackingCode || '';
+      return (
+        productName.toLowerCase().includes(lowerSearch) ||
+        clientName.toLowerCase().includes(lowerSearch) ||
+        trackingCode.toLowerCase().includes(lowerSearch)
+      );
+    });
+  }, [orders, searchTerm]);
+
+  const [activeOrders, completedOrders] = useMemo(() => {
+    const active = filteredOrders.filter(o => o.currentStatus !== 'Entregado');
+    const completed = filteredOrders.filter(o => o.currentStatus === 'Entregado');
+    return [active, completed];
+  }, [filteredOrders]);
+  // --- FIN CAMBIO ---
+  
   const findItemDetails = (itemId) => inventoryItems.find(item => item.id === itemId);
+
+  // Handlers para modal de Bitácora
+  const handleOpenLogModal = (order) => {
+    setSelectedOrderForLog(order);
+    setIsLogModalOpen(true);
+  };
+  const handleCloseLogModal = () => {
+    setIsLogModalOpen(false);
+    setSelectedOrderForLog(null);
+  };
+  
+  // --- CAMBIO: Handlers para el nuevo modal de Edición ---
+  const handleOpenEditModal = (order) => {
+    setSelectedOrderForEdit(order);
+    setIsEditModalOpen(true);
+  };
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedOrderForEdit(null);
+  };
+  // --- FIN CAMBIO ---
+
+  const toggleMaterials = (orderId) => {
+    setExpandedMaterials(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(orderId)) {
+        newSet.delete(orderId);
+      } else {
+        newSet.add(orderId);
+      }
+      return newSet;
+    });
+  };
 
   const advanceStatus = async (order) => {
     const { id, currentStatus, quantity, recipeId, productName, productionType, trackingCode } = order;
     const currentIndex = PRODUCTION_STEPS.indexOf(currentStatus);
+    
     if (currentIndex >= PRODUCTION_STEPS.length - 1) {
-      toast.error("El equipo ya está en el último paso.");
+      toast.error("El equipo ya está en el último paso (Entregado).");
       return;
     }
+
     const nextStatus = PRODUCTION_STEPS[currentIndex + 1];
     const STOCK_CHECK_GATE_STEP = 'En Planta';
 
     if (nextStatus === STOCK_CHECK_GATE_STEP) {
+      // (Lógica de verificación de stock... sin cambios)
       toast.loading('Verificando stock para iniciar producción...');
       const recipe = recipes.find(r => r.id === recipeId);
       if (!recipe) {
@@ -111,7 +193,8 @@ const AdminProductionPage = () => {
       return;
     }
     
-    const isLastStep = currentIndex === PRODUCTION_STEPS.length - 2;
+    const isFinancialStep = currentIndex === PRODUCTION_STEPS.indexOf('Preparación para la Entrega');
+
     toast.loading(`Avanzando a "${nextStatus}"...`);
     try {
       const orderRef = doc(db, 'productionOrders', id);
@@ -119,7 +202,8 @@ const AdminProductionPage = () => {
         currentStatus: nextStatus,
         statusHistory: arrayUnion({ stepName: nextStatus, completed: true, updatedAt: new Date() })
       };
-      if (isLastStep) {
+      
+      if (isFinancialStep) {
         await runTransaction(db, async (transaction) => {
           if (productionType === 'for_stock') {
             const recipeDoc = await transaction.get(doc(db, 'productRecipes', recipeId));
@@ -128,6 +212,7 @@ const AdminProductionPage = () => {
             transaction.update(doc(db, 'productRecipes', recipeId), { stockFinished: newFinishedStock });
           } 
           else if (productionType === 'for_delivery') {
+            // (Lógica de registro de ingreso... sin cambios)
             const productInfo = products.find(p => p.name === productName);
             if (!productInfo) throw new Error("No se encontró el producto para registrar el ingreso.");
             const incomeRecordRef = doc(collection(db, 'registrosFinancieros'));
@@ -205,68 +290,194 @@ const AdminProductionPage = () => {
 
   const getRecipeForOrder = (order) => recipes.find(r => r.id === order.recipeId);
 
+  const renderOrderCard = (order) => {
+    const recipe = getRecipeForOrder(order);
+    const nextStep = getNextStep(order.currentStatus);
+    const isExpanded = expandedMaterials.has(order.id);
+    const isCompleted = order.currentStatus === 'Entregado';
+
+    return (
+      <div 
+        key={order.id} 
+        className={`${styles.orderCard} ${isCompleted ? styles.completedCard : ''}`}
+      >
+        <div className={styles.orderCardHeader}>
+          <h4>{order.productName} (x{order.quantity})</h4>
+          <div className={styles.headerActions}>
+            {/* --- CAMBIO: Añadido botón de Editar --- */}
+            <button className={`${styles.iconButton} ${styles.editButton}`} onClick={() => handleOpenEditModal(order)} title="Editar Pedido/Cliente">
+              <FaPencilAlt />
+            </button>
+            {/* --- FIN CAMBIO --- */}
+            <button className={styles.iconButton} onClick={() => handleOpenLogModal(order)} title="Ver Bitácora de Producción">
+              <FaClipboardList />
+            </button>
+            <button className={`${styles.iconButton} ${styles.deleteButton}`} onClick={() => handleDeleteOrder(order.id, order.trackingCode)} title="Eliminar pedido">
+              <FaTrash />
+            </button>
+          </div>
+        </div>
+
+        <div className={styles.orderCardInfo}>
+          <span className={styles.trackingCode}>{order.trackingCode}</span>
+          {order.productionType && (
+            <span className={`${styles.productionTypeBadge} ${styles[order.productionType]}`}>
+              {order.productionType === 'for_stock' ? 'Para Stock' : 'Para Entrega'}
+            </span>
+          )}
+          <span className={styles.skuCode}>SKU: {order.productSKU || 'N/A'}</span>
+        </div>
+
+        <div className={styles.orderCardBody}>
+          <p><strong>Cliente:</strong> {order.linkedClientName || 'Sin cliente'}</p>
+          <p><strong>Entrega Estimada:</strong> {order.estimatedDeliveryDate ? new Date(order.estimatedDeliveryDate).toLocaleDateString('es-AR', { timeZone: 'UTC' }) : 'No definida'}</p>
+          <p><strong>Estado Actual:</strong> <span className={styles.statusBadge}>{order.currentStatus}</span></p>
+        </div>
+
+        {recipe && (
+          <div className={styles.materialsToggle}>
+            <button className={styles.toggleMaterialsBtn} onClick={() => toggleMaterials(order.id)}>
+              {isExpanded ? 'Ocultar Materiales' : 'Ver Materiales'}
+              {isExpanded ? <FaChevronUp /> : <FaChevronDown />}
+            </button>
+            
+            {isExpanded && (
+              <div className={styles.materialsList}>
+                <table className={styles.materialsTable}>
+                  <tbody>
+                    {recipe.components.map((comp, idx) => (
+                      <tr key={idx}>
+                        <td>{comp.nombrePieza}</td>
+                        <td>{comp.quantityNeeded * order.quantity} un.</td>
+                        <td>
+                          <button className={styles.detailsBtn} onClick={() => setSelectedItemDetails(findItemDetails(comp.idPieza))}>
+                            <FaInfoCircle /> Detalles
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {!isCompleted && (
+          <div className={styles.orderCardActions}>
+            <button 
+              className={styles.forceAdvanceBtn} 
+              onClick={() => forceAdvanceStatus(order)} 
+              disabled={nextStep === 'Ninguno'} 
+              title="Avanzar sin verificar stock"
+            >
+              <FaExclamationTriangle /> Forzar
+            </button>
+            <button 
+              className={styles.advanceBtn} 
+              onClick={() => advanceStatus(order)} 
+              disabled={nextStep === 'Ninguno'}
+            >
+              Mover a: {nextStep}
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+
   return (
     <div className="admin-page-content">
       <ItemDetailsModal item={selectedItemDetails} onClose={() => setSelectedItemDetails(null)} />
+      
+      {isLogModalOpen && selectedOrderForLog && (
+        <ProductionLogModal
+          order={selectedOrderForLog}
+          onClose={handleCloseLogModal}
+          onLogUpdated={() => {
+            fetchAllData().then(() => {
+                setOrders(prevOrders => {
+                    const updatedOrders = prevOrders.map(o => 
+                        o.id === selectedOrderForLog.id ? { ...o, ...selectedOrderForLog } : o
+                    );
+                    const updatedOrder = updatedOrders.find(o => o.id === selectedOrderForLog.id);
+                    if (updatedOrder) {
+                        setSelectedOrderForLog(updatedOrder);
+                    }
+                    return updatedOrders;
+                });
+            });
+          }}
+        />
+      )}
+      
+      {/* --- CAMBIO: Renderizar el nuevo modal de Edición --- */}
+      {isEditModalOpen && selectedOrderForEdit && (
+        <EditProductionOrderModal
+          order={selectedOrderForEdit}
+          onClose={handleCloseEditModal}
+          onOrderUpdated={() => {
+            handleCloseEditModal(); // Cierra el modal
+            fetchAllData();       // Recarga todos los datos
+          }}
+        />
+      )}
+      {/* --- FIN CAMBIO --- */}
+
 
       <div className={styles.pageHeader}>
         <h1 className="admin-page-title">Seguimiento de Producción</h1>
+        <div className={styles.searchContainer}>
+            <FaSearch className={styles.searchIcon} />
+            <input 
+                type="text"
+                placeholder="Buscar por producto, cliente o código..."
+                className={styles.searchInput}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
+        </div>
       </div>
       
+      
+      {/* SECCIÓN ACTIVOS */}
+      <h2 className={styles.sectionTitle}>Equipos en Producción ({activeOrders.length})</h2>
       <div className={styles.productionOrdersContainer}>
         {loading && <p>Cargando pedidos...</p>}
-        {!loading && orders.length === 0 && (
-          <div style={{textAlign: 'center', padding: '2rem', backgroundColor: '#fff', borderRadius: '8px'}}>
-            <h3>No hay pedidos de producción activos.</h3>
+        {!loading && activeOrders.length === 0 && (
+          <div className={styles.noOrdersMessage}>
+            <h3>
+              {searchTerm 
+                ? 'No se encontraron pedidos en producción con ese término.' 
+                : 'No hay pedidos de producción activos.'}
+            </h3>
           </div>
         )}
-        {!loading && orders.map(order => {
-          const recipe = getRecipeForOrder(order);
-          return (
-            <div key={order.id} className={styles.orderCard}>
-              <div className={styles.orderCardHeader}>
-                <div><h4>{order.productName} (x{order.quantity})</h4><small>SKU: {order.productSKU || 'N/A'}</small></div>
-                <div className={styles.headerRight}>
-                  {order.productionType && (<span className={`${styles.productionTypeBadge} ${styles[order.productionType]}`}>{order.productionType === 'for_stock' ? 'Para Stock' : 'Para Entrega'}</span>)}
-                  <span className={styles.trackingCode}>{order.trackingCode}</span>
-                  <button className={styles.deleteOrderBtn} onClick={() => handleDeleteOrder(order.id, order.trackingCode)} title="Eliminar pedido">&times;</button>
-                </div>
-              </div>
-              <div className={styles.orderCardBody}>
-                <p><strong>Cliente:</strong> {order.linkedUserEmail || 'Sin cliente'}</p>
-                <p><strong>Entrega Estimada:</strong> {order.estimatedDeliveryDate ? new Date(order.estimatedDeliveryDate).toLocaleDateString('es-AR', { timeZone: 'UTC' }) : 'No definida'}</p>
-                <p><strong>Estado Actual:</strong> <span className={styles.statusBadge}>{order.currentStatus}</span></p>
-                
-                {recipe && (
-                  <div>
-                    <h5 style={{marginTop: '1rem', marginBottom: '0.5rem'}}>Materiales:</h5>
-                    <table className={styles.materialsTable}>
-                      <tbody>
-                        {recipe.components.map((comp, idx) => (
-                          <tr key={idx}>
-                            <td>{comp.nombrePieza}</td>
-                            <td>{comp.quantityNeeded * order.quantity} un.</td>
-                            <td>
-                              <button className={styles.detailsBtn} onClick={() => setSelectedItemDetails(findItemDetails(comp.idPieza))}>
-                                <FaInfoCircle /> Detalles
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-              <div className={styles.orderCardActions}>
-                <div className={styles.nextStepInfo}>Próximo paso: <strong>{getNextStep(order.currentStatus)}</strong></div>
-                <button className={styles.forceAdvanceBtn} onClick={() => forceAdvanceStatus(order)} disabled={order.currentStatus === 'Listo para Retirar'} title="Avanzar sin verificar stock">Forzar Avance</button>
-                <button className={styles.advanceBtn} onClick={() => advanceStatus(order)} disabled={order.currentStatus === 'Listo para Retirar'}>Avanzar</button>
-              </div>
-            </div>
-          )
-        })}
+        {!loading && activeOrders.map(order => renderOrderCard(order))}
       </div>
+
+      {/* SECCIÓN COMPLETADOS (COLAPSABLE) */}
+      <div className={styles.completedToggle} onClick={() => setShowCompleted(!showCompleted)}>
+        <h2 className={styles.sectionTitle}>Equipos Entregados ({completedOrders.length})</h2>
+        {showCompleted ? <FaChevronUp /> : <FaChevronDown />}
+      </div>
+      
+      {showCompleted && (
+        <div className={styles.productionOrdersContainer}>
+          {!loading && completedOrders.length === 0 && (
+            <div className={styles.noOrdersMessage}>
+              <h3>
+                {searchTerm 
+                  ? 'No se encontraron pedidos entregados con ese término.'
+                  : 'Aún no hay pedidos entregados.'}
+              </h3>
+            </div>
+          )}
+          {!loading && completedOrders.map(order => renderOrderCard(order))}
+        </div>
+      )}
+      
     </div>
   );
 };

@@ -1,0 +1,258 @@
+/* src/components/admin/production/ProductionLogModal.module.css */
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+    backdrop-filter: blur(4px);
+  }
+  
+  .modalContent {
+    background: white;
+    padding: 0;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 700px; /* Ancho del modal */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .modalHeader h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: #212529;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .closeButton {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 0;
+    line-height: 1;
+  }
+  
+  .orderDetails {
+    padding: 1rem 1.5rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+  }
+  .orderDetails p {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+  }
+  .trackingCode {
+    font-family: monospace;
+    background-color: #e9ecef;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  
+  .logContainer {
+    padding: 1.5rem;
+    overflow-y: auto; /* Permite scroll si el contenido es mucho */
+    display: flex; /* Para poner el form y el historial */
+    flex-direction: column;
+    gap: 2rem; /* Espacio entre form e historial */
+  }
+  
+  .noteForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .noteForm textarea {
+    width: 100%;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical; /* Permitir redimensionar verticalmente */
+    min-height: 80px; /* Altura mínima */
+  }
+  .noteForm textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+  .noteForm button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    font-weight: 600;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-end; /* Botón a la derecha */
+  }
+  .noteForm button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+  }
+  
+  .logHistory h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 0.5rem;
+  }
+  .noLogs {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 1rem 0;
+  }
+  .logList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: 300px; /* Límite de altura para el historial */
+    overflow-y: auto; /* Scroll solo para el historial */
+    /* Estilos para la barra de scroll (opcional pero mejora la estética) */
+    scrollbar-width: thin;
+    scrollbar-color: #ced4da #f8f9fa;
+  }
+  .logList::-webkit-scrollbar {
+    width: 8px;
+  }
+  .logList::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 4px;
+  }
+  .logList::-webkit-scrollbar-thumb {
+    background-color: #ced4da;
+    border-radius: 4px;
+    border: 2px solid #f8f9fa;
+  }
+  
+  .logItem {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0.5rem; /* Añadimos padding lateral */
+    border-bottom: 1px solid #e9ecef;
+  }
+  .logItem:last-child {
+    border-bottom: none;
+  }
+  
+  .logIcon {
+    flex-shrink: 0;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: #f1f3f5;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+  }
+  .logDetails p {
+    margin: 0;
+  }
+  .logNote {
+    font-size: 0.95rem;
+    color: #212529;
+    line-height: 1.5;
+    margin-bottom: 0.25rem !important;
+    white-space: pre-wrap; /* Para que respete los saltos de línea */
+  }
+  .logMeta {
+    font-size: 0.8rem;
+    color: #6c757d;
+  }
+  
+  /* --- ESTILOS PARA EL BUSCADOR DE CLIENTES DENTRO DEL MODAL --- */
+  .searchClientGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .searchClientGroup label {
+    font-weight: 500;
+    color: #495057;
+  }
+  .searchContainer {
+    position: relative;
+    width: 100%;
+  }
+  .searchIcon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+  }
+  .searchInput {
+    width: 100%;
+    box-sizing: border-box; /* Asegura que el padding no desborde */
+    padding: 0.75rem 0.75rem 0.75rem 2.2rem; /* Más espacio para el icono */
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  .searchInput:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+  
+  .searchResults {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #ced4da;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    max-height: 150px;
+    overflow-y: auto;
+    /* position: absolute; NO, DEBE SER RELATIVO AL FORM */
+    background: white;
+    width: 100%;
+    box-sizing: border-box; /* Asegura que el borde no desborde */
+    z-index: 1060; 
+  }
+  .searchResults li {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+  }
+  .searchResults li:hover {
+    background-color: #f1f3f5;
+  }
+  .searchResults li strong {
+    font-size: 0.95rem;
+    color: #212529;
+  }
+  .searchResults li span {
+    font-size: 0.8rem;
+    color: #6c757d;
+  }

@@ -6,11 +6,17 @@ import { FaCogs, FaTimes, FaSave } from 'react-icons/fa';
 // --- CORRECCIÓN CLAVE: La importación ahora apunta al archivo .css correcto ---
 import './ProduceTeamForm.css';
 
+// --- CAMBIO 1: Código de seguimiento mucho más robusto ---
 const generateTrackingCode = () => {
   const prefix = "DE-PROD-";
-  const randomNumber = Math.floor(1000 + Math.random() * 9000);
-  return `${prefix}${randomNumber}`;
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789'; // Caracteres amigables (sin I, O)
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return `${prefix}${result}`; // Ej: DE-PROD-A8K4T9
 };
+// --- FIN CAMBIO 1 ---
 
 const FIRST_PRODUCTION_STEP = 'Pedido Recibido';
 
@@ -87,7 +93,7 @@ const ProduceTeamForm = ({ recipe, onProductionDone, onClose }) => {
 
     try {
       const batch = writeBatch(db);
-      const trackingCode = generateTrackingCode();
+      const trackingCode = generateTrackingCode(); // Usa la nueva función mejorada
       const productionOrderRef = doc(collection(db, 'productionOrders'));
       
       let salePrice = 0;
@@ -103,13 +109,16 @@ const ProduceTeamForm = ({ recipe, onProductionDone, onClose }) => {
 
       const orderData = {
         recipeId: recipe.id,
-        trackingCode: trackingCode,
+        trackingCode: trackingCode, // Este es el número de serie único
         productName: recipe.productName,
         productSKU: recipe.productSKU || '',
         quantity: Number(quantity),
         productionType: productionType,
         currentStatus: FIRST_PRODUCTION_STEP,
         statusHistory: [{ stepName: FIRST_PRODUCTION_STEP, completed: true, updatedAt: new Date() }],
+        // --- CAMBIO 2: Inicializa la bitácora de producción ---
+        productionLog: [], // Array vacío para futuras observaciones
+        // --- FIN CAMBIO 2 ---
         createdAt: serverTimestamp(),
         estimatedDeliveryDate: estimatedDelivery || null,
         linkedClientId: selectedClient ? selectedClient.id : null,
@@ -202,7 +211,6 @@ const ProduceTeamForm = ({ recipe, onProductionDone, onClose }) => {
       </div>
     </div>
   );
-};
+}; 
 
 export default ProduceTeamForm;
-
