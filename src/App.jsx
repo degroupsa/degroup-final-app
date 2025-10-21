@@ -41,6 +41,8 @@ import AdminProductsPage from './pages/admin/AdminProductsPage.jsx';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage.jsx';
 import AdminUsersPage from './pages/admin/AdminUsersPage.jsx';
 import AdminRealtimePage from './pages/admin/AdminRealtimePage.jsx'; 
+// --- IMPORTAMOS LA NUEVA PÁGINA ---
+import AdminClientsPage from './pages/admin/AdminClientsPage.jsx';
 
 import './App.css';
 
@@ -75,6 +77,10 @@ function App() {
           <Route index element={<Navigate to="dashboard" replace />} /> 
           <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="inventario" element={<AdminInventoryPage />} />
+
+          {/* --- AÑADIMOS LA NUEVA RUTA --- */}
+          <Route path="clientes" element={<AdminClientsPage />} />
+
           <Route path="recetas" element={<AdminRecipesPage />} />
           <Route path="productos" element={<AdminProductsPage />} />
           <Route path="ordenes" element={<AdminOrdersPage />} />
@@ -114,3 +120,4 @@ function App() {
 }
 
 export default App;
+

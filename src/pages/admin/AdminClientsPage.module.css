@@ -1,0 +1,338 @@
+/* src/pages/admin/AdminClientsPage.module.css */
+
+.pageContainer {
+  padding: 1.5rem 2rem;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pageHeader h1 {
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.searchContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  color: #6c757d;
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+.searchInput {
+  padding: 0.6rem 0.75rem 0.6rem 2.2rem;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  width: 300px; 
+  transition: all 0.2s;
+  background-color: #fff;
+  color: #495057;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
+  background-color: #fff;
+}
+
+.addButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.addButton:hover {
+  background-color: #0b5ed7;
+}
+
+.clientsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.clientCard {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); 
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.clientCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.clientHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.clientHeader h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #212529;
+}
+
+.clientActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* --- CAMBIO AQUÍ: Quitamos el color por defecto --- */
+.clientActions button {
+  background: #f1f3f5;
+  border: none;
+  /* color: #495057; <-- Se quitó esta línea */
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* --- CAMBIO AQUÍ: Quitamos el color por defecto del hover --- */
+.clientActions button:hover {
+  background-color: #e9ecef;
+  /* color: #0d6efd; <-- Se quitó esta línea */
+}
+
+.clientBody {
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1.5rem;
+}
+
+.clientBody p {
+  margin: 0;
+  color: #495057;
+  font-size: 0.9rem;
+  word-wrap: break-word;
+}
+.clientBody p strong {
+  display: block;
+  color: #6c757d;
+  font-weight: 500;
+  font-size: 0.8rem;
+  margin-bottom: 0.1rem;
+}
+
+.vehicleSection {
+  margin-top: auto;
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+  background-color: #f8f9fa;
+}
+
+.vehicleSection h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  color: #343a40;
+}
+
+.vehicleList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.vehicleList li {
+  font-size: 0.9rem;
+  color: #495057;
+  padding: 0.25rem 0;
+}
+
+.noClientsMessage {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #6c757d;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+.noClientsMessage h3 {
+    margin-top: 0;
+}
+
+
+/* --- ESTILOS MEJORADOS PARA MODALES Y FORMULARIOS --- */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+  backdrop-filter: blur(4px);
+}
+
+.modalContent {
+  background: white;
+  padding: 1.5rem 2rem 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #212529;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0;
+  line-height: 1;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.25rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.formGroup label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.formGroup input, .formGroup select {
+  padding: 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+.formGroup input:focus, .formGroup select:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+}
+.actionButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.cancelButton {
+    background-color: #6c757d;
+    color: white;
+}
+.cancelButton:hover {
+    background-color: #5a6268;
+}
+
+.submitButton {
+  background-color: #198754;
+  color: white;
+}
+.submitButton:hover {
+    background-color: #157347;
+}
+
+/* --- AÑADIDO AQUÍ: Colores para los iconos de acción --- */
+.editButton {
+  color: #0d6efd; /* Azul */
+}
+.editButton:hover {
+  color: #0b5ed7;
+}
+
+.vehicleButton {
+  color: #198754; /* Verde */
+}
+.vehicleButton:hover {
+  color: #157347;
+}
+
+.deleteButton {
+  color: #dc3545; /* Rojo */
+}
+.deleteButton:hover {
+  color: #bb2d3b;
+}

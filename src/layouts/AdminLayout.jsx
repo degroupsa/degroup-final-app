@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { NavLink, Link, Outlet } from 'react-router-dom';
 import styles from './AdminLayout.module.css';
 import NavigationArrows from '../components/ui/NavigationArrows';
-// Importamos los íconos que usaremos
 import { 
   FaTachometerAlt, FaWarehouse, FaSitemap, FaTruckLoading, 
-  FaBoxOpen, FaFileInvoiceDollar, FaUsers, FaArrowLeft, FaWifi
+  FaBoxOpen, FaFileInvoiceDollar, FaUsers, FaArrowLeft, FaWifi,
+  FaAddressBook // <-- NUEVO ÍCONO
 } from 'react-icons/fa';
 
 const getNavLinkClass = ({ isActive }) => {
@@ -14,8 +14,6 @@ const getNavLinkClass = ({ isActive }) => {
 
 function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-  // La línea de "console.log" ha sido eliminada de aquí.
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -38,6 +36,12 @@ function AdminLayout() {
             <NavLink to="/admin/inventario" className={getNavLinkClass} title="Inventario">
               <FaWarehouse /><span>Dashboard de Inventario</span>
             </NavLink>
+            
+            {/* --- NUEVO ENLACE AÑADIDO --- */}
+            <NavLink to="/admin/clientes" className={getNavLinkClass} title="Gestión de Clientes">
+              <FaAddressBook /><span>Gestión de Clientes</span>
+            </NavLink>
+
             <NavLink to="/admin/recetas" className={getNavLinkClass} title="Editor de Equipos">
               <FaSitemap /><span>Equipos para Produccion</span>
             </NavLink>
