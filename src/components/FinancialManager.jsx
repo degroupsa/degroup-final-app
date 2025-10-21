@@ -17,30 +17,36 @@ const formatCurrency = (value, withDecimals = false) => {
   }).format(value || 0);
 };
 
-const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, value }) => {
-    const RADIAN = Math.PI / 180;
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-    const lineSourceX = cx + (outerRadius + 5) * Math.cos(-midAngle * RADIAN);
-    const lineSourceY = cy + (outerRadius + 5) * Math.sin(-midAngle * RADIAN);
-    const lineTargetX = cx + (outerRadius + 30) * Math.cos(-midAngle * RADIAN);
-    const lineTargetY = cy + (outerRadius + 30) * Math.sin(-midAngle * RADIAN);
+// --- ▼▼▼ CAMBIO AQUÍ ▼▼▼ ---
+// Eliminamos el 'CustomLabel' anterior y creamos este más simple.
+// Solo muestra el porcentaje DENTRO de la porción del gráfico.
+const PercentLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+  // No mostrar la etiqueta si la porción es muy pequeña (menos del 5%)
+  if (percent < 0.05) return null; 
 
-    return (
-        <>
-            {percent > 0.05 && (
-                <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontWeight="bold" fontSize="1rem">
-                    {`${(percent * 100).toFixed(0)}%`}
-                </text>
-            )}
-            <path d={`M${lineSourceX},${lineSourceY}L${lineTargetX},${lineTargetY}`} stroke="#888" fill="none" />
-            <text x={lineTargetX + (lineTargetX > cx ? 3 : -3)} y={lineTargetY} textAnchor={lineTargetX > cx ? 'start' : 'end'} dominantBaseline="central" className={styles.labelValue}>
-                {formatCurrency(value)}
-            </text>
-        </>
-    );
+  const RADIAN = Math.PI / 180;
+  // Calcula la posición en el centro de la porción
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="white" // Color del texto
+      textAnchor="middle"
+      dominantBaseline="central"
+      fontWeight="bold"
+      fontSize="1rem"
+    >
+      {/* Muestra el porcentaje, ej: "99%" */}
+      {`${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
 };
+// --- ▲▲▲ FIN DEL CAMBIO ▲▲▲ ---
+
 
 const INCOME_CATEGORIES = [ 'Venta de Productos', 'Servicios Tercerizado', 'Credito Financiero', 'Credito Personal', 'Combustible y Viáticos', 'Ajuste de Saldo', 'Otros Ingresos' ];
 const EXPENSE_CATEGORIES = [ 'Materia Prima', 'Salarios', 'Alquiler', 'Servicios Públicos (Luz, Agua, Gas, Internet)', 'Comisiones Concesionarios', 'Herramientas', 'Marketing y Publicidad', 'Honorarios', 'Artículos de Oficina y Limpieza', 'Mantenimiento y Reparaciones', 'Combustible y Viáticos', 'Impuestos y Tasas', 'Intereses y Comisiones Bancarias', 'Otros Gastos' ];
@@ -50,6 +56,10 @@ const RECORDS_PER_PAGE = 10;
 function FinancialManager() {
   const [cheques, setCheques] = useState([]);
   const [newCheque, setNewCheque] = useState({ emisor: '', monto: '', fechaCobro: '' });
+  
+  const [accountsPayable, setAccountsPayable] = useState([]);
+  const [newPayable, setNewPayable] = useState({ proveedor: '', concepto: '', monto: '', fechaVencimiento: '' });
+
   const [loading, setLoading] = useState(true);
   const [manualRecord, setManualRecord] = useState({ type: 'ingreso', concept: '', amount: '', category: INCOME_CATEGORIES[0] });
   const [chartData, setChartData] = useState({ income: [], expense: [] });
@@ -66,21 +76,30 @@ function FinancialManager() {
   const fetchData = async () => {
     setLoading(true);
     try {
+      // Cargar Cheques
       const checksQuery = query(collection(db, 'pendingChecks'), where('status', '!=', 'cobrado'), orderBy('status'), orderBy('fechaCobro', 'asc'));
       const checksSnapshot = await getDocs(checksQuery);
       setCheques(checksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       
+      // Cargar Cuentas por Pagar
+      const payablesQuery = query(collection(db, 'pendingPayables'), where('status', '!=', 'pagado'), orderBy('status'), orderBy('fechaVencimiento', 'asc'));
+      const payablesSnapshot = await getDocs(payablesQuery);
+      setAccountsPayable(payablesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+      // Cargar Registros Financieros
       const recordsQuery = query(collection(db, 'registrosFinancieros'), orderBy('date', 'desc'));
       const recordsSnapshot = await getDocs(recordsQuery);
       const records = recordsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setFinancialRecords(records);
       
+      // Cargar KPIs
       const firstIncomeQuery = query(collection(db, 'registrosFinancieros'), where('type', '==', 'ingreso'), orderBy('date', 'asc'), limit(1));
       const firstExpenseQuery = query(collection(db, 'registrosFinancieros'), where('type', '==', 'egreso'), orderBy('date', 'asc'), limit(1));
       const [firstIncomeSnap, firstExpenseSnap] = await Promise.all([getDocs(firstIncomeQuery), getDocs(firstExpenseQuery)]);
       setFirstIncome(firstIncomeSnap.empty ? null : firstIncomeSnap.docs[0].data());
       setFirstExpense(firstExpenseSnap.empty ? null : firstExpenseSnap.docs[0].data());
       
+      // Procesar datos de Gráficos
       const processChartData = (type) => {
         const categoryMap = records.filter(r => r.type === type).reduce((acc, record) => {
             const category = record.category || `Sin Categoría (${type})`;
@@ -103,6 +122,7 @@ function FinancialManager() {
     fetchData();
   }, []);
 
+  // ... (El resto de las funciones 'handle' no cambian) ...
   const handleInitialBalanceSubmit = async (e) => {
     e.preventDefault();
     if (!initialBalance.amount || !initialBalance.date) {
@@ -132,6 +152,9 @@ function FinancialManager() {
   };
 
   const handleChequeInputChange = (e) => setNewCheque({ ...newCheque, [e.target.name]: e.target.value });
+  
+  const handlePayableInputChange = (e) => setNewPayable({ ...newPayable, [e.target.name]: e.target.value });
+
   const handleRecordInputChange = (e) => {
     const { name, value } = e.target;
     const newRecord = { ...manualRecord, [name]: value };
@@ -162,6 +185,32 @@ function FinancialManager() {
       toast.error("Error al agregar el cheque.");
     }
   };
+
+  const handleAddPayable = async (e) => {
+    e.preventDefault();
+    const { proveedor, concepto, monto, fechaVencimiento } = newPayable;
+    if (!proveedor || !monto || !fechaVencimiento) return toast.error("Completa Proveedor, Monto y Fecha.");
+    
+    toast.loading('Guardando cuenta por pagar...');
+    try {
+      await addDoc(collection(db, 'pendingPayables'), { 
+        proveedor: proveedor.trim(), 
+        concepto: concepto.trim(),
+        monto: Number(monto), 
+        fechaVencimiento: Timestamp.fromDate(new Date(fechaVencimiento)), 
+        status: 'pendiente', 
+        createdAt: serverTimestamp() 
+      });
+      toast.dismiss();
+      toast.success("Cuenta por pagar agregada.");
+      setNewPayable({ proveedor: '', concepto: '', monto: '', fechaVencimiento: '' });
+      fetchData();
+    } catch (error) {
+      toast.dismiss();
+      toast.error("Error al agregar la cuenta.");
+      console.error(error);
+    }
+  };
   
   const handleRecordSubmit = async (e) => {
     e.preventDefault();
@@ -179,24 +228,15 @@ function FinancialManager() {
     }
   };
   
-  // --- FUNCIÓN DE GUARDADO CORREGIDA Y DEFINITIVA ---
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     if (!editingRecord) return;
     toast.loading("Guardando cambios...");
     try {
         const { id, ...dataToUpdate } = editingRecord;
-
-        // Convertimos la fecha de string (yyyy-mm-dd) de vuelta a un Timestamp de Firebase.
         dataToUpdate.date = Timestamp.fromDate(new Date(dataToUpdate.date));
-        // Nos aseguramos de que el monto sea guardado como un número.
         dataToUpdate.amount = Number(dataToUpdate.amount);
-
-        // CORRECCIÓN CLAVE: En lugar de reconstruir el objeto, enviamos
-        // 'dataToUpdate', que contiene TODOS los campos del estado 'editingRecord'
-        // (incluida la nueva categoría) ya listos para ser guardados.
         await updateDoc(doc(db, 'registrosFinancieros', id), dataToUpdate);
-        
         toast.dismiss();
         toast.success("Movimiento actualizado con éxito.");
         setIsEditModalOpen(false);
@@ -214,7 +254,13 @@ function FinancialManager() {
       if (!window.confirm(`¿Confirmas el cobro del cheque de ${cheque.emisor}?`)) return fetchData();
       toast.loading("Procesando cobro...");
       try {
-        await addDoc(collection(db, 'registrosFinancieros'), { type: 'ingreso', amount: cheque.monto, concept: `Cobro de cheque de ${cheque.emisor}`, category: 'Venta de Productos', date: serverTimestamp() });
+        await addDoc(collection(db, 'registrosFinancieros'), { 
+          type: 'ingreso', 
+          amount: cheque.monto, 
+          concept: `Cobro de cheque de ${cheque.emisor}`, 
+          category: 'Venta de Productos',
+          date: serverTimestamp() 
+        });
         await updateDoc(doc(db, 'pendingChecks', cheque.id), { status: 'cobrado' });
         toast.dismiss();
         toast.success("¡Cheque cobrado y registrado!");
@@ -229,6 +275,39 @@ function FinancialManager() {
         toast.success(`Estado del cheque actualizado.`);
         fetchData();
       } catch (error) {
+        toast.error("Error al actualizar el estado.");
+      }
+    }
+  };
+
+  const handlePayableStatusChange = async (payable, newStatus) => {
+    if (newStatus === 'pagado') {
+      if (!window.confirm(`¿Confirmas el pago a ${payable.proveedor}?`)) return fetchData();
+      toast.loading("Procesando pago...");
+      try {
+        await addDoc(collection(db, 'registrosFinancieros'), { 
+          type: 'egreso', 
+          amount: payable.monto, 
+          concept: `Pago a ${payable.proveedor}: ${payable.concepto || 'S/C'}`, 
+          category: 'Otros Gastos', 
+          date: serverTimestamp() 
+        });
+        await updateDoc(doc(db, 'pendingPayables', payable.id), { status: 'pagado' });
+        toast.dismiss();
+        toast.success("¡Pago registrado y marcado!");
+        fetchData();
+      } catch (error) {
+        toast.dismiss();
+        toast.error("Error al procesar el pago.");
+        console.error(error);
+      }
+    } else {
+      try {
+        await updateDoc(doc(db, 'pendingPayables', payable.id), { status: newStatus });
+        toast.success(`Estado de la cuenta actualizado.`);
+        fetchData();
+      } catch (error)
+        {
         toast.error("Error al actualizar el estado.");
       }
     }
@@ -261,6 +340,11 @@ function FinancialManager() {
     });
     return totals;
   }, [cheques]);
+
+  const totalPayable = useMemo(() => {
+    if (!accountsPayable) return 0;
+    return accountsPayable.reduce((acc, payable) => acc + payable.monto, 0);
+  }, [accountsPayable]);
 
   const totalPages = Math.ceil(financialRecords.length / RECORDS_PER_PAGE);
   const indexOfLastRecord = currentPage * RECORDS_PER_PAGE;
@@ -301,10 +385,23 @@ function FinancialManager() {
           <h3>Ingresos por Categoría</h3>
           {chartData.income.length > 0 ? (
             <ResponsiveContainer width="100%" height={400}>
-              <PieChart margin={{ top: 40, right: 40, bottom: 40, left: 40 }}>
-                <Pie data={chartData.income} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={70} outerRadius={110} labelLine={false} label={<CustomLabel />} paddingAngle={5}>
+              <PieChart> {/* Quitamos los márgenes, ya no son necesarios */}
+                {/* --- ▼▼▼ CAMBIO AQUÍ ▼▼▼ --- */}
+                <Pie 
+                  data={chartData.income} 
+                  dataKey="value" 
+                  nameKey="name" 
+                  cx="50%" 
+                  cy="50%" 
+                  innerRadius={70} 
+                  outerRadius={110} 
+                  labelLine={false} 
+                  label={<PercentLabel />} // Usamos el nuevo componente de etiqueta
+                  paddingAngle={5}
+                >
                   {chartData.income.map((entry, index) => ( <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} /> ))}
                 </Pie>
+                {/* --- ▲▲▲ FIN DEL CAMBIO ▲▲▲ --- */}
                 <Tooltip formatter={(value) => formatCurrency(value)} />
                 <Legend iconType="circle" />
               </PieChart>
@@ -315,10 +412,23 @@ function FinancialManager() {
           <h3>Gastos por Categoría</h3>
           {chartData.expense.length > 0 ? (
             <ResponsiveContainer width="100%" height={400}>
-              <PieChart margin={{ top: 40, right: 40, bottom: 40, left: 40 }}>
-                <Pie data={chartData.expense} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={70} outerRadius={110} labelLine={false} label={<CustomLabel />} paddingAngle={5}>
+              <PieChart> {/* Quitamos los márgenes */}
+                {/* --- ▼▼▼ CAMBIO AQUÍ ▼▼▼ --- */}
+                <Pie 
+                  data={chartData.expense} 
+                  dataKey="value" 
+                  nameKey="name" 
+                  cx="50%" 
+                  cy="50%" 
+                  innerRadius={70} 
+                  outerRadius={110} 
+                  labelLine={false} 
+                  label={<PercentLabel />} // Usamos el nuevo componente de etiqueta
+                  paddingAngle={5}
+                >
                   {chartData.expense.map((entry, index) => ( <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} /> ))}
                 </Pie>
+                {/* --- ▲▲▲ FIN DEL CAMBIO ▲▲▲ --- */}
                 <Tooltip formatter={(value) => formatCurrency(value)} />
                 <Legend iconType="circle" />
               </PieChart>
@@ -327,6 +437,7 @@ function FinancialManager() {
         </div>
       </div>
 
+      {/* ... (El resto del JSX no cambia) ... */}
       <hr className={styles.sectionDivider} />
       <h2 className={styles.sectionTitle}>Registro de Movimientos</h2>
       <div className={styles.manualRecordContainer}>
@@ -384,6 +495,69 @@ function FinancialManager() {
             <button onClick={handlePrevPage} disabled={currentPage === 1} className={styles.paginationButton}> <FaChevronLeft /> Anterior </button>
             <span className={styles.pageInfo}>Página {currentPage} de {totalPages}</span>
             <button onClick={handleNextPage} disabled={currentPage === totalPages} className={styles.paginationButton}> Siguiente <FaChevronRight /> </button>
+        </div>
+      </div>
+
+      <hr className={styles.sectionDivider} />
+      <h2 className={styles.sectionTitle}>Gestión de Cuentas por Pagar</h2>
+      <div className={styles.chequeManagerGrid}>
+        <div className={styles.chequeFormCard}>
+            <h3>Cargar Nueva Cuenta</h3>
+            <form onSubmit={handleAddPayable}>
+                <div className={styles.formGroup}>
+                  <label>Proveedor</label>
+                  <input type="text" name="proveedor" value={newPayable.proveedor} onChange={handlePayableInputChange} required />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Concepto (Opcional)</label>
+                  <input type="text" name="concepto" value={newPayable.concepto} onChange={handlePayableInputChange} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Monto</label>
+                  <input type="number" step="0.01" name="monto" value={newPayable.monto} onChange={handlePayableInputChange} required />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Fecha de Vencimiento</label>
+                  <input type="date" name="fechaVencimiento" value={newPayable.fechaVencimiento} onChange={handlePayableInputChange} required />
+                </div>
+                <button type="submit" className={styles.submitButton}>Guardar Cuenta</button>
+            </form>
+        </div>
+        <div className={styles.chequeSummaryCard}>
+            <h3>Resumen de Pagos Pendientes</h3>
+            <div className={styles.monthlySummaryGrid} style={{gridTemplateColumns: '1fr'}}>
+                <div className={styles.summaryBox}>
+                  <h4>Total Pendiente</h4>
+                  <p className={styles.expenseText}>{formatCurrency(totalPayable)}</p>
+                </div>
+            </div>
+            <div style={{maxHeight: '300px', overflowY: 'auto'}}>
+                <table className={styles.chequeTable}>
+                    <thead><tr><th>Vencimiento</th><th>Proveedor</th><th>Concepto</th><th>Monto</th><th>Estado</th></tr></thead>
+                    <tbody>
+                        {loading ? (<tr><td colSpan="5">Cargando...</td></tr>) : accountsPayable.length === 0 ? (<tr><td colSpan="5">No hay cuentas pendientes.</td></tr>) : (
+                        accountsPayable.map(payable => (
+                            <tr key={payable.id}>
+                                <td>{payable.fechaVencimiento.toDate().toLocaleDateString('es-AR')}</td>
+                                <td>{payable.proveedor}</td>
+                                <td>{payable.concepto || 'N/A'}</td>
+                                <td>{formatCurrency(payable.monto)}</td>
+                                <td>
+                                    <select 
+                                      value={payable.status} 
+                                      onChange={(e) => handlePayableStatusChange(payable, e.target.value)} 
+                                      className={`${styles.statusSelect} ${styles[`status-${payable.status}`]}`}
+                                    >
+                                        <option value="pendiente">Pendiente</option>
+                                        <option value="pagado">Pagado</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
         </div>
       </div>
 
@@ -463,4 +637,3 @@ function FinancialManager() {
 }
 
 export default FinancialManager;
-

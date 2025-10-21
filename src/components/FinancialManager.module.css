@@ -19,14 +19,15 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
-  margin-top: -1rem; /* Acercarlo a los KPIs de arriba */
+  margin-top: -1rem;
   margin-bottom: 3rem;
 }
 .milestoneCard {
   background-color: #fff;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  /* --- ▼▼▼ CAMBIO SOMBRA ▼▼▼ --- */
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 .milestoneCard h4 {
@@ -38,7 +39,7 @@
 .milestoneValue {
   font-size: 2rem;
   font-weight: 700;
-  color: #27ae60; /* Verde ingreso por defecto */
+  color: #27ae60;
   margin: 0;
 }
 .milestoneDate {
@@ -69,7 +70,8 @@
   background-color: #fff;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+  /* --- ▼▼▼ CAMBIO SOMBRA ▼▼▼ --- */
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -77,7 +79,8 @@
 }
 .chartCard:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  /* --- ▼▼▼ CAMBIO SOMBRA HOVER ▼▼▼ --- */
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
 
 
@@ -99,16 +102,12 @@
   font-size: 1.1rem;
 }
 
-.labelValue {
-  font-size: 1rem;
-  font-weight: 600;
-  fill: #2c3e50;
-}
+/* --- Se eliminó .labelValue, ya no se usa --- */
 
 /* --- ESTILOS PARA EL REGISTRO MANUAL Y AJUSTE DE SALDO --- */
 .manualRecordContainer {
   display: grid;
-  grid-template-columns: 2fr 1fr; /* El formulario principal ocupa más espacio */
+  grid-template-columns: 2fr 1fr;
   gap: 2rem;
   align-items: flex-start;
 }
@@ -116,7 +115,8 @@
   background-color: #fff;
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  /* --- ▼▼▼ CAMBIO SOMBRA ▼▼▼ --- */
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
 }
 .manualRecordGrid {
   display: grid;
@@ -128,8 +128,10 @@
 
 /* --- ESTILOS PARA EL FORMULARIO DE AJUSTE DE SALDO --- */
 .initialBalanceCard {
-  background-color: #fff9e6; /* Un amarillo suave para destacarlo */
+  background-color: #fff9e6;
   border: 1px solid #ffeeba;
+  /* --- ▼▼▼ CAMBIO SOMBRA ▼▼▼ --- */
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
 }
 .initialBalanceCard h3 {
   display: flex;
@@ -147,7 +149,7 @@
   cursor: help;
 }
 .balanceButton {
-  background-color: #ffc107; /* Amarillo */
+  background-color: #ffc107;
   color: #212529;
 }
 .balanceButton:hover {
@@ -167,7 +169,8 @@
   background-color: #fff;
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  /* --- ▼▼▼ CAMBIO SOMBRA ▼▼▼ --- */
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
 }
 
 .formGroup {
@@ -262,11 +265,16 @@
   background-position: right 0.5rem center;
   background-repeat: no-repeat;
   background-size: 0.65em auto;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%<path fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
 }
 .status-pendiente { background-color: #ffeeba; color: #856404; }
 .status-para_cobrar { background-color: #cce5ff; color: #004085; }
 .status-cobrado { background-color: #d4edda; color: #155724; }
+.status-pagado { 
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
 .incomeText { color: #27ae60; font-weight: 500; }
 .expenseText { color: #c0392b; font-weight: 500; }
 
@@ -281,7 +289,8 @@
   background-color: #fff;
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  /* --- ▼▼▼ CAMBIO SOMBRA ▼▼▼ --- */
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
 }
 .historyTable {
   width: 100%;
@@ -396,4 +405,3 @@
   .monthlySummaryGrid { grid-template-columns: 1fr; }
   .manualRecordGrid { grid-template-columns: 1fr; }
 }
-
