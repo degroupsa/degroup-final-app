@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { db } from '../../firebase/config.js';
 import { collection, getDocs, query, orderBy, where, Timestamp } from 'firebase/firestore';
 import { Bar, Doughnut, Pie } from 'react-chartjs-2';
@@ -13,7 +13,6 @@ import styles from './AdminDashboardPage.module.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
-// Helper para formatear moneda sin decimales
 const formatCurrency = (value) => {
     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(value || 0);
 };
@@ -24,9 +23,9 @@ function AdminDashboardPage() {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    // console.log("DEBUG LOG: Iniciando fetchData..."); // Logs eliminados para limpieza
     try {
-      // Optimizamos las peticiones
-      const [ordersSnap, usersSnap, inventorySnap, recipesSnap, recordsSnap, productionSnap, checksSnap] = await Promise.all([
+      const [ordersSnap, usersSnap, inventorySnap, recipesSnap, recordsSnap, productionSnap, checksSnap, clientsSnap] = await Promise.all([
         getDocs(query(collection(db, 'orders'), orderBy('createdAt', 'desc'))),
         getDocs(collection(db, 'users')),
         getDocs(collection(db, 'inventoryItems')),
@@ -34,27 +33,28 @@ function AdminDashboardPage() {
         getDocs(collection(db, 'registrosFinancieros')),
         getDocs(collection(db, 'productionOrders')),
         getDocs(query(collection(db, 'pendingChecks'), where('status', '!=', 'cobrado'))),
+        getDocs(collection(db, 'clients')),
       ]);
 
       const orders = ordersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       const users = usersSnap.docs;
       const inventoryItems = inventorySnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const recipes = recipesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })); // Contiene los precios de venta
+      const recipes = recipesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       const financialRecords = recordsSnap.docs.map(doc => doc.data());
       const productionOrders = productionSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       const pendingChecks = checksSnap.docs.map(doc => doc.data());
+      const clients = clientsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-      // --- CÁLCULOS DE KPI ---
+      // console.log("DEBUG LOG: Datos crudos de Firebase:", { productionOrdersCount: productionOrders.length, clientsCount: clients.length, firstProductionOrder: productionOrders[0] });
+
+      // --- CÁLCULOS DE KPI (Sin cambios) ---
       const manualIncome = financialRecords.filter(r => r.type === 'ingreso').reduce((sum, r) => sum + (r.amount || 0), 0);
       const totalExpense = financialRecords.filter(r => r.type === 'gasto').reduce((sum, r) => sum + (r.amount || 0), 0);
       const balance = manualIncome - totalExpense;
-      
       const totalOrders = orders.length;
       const totalRevenueFromOrders = orders.reduce((sum, order) => sum + (order.total || 0), 0);
       const averageOrderValue = totalOrders > 0 ? totalRevenueFromOrders / totalOrders : 0;
-      
       const totalCustomers = users.filter(u => u.data().role === 'cliente' || u.data().role === 'concesionario').length;
-      
       const inventoryValue = inventoryItems.reduce((sum, item) => sum + ((parseFloat(item.stock) || 0) * (parseFloat(item.costoPorUnidad) || 0)), 0);
       const finishedGoodsValue = recipes.reduce((sum, recipe) => {
         const recipeCost = (recipe.components || []).reduce((cost, comp) => {
@@ -64,7 +64,6 @@ function AdminDashboardPage() {
         return sum + ((parseFloat(recipe.stockFinished) || 0) * recipeCost);
       }, 0);
       const totalInventoryValue = inventoryValue + finishedGoodsValue;
-
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
@@ -72,82 +71,176 @@ function AdminDashboardPage() {
           const dueDate = cheque.fechaCobro.toDate();
           return dueDate >= startOfMonth && dueDate <= endOfMonth;
         }).reduce((sum, cheque) => sum + cheque.monto, 0);
-
-      // --- CÁLCULO DE INGRESOS POR VENTAS CORREGIDO Y DEFINITIVO ---
       const totalSalesRevenue = productionOrders
         .filter(order => order.productionType === 'for_delivery')
         .reduce((sum, order) => {
-          // Buscamos la receta (que ahora tiene el precio)
           const recipeInfo = recipes.find(r => r.id === order.recipeId);
           const price = recipeInfo ? (recipeInfo.price || 0) : 0;
           return sum + (price * (order.quantity || 0));
         }, 0);
-      // --- FIN DEL CÁLCULO ---
 
-      // ... (resto de tu lógica de gráficos sin cambios) ...
-      const salesByMonth = {};
+      // --- CÁLCULO Ingresos por Producción (Últimos 6 Meses) ---
+      const productionIncomeByMonth = {};
       const monthLabels = [];
       const today = new Date();
       for (let i = 5; i >= 0; i--) {
         const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-        const monthLabel = d.toLocaleString('es-AR', { month: 'short', year: '2-digit' });
+        // --- CORRECCIÓN CLAVE: Asegurar formato consistente 'mes aa' ---
+        const monthLabel = d.toLocaleString('es-AR', { month: 'short', year: '2-digit' }).replace('.', '').toLowerCase(); // ej: 'sep 25'
+        // --- FIN CORRECCIÓN ---
         monthLabels.push(monthLabel);
-        salesByMonth[monthLabel] = 0;
+        productionIncomeByMonth[monthLabel] = 0;
       }
-      orders.forEach(order => {
-        if (order.createdAt?.seconds) {
-          const orderDate = new Date(order.createdAt.seconds * 1000);
-          const monthLabel = orderDate.toLocaleString('es-AR', { month: 'short', year: '2-digit' });
-          if (salesByMonth.hasOwnProperty(monthLabel)) { salesByMonth[monthLabel] += order.total || 0; }
-        }
-      });
-      const monthlySalesChart = { labels: monthLabels, datasets: [{ label: 'Ingresos por Órdenes ($)', data: Object.values(salesByMonth), backgroundColor: '#0d6efd' }] };
+
+      const deliveredProductionOrders = productionOrders.filter(order => order.currentStatus === 'Entregado' && order.productionType === 'for_delivery');
+      // console.log(`DEBUG LOG: Órdenes de producción entregadas y para entrega: ${deliveredProductionOrders.length}`);
+
+      deliveredProductionOrders.forEach(order => {
+          let deliveryDate = null;
+          if (order.statusHistory && order.statusHistory.length > 0) {
+            const deliveredEntry = order.statusHistory.find(entry => entry.stepName === 'Entregado');
+            if (deliveredEntry && deliveredEntry.updatedAt) {
+              deliveryDate = deliveredEntry.updatedAt instanceof Timestamp 
+                             ? deliveredEntry.updatedAt.toDate() 
+                             : new Date(deliveredEntry.updatedAt);
+            }
+          }
+          if (!deliveryDate && order.createdAt) {
+             deliveryDate = order.createdAt instanceof Timestamp 
+                            ? order.createdAt.toDate()
+                            : new Date(order.createdAt);
+          }
+
+          if (deliveryDate) {
+            // --- CORRECCIÓN CLAVE: Usar el mismo formato que en la inicialización ---
+            const monthLabel = deliveryDate.toLocaleString('es-AR', { month: 'short', year: '2-digit' }).replace('.', '').toLowerCase(); // ej: 'sep 25'
+            // --- FIN CORRECCIÓN ---
+            const saleValue = order.totalSaleValue || (order.unitSalePrice * order.quantity) || 0;
+            if (productionIncomeByMonth.hasOwnProperty(monthLabel)) {
+              productionIncomeByMonth[monthLabel] += saleValue;
+            } else {
+                 // console.log(`DEBUG LOG: Mes ${monthLabel} no encontrado para la orden ${order.trackingCode}`);
+            }
+          } else {
+             // console.log(`DEBUG LOG: No se pudo determinar fecha de entrega para la orden ${order.trackingCode}`);
+          }
+        });
+      
+      // console.log("DEBUG LOG: Ingresos por producción por mes:", productionIncomeByMonth);
+      
+      const monthlyProductionIncomeChart = { 
+        labels: monthLabels.map(l => l.charAt(0).toUpperCase() + l.slice(1)), // Poner Mayúscula inicial para mostrar
+        datasets: [{ 
+          label: 'Ingresos por Producción ($)', 
+          data: Object.values(productionIncomeByMonth), 
+          backgroundColor: '#0d6efd' 
+        }] 
+      };
+      // --- FIN CÁLCULO ---
+
+      // --- CÁLCULO Top Clientes por Compras (Producción) ---
+      const deliveredOrdersWithClient = productionOrders.filter(order => order.currentStatus === 'Entregado' && order.linkedClientId);
+      // console.log(`DEBUG LOG: Órdenes entregadas con cliente vinculado: ${deliveredOrdersWithClient.length}`);
+      
+      const salesByProdCustomer = deliveredOrdersWithClient.reduce((acc, order) => {
+          const clientId = order.linkedClientId;
+          const saleValue = order.totalSaleValue || (order.unitSalePrice * order.quantity) || 0;
+          acc[clientId] = (acc[clientId] || 0) + saleValue;
+          return acc;
+        }, {});
+        
+      // console.log("DEBUG LOG: Ventas por ID de cliente (Producción):", salesByProdCustomer);
+      
+      const topProdCustomersData = Object.entries(salesByProdCustomer)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 5)
+        .map(([clientId, totalSales]) => {
+          const clientInfo = clients.find(c => c.id === clientId);
+          // Si no encontramos cliente, mostramos ID corto
+          const clientName = clientInfo ? `${clientInfo.name || ''} ${clientInfo.lastName || ''}`.trim() : `ID: ${clientId.substring(0, 5)}...`; 
+          return { name: clientName || 'Cliente Desconocido', sales: totalSales };
+        });
+
+      // console.log("DEBUG LOG: Datos finales para Top Clientes (Producción):", topProdCustomersData);
+
+      const topCustomersProductionChart = { 
+        labels: topProdCustomersData.map(c => c.name), 
+        datasets: [{ 
+          label: 'Total Comprado (Producción) ($)', 
+          data: topProdCustomersData.map(c => c.sales), 
+          backgroundColor: '#6f42c1' 
+        }] 
+      };
+      // --- FIN CÁLCULO ---
+
+      // --- Otros gráficos (sin cambios) ---
       const productionStatusCounts = productionOrders.reduce((acc, order) => {
         const status = order.currentStatus || 'Desconocido';
-        acc[status] = (acc[status] || 0) + 1;
+        acc[status] = (acc[status] || 0) + (order.quantity || 1);
         return acc;
-      }, {});
-      const productionStatusChartData = { labels: Object.keys(productionStatusCounts), datasets: [{ data: Object.values(productionStatusCounts), backgroundColor: ['#ffc107', '#17a2b8', '#6f42c1', '#20c997', '#fd7e14', '#dc3545', '#28a745'] }] };
-      const salesByCustomer = orders.reduce((acc, order) => {
-        const customerName = order.buyer?.name || 'Cliente Anónimo';
-        acc[customerName] = (acc[customerName] || 0) + (order.total || 0);
-        return acc;
-      }, {});
-      const topCustomers = Object.entries(salesByCustomer).sort(([, a], [, b]) => b - a).slice(0, 5);
-      const topCustomersChart = { labels: topCustomers.map(([name,]) => name), datasets: [{ label: 'Total Comprado ($)', data: topCustomers.map(([, sales]) => sales), backgroundColor: '#6f42c1' }] };
+    }, {});
+      const productionStatusChartData = { 
+        labels: Object.keys(productionStatusCounts), 
+        datasets: [{ 
+          data: Object.values(productionStatusCounts), 
+          backgroundColor: ['#ffc107', '#17a2b8', '#6f42c1', '#20c997', '#fd7e14', '#dc3545', '#28a745', '#0d6efd', '#6c757d', '#198754', '#e83e8c', '#adb5bd'] 
+        }] 
+      };
       const expensesByCategory = financialRecords.filter(r => r.type === 'gasto').reduce((acc, record) => {
         const category = record.category || 'Sin Categoría';
         acc[category] = (acc[category] || 0) + record.amount;
         return acc;
       }, {});
-      const expenseChart = { labels: Object.keys(expensesByCategory), datasets: [{ data: Object.values(expensesByCategory), backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#6c757d'] }] };
+      const expenseChart = { 
+        labels: Object.keys(expensesByCategory), 
+        datasets: [{ 
+          data: Object.values(expensesByCategory), 
+          backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#6c757d', '#17a2b8', '#6f42c1'] 
+        }] 
+      };
       const quantityByProduct = orders.flatMap(o => o.items || []).reduce((acc, item) => {
         acc[item.name] = (acc[item.name] || 0) + (item.quantity || 0);
         return acc;
       }, {});
       const topProductsByQuantity = Object.entries(quantityByProduct).sort(([, a], [, b]) => b - a).slice(0, 5);
-      const topProductsByQuantityChart = { labels: topProductsByQuantity.map(([name,]) => name), datasets: [{ label: 'Unidades Vendidas', data: topProductsByQuantity.map(([, qty]) => qty), backgroundColor: '#198754' }] };
+      const topProductsByQuantityChart = { 
+        labels: topProductsByQuantity.map(([name,]) => name), 
+        datasets: [{ 
+          label: 'Unidades Vendidas (Presup.)', 
+          data: topProductsByQuantity.map(([, qty]) => qty), 
+          backgroundColor: '#198754' 
+        }] 
+      };
 
+      // console.log("DEBUG LOG: Preparando setDashboardData...");
       setDashboardData({
         kpis: { 
             totalIncome: manualIncome, 
             totalSalesRevenue,
             totalExpense, 
             balance,
-            totalOrders, 
+            totalOrders,
             totalCustomers, 
             totalInventoryValue, 
             averageOrderValue,
             checksToCollect: checksToCollectThisMonth
         },
-        charts: { monthlySalesChart, productionStatusChart: productionStatusChartData, topCustomersChart, expenseChart, topProductsByQuantityChart },
+        charts: { 
+          monthlyProductionIncomeChart,
+          productionStatusChart: productionStatusChartData, 
+          topCustomersProductionChart,
+          expenseChart, 
+          topProductsByQuantityChart
+        },
         latestOrders: orders.slice(0, 5)
       });
+      // console.log("DEBUG LOG: setDashboardData completado.");
     } catch (error) {
       console.error("Error al procesar datos del dashboard:", error);
       toast.error("No se pudieron cargar los datos del dashboard.");
     } finally {
       setLoading(false);
+      // console.log("DEBUG LOG: fetchData finalizado.");
     }
   }, []);
   
@@ -155,8 +248,38 @@ function AdminDashboardPage() {
     fetchData();
   }, [fetchData]);
 
-  const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } };
-  const barChartOptions = { ...chartOptions, indexAxis: 'y' };
+  const chartOptions = { 
+    responsive: true, 
+    maintainAspectRatio: false, 
+    plugins: { 
+      legend: { position: 'top' },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            let label = context.dataset.label || '';
+            if (label) { label += ': '; }
+            let value = 0;
+            if (context.parsed.y !== null) value = context.parsed.y;
+            else if (context.parsed.x !== null) value = context.parsed.x;
+            else if (context.parsed !== null) value = context.parsed;
+            label += formatCurrency(value);
+            return label;
+          }
+        }
+      }
+    } 
+  };
+  
+  const barChartOptions = { 
+    ...chartOptions, 
+    indexAxis: 'y', 
+    scales: { x: { beginAtZero: true } }
+  };
+  
+  const verticalBarChartOptions = {
+      ...chartOptions,
+      scales: { y: { beginAtZero: true } }
+  };
 
   return (
     <div className={styles.pageContent}>
@@ -168,6 +291,7 @@ function AdminDashboardPage() {
       {loading ? <p>Cargando y calculando datos...</p> : dashboardData && (
         <>
           <div className={styles.kpiGrid}>
+            {/* KPIs sin cambios */}
             <KPI title="Ingresos por Ventas" value={formatCurrency(dashboardData.kpis.totalSalesRevenue)} icon={<FaCashRegister />} color="#20c997" />
             <KPI title="Ingresos (Manuales)" value={formatCurrency(dashboardData.kpis.totalIncome)} icon={<FaDollarSign />} color="#198754" />
             <KPI title="Gastos Totales" value={formatCurrency(dashboardData.kpis.totalExpense)} icon={<FaRegChartBar />} color="#dc3545" />
@@ -181,12 +305,12 @@ function AdminDashboardPage() {
 
           <div className={styles.mainChartsGrid}>
             <div className={styles.chartContainer}>
-              <h3>Ingresos por Presupuestos (Últimos 6 Meses)</h3>
-              <div className={styles.chartWrapper}><Bar data={dashboardData.charts.monthlySalesChart} options={chartOptions} /></div>
+              <h3>Ingresos por Producción (Últimos 6 Meses)</h3>
+              <div className={styles.chartWrapper}><Bar data={dashboardData.charts.monthlyProductionIncomeChart} options={verticalBarChartOptions} /></div>
             </div>
             <div className={styles.chartContainer}>
-              <h3>Top 5 Clientes por Compras</h3>
-              <div className={styles.chartWrapper}><Bar data={dashboardData.charts.topCustomersChart} options={barChartOptions} /></div>
+              <h3>Top 5 Clientes por Producción</h3>
+              <div className={styles.chartWrapper}><Bar data={dashboardData.charts.topCustomersProductionChart} options={barChartOptions} /></div>
             </div>
           </div>
           
@@ -203,7 +327,7 @@ function AdminDashboardPage() {
 
           <div className={styles.bottomWidgetsGrid}>
             <div className={styles.chartContainer}>
-              <h3>Top 5 Productos (por Cantidad Vendida)</h3>
+              <h3>Top 5 Productos (por Cantidad Presupuestada)</h3>
               <div className={styles.chartWrapper}><Bar data={dashboardData.charts.topProductsByQuantityChart} options={barChartOptions} /></div>
             </div>
             <div className={styles.chartContainer}>
@@ -225,4 +349,3 @@ function AdminDashboardPage() {
 }
 
 export default AdminDashboardPage;
-
