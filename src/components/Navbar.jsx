@@ -4,10 +4,10 @@ import CartWidget from './CartWidget.jsx';
 import styles from './Navbar.module.css';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useChatPanel } from '../context/ChatPanelContext.jsx';
-import { 
-  FaBars, FaTimes, FaUserCircle, FaComments, 
+import {
+  FaBars, FaTimes, FaUserCircle, FaComments,
   FaHome, FaBoxOpen, FaUsers, FaEnvelope, FaGlobe,
-  FaSignInAlt, FaUserPlus, FaSignOutAlt
+  FaSignInAlt, FaUserPlus, FaSignOutAlt, FaCog
 } from 'react-icons/fa';
 
 const getNavLinkClass = ({ isActive }) => {
@@ -15,11 +15,14 @@ const getNavLinkClass = ({ isActive }) => {
 };
 
 function Navbar() {
+  console.log("--- Navbar rendering ---"); // <--- LOG 1: ¿Se renderiza?
   const { user, logout } = useAuth();
+  console.log("User object seen by Navbar:", user); // <--- LOG 2: ¿Qué 'user' ve?
+
   const { toggleChatPanel } = useChatPanel();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
@@ -61,7 +64,7 @@ function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [menuOpen]);
-  
+
   useEffect(() => {
     if (menuOpen) {
       document.body.style.overflow = 'hidden';
@@ -73,18 +76,22 @@ function Navbar() {
     };
   }, [menuOpen]);
 
-  // --- ✅ CAMBIO EN LA CONDICIÓN ---
-  // El ícono ahora requiere que HAYA un usuario Y que la ruta sea '/canal'
   const showChatIcon = user && location.pathname === '/canal';
+
+  // --- Condición para el enlace de Admin ---
+  const showAdminLink = user && (user.role === 'admin' || user.role === 'gestion');
+  // console.log("Show Admin Link?", showAdminLink, "User Role:", user?.role); // Log opcional más específico
+
 
   return (
     <header className={styles.header}>
       <nav className={styles.nav}>
+        {/* Left Section */}
         <div className={styles.leftSection}>
           <div className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)} ref={hamburgerRef}>
             <FaBars />
           </div>
-          
+
           {showChatIcon && (
             <button className={styles.mobileChatIcon} onClick={toggleChatPanel} aria-label="Abrir panel de chats">
               <FaComments />
@@ -92,11 +99,12 @@ function Navbar() {
           )}
         </div>
 
+        {/* Center Section */}
         <div className={styles.centerSection}>
           <Link to="/" className={styles.logoContainer}>
-            <img 
-              src="https://firebasestorage.googleapis.com/v0/b/web-de-group.firebasestorage.app/o/logos%2FLogoplateado.png?alt=media&token=44ae5d44-f901-44d8-880f-b2115e186e35" 
-              alt="DE Group Logo" 
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/web-de-group.firebasestorage.app/o/logos%2FLogoplateado.png?alt=media&token=44ae5d44-f901-44d8-880f-b2115e186e35"
+              alt="DE Group Logo"
               className={styles.logo}
             />
           </Link>
@@ -106,9 +114,17 @@ function Navbar() {
             <NavLink to="/nosotros" className={getNavLinkClass}>Nosotros</NavLink>
             <NavLink to="/contacto" className={getNavLinkClass}>Contacto</NavLink>
             <NavLink to="/canal" className={getNavLinkClass}>DE Group Social</NavLink>
+            {/* Usamos la variable showAdminLink */}
+            {showAdminLink && (
+              <NavLink to="/admin" className={getNavLinkClass}>
+                <FaCog style={{ marginRight: '5px' }} />
+                Administración
+              </NavLink>
+            )}
           </div>
         </div>
-        
+
+        {/* Right Section */}
         <div className={styles.rightSection}>
           <div className={styles.navActions}>
             <div className={styles.userMenuContainer} ref={userMenuRef}>
@@ -144,6 +160,7 @@ function Navbar() {
         </div>
       </nav>
 
+      {/* Menú Móvil */}
       <div className={`${styles.mobileMenu} ${menuOpen ? styles.menuOpen : ''}`} ref={mobileMenuRef}>
         <div className={styles.mobileMenuHeader}>
           <button className={styles.closeButton} onClick={() => setMenuOpen(false)}>
@@ -166,6 +183,12 @@ function Navbar() {
             <NavLink to="/canal" className={getNavLinkClass} onClick={closeMenu}>
               <FaGlobe /> <span>DE Group Social</span>
             </NavLink>
+            {/* Usamos la variable showAdminLink */}
+            {showAdminLink && (
+              <NavLink to="/admin" className={getNavLinkClass} onClick={closeMenu}>
+                <FaCog /> <span>Administración</span>
+              </NavLink>
+            )}
         </div>
       </div>
     </header>

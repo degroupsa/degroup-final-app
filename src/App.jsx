@@ -10,6 +10,8 @@ import PublicLayout from './layouts/PublicLayout.jsx';
 // Componentes de Lógica
 import AdminRoute from './components/AdminRoute.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import { useAuth } from './context/AuthContext.jsx';
+
 
 // Páginas Públicas
 import OrderSuccessPage from './pages/OrderSuccessPage.jsx';
@@ -40,47 +42,39 @@ import AdminBulkPriceEditorPage from './pages/admin/AdminBulkPriceEditorPage.jsx
 import AdminProductsPage from './pages/admin/AdminProductsPage.jsx';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage.jsx';
 import AdminUsersPage from './pages/admin/AdminUsersPage.jsx';
-import AdminRealtimePage from './pages/admin/AdminRealtimePage.jsx'; 
-// --- IMPORTAMOS LA NUEVA PÁGINA ---
+import AdminRealtimePage from './pages/admin/AdminRealtimePage.jsx';
 import AdminClientsPage from './pages/admin/AdminClientsPage.jsx';
+// --- ▼▼▼ IMPORTAMOS LA NUEVA PÁGINA DE CONTACTOS ▼▼▼ ---
+import AdminContactsPage from './pages/admin/AdminContactsPage.jsx'; // Asegúrate de crear este archivo
+// --- ▲▲▲ FIN IMPORTACIÓN ▲▲▲ ---
+
 
 import './App.css';
+
+function AdminIndexRedirect() {
+  const { user } = useAuth();
+  if (user?.role === 'admin') { return <Navigate to="/admin/dashboard" replace />; }
+  else if (user?.role === 'gestion') { return <Navigate to="/admin/inventario" replace />; }
+  else { return <Navigate to="/" replace />; }
+}
+
 
 function App() {
   return (
     <>
       <ScrollToTop />
-      
-      <Toaster 
-        position="top-right"
-        containerStyle={{ zIndex: 9999 }}
-        toastOptions={{
-          style: {
-            background: '#212529',
-            color: '#f8f9fa',
-            border: '1px solid #495057',
-            padding: '16px',
-            borderRadius: '8px',
-          },
-          duration: 5000,
-          success: { style: { background: '#28a745', color: 'white' } },
-          error: { style: { background: '#dc3545', color: 'white' } },
-        }}
-      />
+      <Toaster position="top-right" containerStyle={{ zIndex: 9999 }} toastOptions={{ /* ... */ }} />
 
       <Routes>
         {/* --- MUNDO DE ADMINISTRACIÓN --- */}
-        <Route 
+        <Route
           path="/admin"
           element={<AdminRoute><AdminLayout /></AdminRoute>}
-        > 
-          <Route index element={<Navigate to="dashboard" replace />} /> 
+        >
+          <Route index element={<AdminIndexRedirect />} />
           <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="inventario" element={<AdminInventoryPage />} />
-
-          {/* --- AÑADIMOS LA NUEVA RUTA --- */}
-          <Route path="clientes" element={<AdminClientsPage />} />
-
+          <Route path="clientes" element={<AdminClientsPage />} /> {/* Gestión Clientes + Flota */}
           <Route path="recetas" element={<AdminRecipesPage />} />
           <Route path="productos" element={<AdminProductsPage />} />
           <Route path="ordenes" element={<AdminOrdersPage />} />
@@ -88,11 +82,16 @@ function App() {
           <Route path="produccion" element={<AdminProductionPage />} />
           <Route path="precios" element={<AdminBulkPriceEditorPage />} />
           <Route path="en-linea" element={<AdminRealtimePage />} />
-          <Route path="mensajes" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} /> 
+          <Route path="mensajes" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
           <Route path="mensajes/:chatId" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
+
+          {/* --- ▼▼▼ AÑADIMOS LA NUEVA RUTA PARA CONTACTOS ▼▼▼ --- */}
+          <Route path="contactos" element={<AdminContactsPage />} />
+          {/* --- ▲▲▲ FIN NUEVA RUTA ▲▲▲ --- */}
+
         </Route>
 
-        {/* --- MUNDO PÚBLICO --- */}
+        {/* --- MUNDO PÚBLICO (sin cambios) --- */}
         <Route path="/" element={<PublicLayout />}>
           <Route path="/solicitud-enviada" element={<OrderSuccessPage />} />
           <Route index element={<HomePage />} />
@@ -120,4 +119,3 @@ function App() {
 }
 
 export default App;
-

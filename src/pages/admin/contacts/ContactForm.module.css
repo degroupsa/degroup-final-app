@@ -1,0 +1,68 @@
+/* src/components/admin/contacts/ContactForm.module.css */
+
+/* Clase opcional para ajustar el ancho del modal si es necesario */
+.contactModalContent {
+    max-width: 850px; /* Un poco más ancho que el de bitácora */
+  }
+  
+  /* Padding interno del área del formulario */
+  .contactForm {
+    padding: 1.5rem 2rem 2rem 2rem; /* Más padding */
+    overflow-y: auto;
+  }
+  
+  .formGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    /* --- CAMBIO: Aumentamos el gap --- */
+    gap: 1.25rem 1.5rem; /* Más espacio vertical */
+    /* --- FIN CAMBIO --- */
+  }
+  
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .formGroup label {
+    margin-bottom: 0.5rem; /* Más espacio bajo la etiqueta */
+    font-weight: 500;
+    color: #495057;
+    font-size: 0.9rem;
+  }
+  
+  /* --- CAMBIO: Estilos consistentes para inputs/selects --- */
+  .formGroup input,
+  .formGroup textarea,
+  .formGroup select {
+    padding: 0.75rem 1rem; /* Padding estándar */
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-family: inherit;
+    box-sizing: border-box;
+    background-color: #fff; /* Asegura fondo blanco */
+    color: #212529; /* Asegura color de texto */
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out; /* Transición suave */
+  }
+  
+  .formGroup input:focus,
+  .formGroup textarea:focus,
+  .formGroup select:focus {
+    outline: none;
+    border-color: #86b7fe; /* Color de borde al enfocar */
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .25); /* Sombra de enfoque */
+  }
+  /* --- FIN CAMBIO --- */
+  
+  .formGroup textarea {
+    resize: vertical;
+    min-height: 80px; /* Altura mínima aumentada */
+  }
+  
+  .fullWidth {
+    grid-column: 1 / -1;
+  }
+  
+  /* El botón de guardar ahora usa los estilos de modalActions/actionButton/submitButton
+     importados desde ProductionLogModal.module.css via ContactForm.jsx */
