@@ -202,31 +202,51 @@
   background-color: #2980b9;
 }
 
+/* --- REGLA ACTUALIZADA .monthlySummaryGrid --- */
 .monthlySummaryGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* Permitimos que los elementos se ajusten, mínimo ~100px */
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
+/* --- REGLA ACTUALIZADA .summaryBox --- */
 .summaryBox {
-  background-color: #ecf0f1;
-  border-radius: 8px;
-  padding: 1rem;
+  background-color: #fff;       /* Fondo blanco */
+  border: 1px solid #e9ecef; /* Borde sutil */
+  border-radius: 8px;       /* Bordes redondeados */
+  padding: 0.8rem 1rem;     /* Padding */
   text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra ligera */
+  overflow: hidden;         /* Evita desbordes extremos */
 }
 
+/* --- REGLA ACTUALIZADA .summaryBox h4 --- */
 .summaryBox h4 {
-  margin: 0 0 0.5rem 0;
-  font-size: 0.9rem;
-  color: #7f8c8d;
+  margin: 0 0 0.3rem 0;
+  font-size: 0.8rem;
+  color: #6c757d;    /* Mantenemos color gris */
+  font-weight: 500;
+  white-space: nowrap; /* Título en una línea */
 }
 
+/* --- REGLA CORREGIDA .summaryBox p --- */
 .summaryBox p {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 600;
-  color: #2c3e50;
+  color: #212529;
+  white-space: nowrap; /* Asegura una sola línea */
+  /* Ya no hay overflow: hidden ni text-overflow: ellipsis */
+}
+
+.totalPendingBox {
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+}
+.totalPendingBox p {
+    color: #0d6efd;
 }
 
 .chequeTable {
@@ -235,10 +255,10 @@
 }
 
 .chequeTable th, .chequeTable td {
-  padding: 0.8rem 0.5rem; /* Reducimos padding horizontal */
+  padding: 0.8rem 0.5rem;
   text-align: left;
   border-bottom: 1px solid #dfe6e9;
-  vertical-align: middle; /* Alineamos verticalmente */
+  vertical-align: middle;
 }
 
 .chequeTable th {
@@ -394,43 +414,45 @@
   .manualRecordContainer { grid-template-columns: 1fr; }
 }
 @media (max-width: 768px) {
-  .monthlySummaryGrid { grid-template-columns: 1fr; }
+  .monthlySummaryGrid {
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  }
   .manualRecordGrid { grid-template-columns: 1fr; }
 }
 
 /* --- ESTILOS PARA ALERTAS VISUALES --- */
 tr.overdue {
-  background-color: #f8d7da !important; /* Rojo muy claro */
-  color: #721c24; /* Rojo oscuro */
+  background-color: #f8d7da !important;
+  color: #721c24;
 }
 tr.dueSoon {
-  background-color: #fff3cd !important; /* Amarillo muy claro */
-  color: #856404; /* Amarillo oscuro */
+  background-color: #fff3cd !important;
+  color: #856404;
 }
 tr.collectible {
-  background-color: #cce5ff !important; /* Azul muy claro */
-  color: #004085; /* Azul oscuro */
+  background-color: #cce5ff !important;
+  color: #004085;
 }
 tr.overdue td, tr.dueSoon td, tr.collectible td {
-  font-weight: 500; /* Un poco más de énfasis */
+  font-weight: 500;
 }
 tr.overdue select, tr.dueSoon select, tr.collectible select {
    color: initial;
-   border-color: rgba(0,0,0,0.1); /* Borde sutil */
+   border-color: rgba(0,0,0,0.1);
 }
 
 /* --- ESTILOS PARA BOTÓN ELIMINAR --- */
 .deleteButton {
   background: none;
   border: none;
-  color: #6c757d; /* Gris por defecto */
+  color: #6c757d;
   cursor: pointer;
   padding: 0.3rem 0.5rem;
-  font-size: 1rem; /* Tamaño del icono */
+  font-size: 1rem;
   line-height: 1;
   transition: color 0.2s;
-  vertical-align: middle; /* Alinea con el texto/select */
+  vertical-align: middle;
 }
 .deleteButton:hover {
-  color: #dc3545; /* Rojo al pasar el mouse */
+  color: #dc3545;
 }

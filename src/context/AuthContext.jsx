@@ -13,7 +13,7 @@ import {
 import { 
   doc, 
   setDoc, 
-  getDoc,
+  getDoc, 
   serverTimestamp as firestoreServerTimestamp, 
   collection, 
   query, 

@@ -12,7 +12,7 @@ const getNavLinkClass = ({ isActive }) => {
   return isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink;
 };
 
-function AdminLayout() {
+function AdminLayout() { 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const toggleSidebar = () => {

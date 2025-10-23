@@ -6,7 +6,9 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import toast from 'react-hot-toast';
 import KPI from '../../components/dashboard/KPI.jsx';
 import LatestOrdersTable from '../../components/dashboard/LatestOrdersTable.jsx';
-import { FaDollarSign, FaShoppingCart, FaUsers, FaWarehouse, FaRegChartBar, FaChartPie, FaBalanceScale, FaFileInvoiceDollar, FaCashRegister } from 'react-icons/fa';
+// --- CAMBIO: Añadimos nuevos iconos ---
+import { FaDollarSign, FaShoppingCart, FaUsers, FaWarehouse, FaRegChartBar, FaChartPie, FaBalanceScale, FaFileInvoiceDollar, FaCashRegister, FaIndustry, FaTools } from 'react-icons/fa';
+// --- FIN CAMBIO ---
 import QuoteRequestsWidget from '../../components/QuoteRequestsWidget.jsx';
 import FinancialManager from '../../components/FinancialManager.jsx';
 import styles from './AdminDashboardPage.module.css';
@@ -23,7 +25,6 @@ function AdminDashboardPage() {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    // console.log("DEBUG LOG: Iniciando fetchData..."); // Logs eliminados para limpieza
     try {
       const [ordersSnap, usersSnap, inventorySnap, recipesSnap, recordsSnap, productionSnap, checksSnap, clientsSnap] = await Promise.all([
         getDocs(query(collection(db, 'orders'), orderBy('createdAt', 'desc'))),
@@ -45,9 +46,7 @@ function AdminDashboardPage() {
       const pendingChecks = checksSnap.docs.map(doc => doc.data());
       const clients = clientsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-      // console.log("DEBUG LOG: Datos crudos de Firebase:", { productionOrdersCount: productionOrders.length, clientsCount: clients.length, firstProductionOrder: productionOrders[0] });
-
-      // --- CÁLCULOS DE KPI (Sin cambios) ---
+      // --- CÁLCULOS DE KPI (Existentes) ---
       const manualIncome = financialRecords.filter(r => r.type === 'ingreso').reduce((sum, r) => sum + (r.amount || 0), 0);
       const totalExpense = financialRecords.filter(r => r.type === 'gasto').reduce((sum, r) => sum + (r.amount || 0), 0);
       const balance = manualIncome - totalExpense;
@@ -79,207 +78,118 @@ function AdminDashboardPage() {
           return sum + (price * (order.quantity || 0));
         }, 0);
 
-      // --- CÁLCULO Ingresos por Producción (Últimos 6 Meses) ---
+      // --- ▼▼▼ NUEVOS CÁLCULOS KPI ▼▼▼ ---
+      const activeProductionOrders = productionOrders.filter(order => order.currentStatus !== 'Entregado');
+      let grossValueInProduction = 0;
+      let totalMaterialCostInProduction = 0;
+
+      activeProductionOrders.forEach(order => {
+        const recipe = recipes.find(r => r.id === order.recipeId);
+        const orderQuantity = order.quantity || 0;
+
+        // Calcular Valor Bruto
+        if (order.productionType === 'for_delivery') {
+          grossValueInProduction += order.totalSaleValue || (order.unitSalePrice * orderQuantity) || 0;
+        } else if (order.productionType === 'for_stock' && recipe) {
+          grossValueInProduction += (recipe.price || 0) * orderQuantity;
+        }
+
+        // Calcular Costo de Materiales
+        if (recipe && recipe.components) {
+          let orderMaterialCost = 0;
+          recipe.components.forEach(component => {
+            const inventoryItem = inventoryItems.find(item => item.id === component.idPieza);
+            const itemCost = parseFloat(inventoryItem?.costoPorUnidad) || 0;
+            const quantityNeeded = component.quantityNeeded || 0;
+            orderMaterialCost += (itemCost * quantityNeeded);
+          });
+          totalMaterialCostInProduction += (orderMaterialCost * orderQuantity);
+        }
+      });
+
+      const netValueInProduction = grossValueInProduction - totalMaterialCostInProduction;
+      // --- ▲▲▲ FIN NUEVOS CÁLCULOS KPI ▲▲▲ ---
+
+
+      // --- CÁLCULOS DE GRÁFICOS (Existentes - Sin cambios) ---
       const productionIncomeByMonth = {};
       const monthLabels = [];
       const today = new Date();
       for (let i = 5; i >= 0; i--) {
         const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-        // --- CORRECCIÓN CLAVE: Asegurar formato consistente 'mes aa' ---
-        const monthLabel = d.toLocaleString('es-AR', { month: 'short', year: '2-digit' }).replace('.', '').toLowerCase(); // ej: 'sep 25'
-        // --- FIN CORRECCIÓN ---
+        const monthLabel = d.toLocaleString('es-AR', { month: 'short', year: '2-digit' }).replace('.', '').toLowerCase();
         monthLabels.push(monthLabel);
         productionIncomeByMonth[monthLabel] = 0;
       }
-
       const deliveredProductionOrders = productionOrders.filter(order => order.currentStatus === 'Entregado' && order.productionType === 'for_delivery');
-      // console.log(`DEBUG LOG: Órdenes de producción entregadas y para entrega: ${deliveredProductionOrders.length}`);
-
       deliveredProductionOrders.forEach(order => {
           let deliveryDate = null;
-          if (order.statusHistory && order.statusHistory.length > 0) {
+          if (order.statusHistory?.length > 0) {
             const deliveredEntry = order.statusHistory.find(entry => entry.stepName === 'Entregado');
-            if (deliveredEntry && deliveredEntry.updatedAt) {
-              deliveryDate = deliveredEntry.updatedAt instanceof Timestamp 
-                             ? deliveredEntry.updatedAt.toDate() 
-                             : new Date(deliveredEntry.updatedAt);
+            if (deliveredEntry?.updatedAt) {
+              deliveryDate = deliveredEntry.updatedAt instanceof Timestamp ? deliveredEntry.updatedAt.toDate() : new Date(deliveredEntry.updatedAt);
             }
           }
-          if (!deliveryDate && order.createdAt) {
-             deliveryDate = order.createdAt instanceof Timestamp 
-                            ? order.createdAt.toDate()
-                            : new Date(order.createdAt);
-          }
-
+          if (!deliveryDate && order.createdAt) { deliveryDate = order.createdAt instanceof Timestamp ? order.createdAt.toDate() : new Date(order.createdAt); }
           if (deliveryDate) {
-            // --- CORRECCIÓN CLAVE: Usar el mismo formato que en la inicialización ---
-            const monthLabel = deliveryDate.toLocaleString('es-AR', { month: 'short', year: '2-digit' }).replace('.', '').toLowerCase(); // ej: 'sep 25'
-            // --- FIN CORRECCIÓN ---
+            const monthLabel = deliveryDate.toLocaleString('es-AR', { month: 'short', year: '2-digit' }).replace('.', '').toLowerCase();
             const saleValue = order.totalSaleValue || (order.unitSalePrice * order.quantity) || 0;
-            if (productionIncomeByMonth.hasOwnProperty(monthLabel)) {
-              productionIncomeByMonth[monthLabel] += saleValue;
-            } else {
-                 // console.log(`DEBUG LOG: Mes ${monthLabel} no encontrado para la orden ${order.trackingCode}`);
-            }
-          } else {
-             // console.log(`DEBUG LOG: No se pudo determinar fecha de entrega para la orden ${order.trackingCode}`);
+            if (productionIncomeByMonth.hasOwnProperty(monthLabel)) { productionIncomeByMonth[monthLabel] += saleValue; }
           }
         });
-      
-      // console.log("DEBUG LOG: Ingresos por producción por mes:", productionIncomeByMonth);
-      
-      const monthlyProductionIncomeChart = { 
-        labels: monthLabels.map(l => l.charAt(0).toUpperCase() + l.slice(1)), // Poner Mayúscula inicial para mostrar
-        datasets: [{ 
-          label: 'Ingresos por Producción ($)', 
-          data: Object.values(productionIncomeByMonth), 
-          backgroundColor: '#0d6efd' 
-        }] 
-      };
-      // --- FIN CÁLCULO ---
-
-      // --- CÁLCULO Top Clientes por Compras (Producción) ---
+      const monthlyProductionIncomeChart = { labels: monthLabels.map(l => l.charAt(0).toUpperCase() + l.slice(1)), datasets: [{ label: 'Ingresos por Producción ($)', data: Object.values(productionIncomeByMonth), backgroundColor: '#0d6efd' }] };
       const deliveredOrdersWithClient = productionOrders.filter(order => order.currentStatus === 'Entregado' && order.linkedClientId);
-      // console.log(`DEBUG LOG: Órdenes entregadas con cliente vinculado: ${deliveredOrdersWithClient.length}`);
-      
-      const salesByProdCustomer = deliveredOrdersWithClient.reduce((acc, order) => {
-          const clientId = order.linkedClientId;
-          const saleValue = order.totalSaleValue || (order.unitSalePrice * order.quantity) || 0;
-          acc[clientId] = (acc[clientId] || 0) + saleValue;
-          return acc;
-        }, {});
-        
-      // console.log("DEBUG LOG: Ventas por ID de cliente (Producción):", salesByProdCustomer);
-      
-      const topProdCustomersData = Object.entries(salesByProdCustomer)
-        .sort(([, a], [, b]) => b - a)
-        .slice(0, 5)
-        .map(([clientId, totalSales]) => {
-          const clientInfo = clients.find(c => c.id === clientId);
-          // Si no encontramos cliente, mostramos ID corto
-          const clientName = clientInfo ? `${clientInfo.name || ''} ${clientInfo.lastName || ''}`.trim() : `ID: ${clientId.substring(0, 5)}...`; 
-          return { name: clientName || 'Cliente Desconocido', sales: totalSales };
-        });
-
-      // console.log("DEBUG LOG: Datos finales para Top Clientes (Producción):", topProdCustomersData);
-
-      const topCustomersProductionChart = { 
-        labels: topProdCustomersData.map(c => c.name), 
-        datasets: [{ 
-          label: 'Total Comprado (Producción) ($)', 
-          data: topProdCustomersData.map(c => c.sales), 
-          backgroundColor: '#6f42c1' 
-        }] 
-      };
-      // --- FIN CÁLCULO ---
-
-      // --- Otros gráficos (sin cambios) ---
-      const productionStatusCounts = productionOrders.reduce((acc, order) => {
-        const status = order.currentStatus || 'Desconocido';
-        acc[status] = (acc[status] || 0) + (order.quantity || 1);
-        return acc;
-    }, {});
-      const productionStatusChartData = { 
-        labels: Object.keys(productionStatusCounts), 
-        datasets: [{ 
-          data: Object.values(productionStatusCounts), 
-          backgroundColor: ['#ffc107', '#17a2b8', '#6f42c1', '#20c997', '#fd7e14', '#dc3545', '#28a745', '#0d6efd', '#6c757d', '#198754', '#e83e8c', '#adb5bd'] 
-        }] 
-      };
-      const expensesByCategory = financialRecords.filter(r => r.type === 'gasto').reduce((acc, record) => {
-        const category = record.category || 'Sin Categoría';
-        acc[category] = (acc[category] || 0) + record.amount;
-        return acc;
-      }, {});
-      const expenseChart = { 
-        labels: Object.keys(expensesByCategory), 
-        datasets: [{ 
-          data: Object.values(expensesByCategory), 
-          backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#6c757d', '#17a2b8', '#6f42c1'] 
-        }] 
-      };
-      const quantityByProduct = orders.flatMap(o => o.items || []).reduce((acc, item) => {
-        acc[item.name] = (acc[item.name] || 0) + (item.quantity || 0);
-        return acc;
-      }, {});
+      const salesByProdCustomer = deliveredOrdersWithClient.reduce((acc, order) => { const clientId = order.linkedClientId; const saleValue = order.totalSaleValue || (order.unitSalePrice * order.quantity) || 0; acc[clientId] = (acc[clientId] || 0) + saleValue; return acc; }, {});
+      const topProdCustomersData = Object.entries(salesByProdCustomer).sort(([, a], [, b]) => b - a).slice(0, 5).map(([clientId, totalSales]) => { const clientInfo = clients.find(c => c.id === clientId); const clientName = clientInfo ? `${clientInfo.name || ''} ${clientInfo.lastName || ''}`.trim() : `ID: ${clientId.substring(0, 5)}...`; return { name: clientName || 'Cliente Desconocido', sales: totalSales }; });
+      const topCustomersProductionChart = { labels: topProdCustomersData.map(c => c.name), datasets: [{ label: 'Total Comprado (Producción) ($)', data: topProdCustomersData.map(c => c.sales), backgroundColor: '#6f42c1' }] };
+      const productionStatusCounts = productionOrders.reduce((acc, order) => { const status = order.currentStatus || 'Desconocido'; acc[status] = (acc[status] || 0) + (order.quantity || 1); return acc; }, {});
+      const productionStatusChartData = { labels: Object.keys(productionStatusCounts), datasets: [{ data: Object.values(productionStatusCounts), backgroundColor: ['#ffc107', '#17a2b8', '#6f42c1', '#20c997', '#fd7e14', '#dc3545', '#28a745', '#0d6efd', '#6c757d', '#198754', '#e83e8c', '#adb5bd'] }] };
+      const expensesByCategory = financialRecords.filter(r => r.type === 'gasto').reduce((acc, record) => { const category = record.category || 'Sin Categoría'; acc[category] = (acc[category] || 0) + record.amount; return acc; }, {});
+      const expenseChart = { labels: Object.keys(expensesByCategory), datasets: [{ data: Object.values(expensesByCategory), backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#6c757d', '#17a2b8', '#6f42c1'] }] };
+      const quantityByProduct = orders.flatMap(o => o.items || []).reduce((acc, item) => { acc[item.name] = (acc[item.name] || 0) + (item.quantity || 0); return acc; }, {});
       const topProductsByQuantity = Object.entries(quantityByProduct).sort(([, a], [, b]) => b - a).slice(0, 5);
-      const topProductsByQuantityChart = { 
-        labels: topProductsByQuantity.map(([name,]) => name), 
-        datasets: [{ 
-          label: 'Unidades Vendidas (Presup.)', 
-          data: topProductsByQuantity.map(([, qty]) => qty), 
-          backgroundColor: '#198754' 
-        }] 
-      };
+      const topProductsByQuantityChart = { labels: topProductsByQuantity.map(([name,]) => name), datasets: [{ label: 'Unidades Vendidas (Presup.)', data: topProductsByQuantity.map(([, qty]) => qty), backgroundColor: '#198754' }] };
 
-      // console.log("DEBUG LOG: Preparando setDashboardData...");
       setDashboardData({
-        kpis: { 
-            totalIncome: manualIncome, 
+        kpis: {
+            totalIncome: manualIncome,
             totalSalesRevenue,
-            totalExpense, 
+            totalExpense,
             balance,
             totalOrders,
-            totalCustomers, 
-            totalInventoryValue, 
+            totalCustomers,
+            totalInventoryValue,
             averageOrderValue,
-            checksToCollect: checksToCollectThisMonth
+            checksToCollect: checksToCollectThisMonth,
+            // --- ▼▼▼ Añadimos los nuevos KPIs ▼▼▼ ---
+            grossValueInProduction,
+            netValueInProduction,
+            // --- ▲▲▲ FIN AÑADIDOS ▲▲▲ ---
         },
-        charts: { 
+        charts: {
           monthlyProductionIncomeChart,
-          productionStatusChart: productionStatusChartData, 
+          productionStatusChart: productionStatusChartData,
           topCustomersProductionChart,
-          expenseChart, 
+          expenseChart,
           topProductsByQuantityChart
         },
         latestOrders: orders.slice(0, 5)
       });
-      // console.log("DEBUG LOG: setDashboardData completado.");
     } catch (error) {
       console.error("Error al procesar datos del dashboard:", error);
       toast.error("No se pudieron cargar los datos del dashboard.");
     } finally {
       setLoading(false);
-      // console.log("DEBUG LOG: fetchData finalizado.");
     }
   }, []);
-  
+
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  const chartOptions = { 
-    responsive: true, 
-    maintainAspectRatio: false, 
-    plugins: { 
-      legend: { position: 'top' },
-      tooltip: {
-        callbacks: {
-          label: function(context) {
-            let label = context.dataset.label || '';
-            if (label) { label += ': '; }
-            let value = 0;
-            if (context.parsed.y !== null) value = context.parsed.y;
-            else if (context.parsed.x !== null) value = context.parsed.x;
-            else if (context.parsed !== null) value = context.parsed;
-            label += formatCurrency(value);
-            return label;
-          }
-        }
-      }
-    } 
-  };
-  
-  const barChartOptions = { 
-    ...chartOptions, 
-    indexAxis: 'y', 
-    scales: { x: { beginAtZero: true } }
-  };
-  
-  const verticalBarChartOptions = {
-      ...chartOptions,
-      scales: { y: { beginAtZero: true } }
-  };
+  const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: function(context) { let label = context.dataset.label || ''; if (label) { label += ': '; } let value = 0; if (context.parsed.y !== null) value = context.parsed.y; else if (context.parsed.x !== null) value = context.parsed.x; else if (context.parsed !== null) value = context.parsed; label += formatCurrency(value); return label; } } } } };
+  const barChartOptions = { ...chartOptions, indexAxis: 'y', scales: { x: { beginAtZero: true } } };
+  const verticalBarChartOptions = { ...chartOptions, scales: { y: { beginAtZero: true } } };
 
   return (
     <div className={styles.pageContent}>
@@ -291,11 +201,14 @@ function AdminDashboardPage() {
       {loading ? <p>Cargando y calculando datos...</p> : dashboardData && (
         <>
           <div className={styles.kpiGrid}>
-            {/* KPIs sin cambios */}
             <KPI title="Ingresos por Ventas" value={formatCurrency(dashboardData.kpis.totalSalesRevenue)} icon={<FaCashRegister />} color="#20c997" />
             <KPI title="Ingresos (Manuales)" value={formatCurrency(dashboardData.kpis.totalIncome)} icon={<FaDollarSign />} color="#198754" />
             <KPI title="Gastos Totales" value={formatCurrency(dashboardData.kpis.totalExpense)} icon={<FaRegChartBar />} color="#dc3545" />
             <KPI title="Balance" value={formatCurrency(dashboardData.kpis.balance)} icon={<FaBalanceScale />} color={dashboardData.kpis.balance >= 0 ? "#0d6efd" : "#dc3545"} />
+            {/* --- ▼▼▼ Nuevos KPIs añadidos ▼▼▼ --- */}
+            <KPI title="Valor Bruto en Prod." value={formatCurrency(dashboardData.kpis.grossValueInProduction)} icon={<FaIndustry />} color="#ffc107" />
+            <KPI title="Valor Neto en Prod." value={formatCurrency(dashboardData.kpis.netValueInProduction)} icon={<FaTools />} color="#17a2b8" />
+            {/* --- ▲▲▲ Fin Nuevos KPIs ▲▲▲ --- */}
             <KPI title="Cheques a Cobrar (Mes)" value={formatCurrency(dashboardData.kpis.checksToCollect)} icon={<FaFileInvoiceDollar />} color="#6f42c1" />
             <KPI title="Total de Órdenes" value={dashboardData.kpis.totalOrders} icon={<FaShoppingCart />} color="#0d6efd" />
             <KPI title="Ticket Promedio" value={formatCurrency(dashboardData.kpis.averageOrderValue)} icon={<FaChartPie />} color="#17a2b8" />

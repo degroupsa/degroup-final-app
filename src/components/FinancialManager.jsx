@@ -5,9 +5,7 @@ import toast from 'react-hot-toast';
 import styles from './FinancialManager.module.css';
 import DataExporter from './admin/DataExporter';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-// --- CAMBIO: Importamos FaTrash ---
 import { FaChevronLeft, FaChevronRight, FaInfoCircle, FaTrash } from 'react-icons/fa';
-// --- FIN CAMBIO ---
 
 // --- FUNCIONES Y COMPONENTES PARA GRÁFICOS ---
 const formatCurrency = (value, withDecimals = false) => {
@@ -104,241 +102,35 @@ function FinancialManager() {
     fetchData();
   }, []);
 
-  const handleInitialBalanceSubmit = async (e) => {
-    e.preventDefault();
-    if (!initialBalance.amount || !initialBalance.date) {
-        return toast.error("Por favor, completa el monto y la fecha del saldo inicial.");
-    }
-    if (!window.confirm("¿Estás seguro de registrar este saldo inicial?")) { return; }
-    toast.loading("Registrando saldo inicial...");
-    try {
-      const initialDate = getDateFromInput(initialBalance.date);
-      await addDoc(collection(db, 'registrosFinancieros'), {
-        type: 'ingreso', concept: 'Ajuste de Saldo Inicial', amount: Number(initialBalance.amount),
-        category: 'Ajuste de Saldo', date: Timestamp.fromDate(initialDate), isManual: true,
-      });
-      toast.dismiss();
-      toast.success("Saldo inicial registrado con éxito.");
-      setInitialBalance({ amount: '', date: new Date().toISOString().split('T')[0] });
-      fetchData();
-    } catch (error) {
-      toast.dismiss();
-      toast.error("Error al registrar el saldo.");
-    }
-  };
-
+  // --- Funciones 'handle' ---
+  const handleInitialBalanceSubmit = async (e) => { e.preventDefault(); if (!initialBalance.amount || !initialBalance.date) { return toast.error("Por favor, completa el monto y la fecha del saldo inicial."); } if (!window.confirm("¿Estás seguro de registrar este saldo inicial?")) { return; } toast.loading("Registrando saldo inicial..."); try { const initialDate = getDateFromInput(initialBalance.date); await addDoc(collection(db, 'registrosFinancieros'), { type: 'ingreso', concept: 'Ajuste de Saldo Inicial', amount: Number(initialBalance.amount), category: 'Ajuste de Saldo', date: Timestamp.fromDate(initialDate), isManual: true, }); toast.dismiss(); toast.success("Saldo inicial registrado con éxito."); setInitialBalance({ amount: '', date: new Date().toISOString().split('T')[0] }); fetchData(); } catch (error) { toast.dismiss(); toast.error("Error al registrar el saldo."); } };
   const handleChequeInputChange = (e) => setNewCheque({ ...newCheque, [e.target.name]: e.target.value });
   const handlePayableInputChange = (e) => setNewPayable({ ...newPayable, [e.target.name]: e.target.value });
-  const handleRecordInputChange = (e) => {
-    const { name, value } = e.target;
-    const newRecord = { ...manualRecord, [name]: value };
-    if (name === 'type') newRecord.category = value === 'ingreso' ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0];
-    setManualRecord(newRecord);
-  };
-  const handleEditingRecordChange = (e) => {
-    const { name, value } = e.target;
-    setEditingRecord(prevRecord => {
-        const updatedRecord = { ...prevRecord, [name]: value };
-        if (name === 'type') {
-            updatedRecord.category = value === 'ingreso' ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0];
-        }
-        return updatedRecord;
-    });
-  };
+  const handleRecordInputChange = (e) => { const { name, value } = e.target; const newRecord = { ...manualRecord, [name]: value }; if (name === 'type') newRecord.category = value === 'ingreso' ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0]; setManualRecord(newRecord); };
+  const handleEditingRecordChange = (e) => { const { name, value } = e.target; setEditingRecord(prevRecord => { const updatedRecord = { ...prevRecord, [name]: value }; if (name === 'type') { updatedRecord.category = value === 'ingreso' ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0]; } return updatedRecord; }); };
+  const handleAddCheque = async (e) => { e.preventDefault(); if (!newCheque.emisor || !newCheque.monto || !newCheque.fechaCobro) return toast.error("Completa todos los campos del cheque."); try { const fechaCobroDate = getDateFromInput(newCheque.fechaCobro); await addDoc(collection(db, 'pendingChecks'), { emisor: newCheque.emisor, monto: Number(newCheque.monto), fechaCobro: Timestamp.fromDate(fechaCobroDate), status: 'pendiente', createdAt: serverTimestamp() }); toast.success("Cheque pendiente agregado."); setNewCheque({ emisor: '', monto: '', fechaCobro: '' }); fetchData(); } catch (error) { toast.error("Error al agregar el cheque."); console.error("Error en handleAddCheque:", error); } };
+  const handleAddPayable = async (e) => { e.preventDefault(); const { proveedor, concepto, monto, fechaVencimiento } = newPayable; if (!proveedor || !monto || !fechaVencimiento) return toast.error("Completa Proveedor, Monto y Fecha."); toast.loading('Guardando cuenta por pagar...'); try { const fechaVencimientoDate = getDateFromInput(fechaVencimiento); await addDoc(collection(db, 'pendingPayables'), { proveedor: proveedor.trim(), concepto: concepto.trim(), monto: Number(monto), fechaVencimiento: Timestamp.fromDate(fechaVencimientoDate), status: 'pendiente', createdAt: serverTimestamp() }); toast.dismiss(); toast.success("Cuenta por pagar agregada."); setNewPayable({ proveedor: '', concepto: '', monto: '', fechaVencimiento: '' }); fetchData(); } catch (error) { toast.dismiss(); toast.error("Error al agregar la cuenta."); console.error("Error en handleAddPayable:", error); } };
+  const handleRecordSubmit = async (e) => { e.preventDefault(); if (!manualRecord.concept || !manualRecord.amount || !manualRecord.category) return toast.error("Completa todos los campos del registro."); toast.loading("Registrando movimiento..."); try { await addDoc(collection(db, 'registrosFinancieros'), { type: manualRecord.type, concept: manualRecord.concept, amount: Number(manualRecord.amount), category: manualRecord.category, date: serverTimestamp(), isManual: true }); toast.dismiss(); toast.success("Movimiento registrado."); setManualRecord({ type: 'ingreso', concept: '', amount: '', category: INCOME_CATEGORIES[0] }); fetchData(); } catch (error) { toast.dismiss(); toast.error("Error al registrar el movimiento."); } };
+  const handleEditSubmit = async (e) => { e.preventDefault(); if (!editingRecord) return; toast.loading("Guardando cambios..."); try { const { id, ...dataToUpdate } = editingRecord; dataToUpdate.date = Timestamp.fromDate(getDateFromInput(dataToUpdate.date)); dataToUpdate.amount = Number(dataToUpdate.amount); await updateDoc(doc(db, 'registrosFinancieros', id), dataToUpdate); toast.dismiss(); toast.success("Movimiento actualizado con éxito."); setIsEditModalOpen(false); setEditingRecord(null); fetchData(); } catch (error) { toast.dismiss(); toast.error("Error al guardar los cambios."); console.error("Error en handleEditSubmit: ", error); } };
+  const handleStatusChange = async (cheque, newStatus) => { if (newStatus === 'cobrado') { if (!window.confirm(`¿Confirmas el cobro del cheque de ${cheque.emisor}?`)) return fetchData(); toast.loading("Procesando cobro..."); try { await addDoc(collection(db, 'registrosFinancieros'), { type: 'ingreso', amount: cheque.monto, concept: `Cobro de cheque de ${cheque.emisor}`, category: 'Venta de Productos', date: serverTimestamp() }); await updateDoc(doc(db, 'pendingChecks', cheque.id), { status: 'cobrado' }); toast.dismiss(); toast.success("¡Cheque cobrado y registrado!"); fetchData(); } catch (error) { toast.dismiss(); toast.error("Error al procesar el cobro."); } } else { try { await updateDoc(doc(db, 'pendingChecks', cheque.id), { status: newStatus }); toast.success(`Estado del cheque actualizado.`); fetchData(); } catch (error) { toast.error("Error al actualizar el estado."); } } };
+  const handlePayableStatusChange = async (payable, newStatus) => { if (newStatus === 'pagado') { if (!window.confirm(`¿Confirmas el pago a ${payable.proveedor}?`)) return fetchData(); toast.loading("Procesando pago..."); try { await addDoc(collection(db, 'registrosFinancieros'), { type: 'egreso', amount: payable.monto, concept: `Pago a ${payable.proveedor}: ${payable.concepto || 'S/C'}`, category: 'Otros Gastos', date: serverTimestamp() }); await updateDoc(doc(db, 'pendingPayables', payable.id), { status: 'pagado' }); toast.dismiss(); toast.success("¡Pago registrado y marcado!"); fetchData(); } catch (error) { toast.dismiss(); toast.error("Error al procesar el pago."); console.error(error); } } else { try { await updateDoc(doc(db, 'pendingPayables', payable.id), { status: newStatus }); toast.success(`Estado de la cuenta actualizado.`); fetchData(); } catch (error) { toast.error("Error al actualizar el estado."); } } };
+  const handleDeleteCheque = async (chequeId, emisor) => { if (!window.confirm(`¿Estás seguro de eliminar el cheque pendiente de "${emisor}"?`)) return; toast.loading('Eliminando cheque...'); try { await deleteDoc(doc(db, "pendingChecks", chequeId)); toast.dismiss(); toast.success("Cheque eliminado."); fetchData(); } catch (error) { toast.dismiss(); toast.error("Error al eliminar el cheque."); console.error("Error deleting cheque: ", error); } };
+  const handleDeletePayable = async (payableId, proveedor) => { if (!window.confirm(`¿Estás seguro de eliminar la cuenta por pagar a "${proveedor}"?`)) return; toast.loading('Eliminando cuenta...'); try { await deleteDoc(doc(db, "pendingPayables", payableId)); toast.dismiss(); toast.success("Cuenta por pagar eliminada."); fetchData(); } catch (error) { toast.dismiss(); toast.error("Error al eliminar la cuenta."); console.error("Error deleting payable: ", error); } };
+  const openEditModal = (record) => { const currentCategories = record.type === 'ingreso' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES; const recordDate = record.date instanceof Timestamp ? record.date.toDate() : new Date(record.date); const formattedDate = recordDate.toISOString().split('T')[0]; const recordToEdit = { ...record, category: record.category || currentCategories[0], date: formattedDate }; setEditingRecord(recordToEdit); setIsEditModalOpen(true); };
 
-  const handleAddCheque = async (e) => {
-    e.preventDefault();
-    if (!newCheque.emisor || !newCheque.monto || !newCheque.fechaCobro) return toast.error("Completa todos los campos del cheque.");
-    try {
-      const fechaCobroDate = getDateFromInput(newCheque.fechaCobro);
-      await addDoc(collection(db, 'pendingChecks'), {
-          emisor: newCheque.emisor, monto: Number(newCheque.monto),
-          fechaCobro: Timestamp.fromDate(fechaCobroDate), status: 'pendiente', createdAt: serverTimestamp()
-      });
-      toast.success("Cheque pendiente agregado.");
-      setNewCheque({ emisor: '', monto: '', fechaCobro: '' });
-      fetchData();
-    } catch (error) {
-      toast.error("Error al agregar el cheque.");
-      console.error("Error en handleAddCheque:", error);
-    }
-  };
+  // --- Cálculos useMemo ---
+  const monthlyTotals = useMemo(() => { const totals = { current: 0, next: 0, twoMonths: 0 }; if (!cheques) return totals; const now = new Date(); const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1); const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1); const twoMonthsLaterStart = new Date(now.getFullYear(), now.getMonth() + 2, 1); const threeMonthsLaterStart = new Date(now.getFullYear(), now.getMonth() + 3, 1); cheques.forEach(cheque => { const dueDate = cheque.fechaCobro.toDate(); if (dueDate >= currentMonthStart && dueDate < nextMonthStart) { totals.current += cheque.monto; } else if (dueDate >= nextMonthStart && dueDate < twoMonthsLaterStart) { totals.next += cheque.monto; } else if (dueDate >= twoMonthsLaterStart && dueDate < threeMonthsLaterStart) { totals.twoMonths += cheque.monto; } }); return totals; }, [cheques]);
+  const totalPayable = useMemo(() => { if (!accountsPayable) return 0; return accountsPayable.reduce((acc, payable) => acc + payable.monto, 0); }, [accountsPayable]);
 
-  const handleAddPayable = async (e) => {
-    e.preventDefault();
-    const { proveedor, concepto, monto, fechaVencimiento } = newPayable;
-    if (!proveedor || !monto || !fechaVencimiento) return toast.error("Completa Proveedor, Monto y Fecha.");
-    toast.loading('Guardando cuenta por pagar...');
-    try {
-      const fechaVencimientoDate = getDateFromInput(fechaVencimiento);
-      await addDoc(collection(db, 'pendingPayables'), {
-        proveedor: proveedor.trim(), concepto: concepto.trim(), monto: Number(monto),
-        fechaVencimiento: Timestamp.fromDate(fechaVencimientoDate), status: 'pendiente', createdAt: serverTimestamp()
-      });
-      toast.dismiss();
-      toast.success("Cuenta por pagar agregada.");
-      setNewPayable({ proveedor: '', concepto: '', monto: '', fechaVencimiento: '' });
-      fetchData();
-    } catch (error) {
-      toast.dismiss();
-      toast.error("Error al agregar la cuenta.");
-      console.error("Error en handleAddPayable:", error);
-    }
-  };
-
-  const handleRecordSubmit = async (e) => {
-    e.preventDefault();
-    if (!manualRecord.concept || !manualRecord.amount || !manualRecord.category) return toast.error("Completa todos los campos del registro.");
-    toast.loading("Registrando movimiento...");
-    try {
-      await addDoc(collection(db, 'registrosFinancieros'), { type: manualRecord.type, concept: manualRecord.concept, amount: Number(manualRecord.amount), category: manualRecord.category, date: serverTimestamp(), isManual: true });
-      toast.dismiss();
-      toast.success("Movimiento registrado.");
-      setManualRecord({ type: 'ingreso', concept: '', amount: '', category: INCOME_CATEGORIES[0] });
-      fetchData();
-    } catch (error) {
-      toast.dismiss();
-      toast.error("Error al registrar el movimiento.");
-    }
-  };
-
-  const handleEditSubmit = async (e) => {
-    e.preventDefault();
-    if (!editingRecord) return;
-    toast.loading("Guardando cambios...");
-    try {
-        const { id, ...dataToUpdate } = editingRecord;
-        dataToUpdate.date = Timestamp.fromDate(getDateFromInput(dataToUpdate.date));
-        dataToUpdate.amount = Number(dataToUpdate.amount);
-        await updateDoc(doc(db, 'registrosFinancieros', id), dataToUpdate);
-        toast.dismiss();
-        toast.success("Movimiento actualizado con éxito.");
-        setIsEditModalOpen(false);
-        setEditingRecord(null);
-        fetchData();
-    } catch (error) {
-        toast.dismiss();
-        toast.error("Error al guardar los cambios.");
-        console.error("Error en handleEditSubmit: ", error);
-    }
-  };
-
-  const handleStatusChange = async (cheque, newStatus) => {
-    if (newStatus === 'cobrado') {
-      if (!window.confirm(`¿Confirmas el cobro del cheque de ${cheque.emisor}?`)) return fetchData();
-      toast.loading("Procesando cobro...");
-      try {
-        await addDoc(collection(db, 'registrosFinancieros'), { type: 'ingreso', amount: cheque.monto, concept: `Cobro de cheque de ${cheque.emisor}`, category: 'Venta de Productos', date: serverTimestamp() });
-        await updateDoc(doc(db, 'pendingChecks', cheque.id), { status: 'cobrado' });
-        toast.dismiss();
-        toast.success("¡Cheque cobrado y registrado!");
-        fetchData();
-      } catch (error) {
-        toast.dismiss();
-        toast.error("Error al procesar el cobro.");
-      }
-    } else {
-      try {
-        await updateDoc(doc(db, 'pendingChecks', cheque.id), { status: newStatus });
-        toast.success(`Estado del cheque actualizado.`);
-        fetchData();
-      } catch (error) {
-        toast.error("Error al actualizar el estado.");
-      }
-    }
-  };
-
-  const handlePayableStatusChange = async (payable, newStatus) => {
-    if (newStatus === 'pagado') {
-      if (!window.confirm(`¿Confirmas el pago a ${payable.proveedor}?`)) return fetchData();
-      toast.loading("Procesando pago...");
-      try {
-        await addDoc(collection(db, 'registrosFinancieros'), { type: 'egreso', amount: payable.monto, concept: `Pago a ${payable.proveedor}: ${payable.concepto || 'S/C'}`, category: 'Otros Gastos', date: serverTimestamp() });
-        await updateDoc(doc(db, 'pendingPayables', payable.id), { status: 'pagado' });
-        toast.dismiss();
-        toast.success("¡Pago registrado y marcado!");
-        fetchData();
-      } catch (error) {
-        toast.dismiss();
-        toast.error("Error al procesar el pago.");
-        console.error(error);
-      }
-    } else {
-      try {
-        await updateDoc(doc(db, 'pendingPayables', payable.id), { status: newStatus });
-        toast.success(`Estado de la cuenta actualizado.`);
-        fetchData();
-      } catch (error) {
-        toast.error("Error al actualizar el estado.");
-      }
-    }
-  };
-
-  // --- NUEVO: Función para eliminar Cheque ---
-  const handleDeleteCheque = async (chequeId, emisor) => {
-    if (!window.confirm(`¿Estás seguro de eliminar el cheque pendiente de "${emisor}"?`)) return;
-    toast.loading('Eliminando cheque...');
-    try {
-      await deleteDoc(doc(db, "pendingChecks", chequeId));
-      toast.dismiss();
-      toast.success("Cheque eliminado.");
-      fetchData(); // Recarga la lista
-    } catch (error) {
-      toast.dismiss();
-      toast.error("Error al eliminar el cheque.");
-      console.error("Error deleting cheque: ", error);
-    }
-  };
-  // --- FIN NUEVO ---
-
-  // --- NUEVO: Función para eliminar Cuenta por Pagar ---
-  const handleDeletePayable = async (payableId, proveedor) => {
-    if (!window.confirm(`¿Estás seguro de eliminar la cuenta por pagar a "${proveedor}"?`)) return;
-    toast.loading('Eliminando cuenta...');
-    try {
-      await deleteDoc(doc(db, "pendingPayables", payableId));
-      toast.dismiss();
-      toast.success("Cuenta por pagar eliminada.");
-      fetchData(); // Recarga la lista
-    } catch (error) {
-      toast.dismiss();
-      toast.error("Error al eliminar la cuenta.");
-      console.error("Error deleting payable: ", error);
-    }
-  };
-  // --- FIN NUEVO ---
-
-  const openEditModal = (record) => {
-    const currentCategories = record.type === 'ingreso' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
-    const recordDate = record.date instanceof Timestamp ? record.date.toDate() : new Date(record.date);
-    const formattedDate = recordDate.toISOString().split('T')[0];
-    const recordToEdit = { ...record, category: record.category || currentCategories[0], date: formattedDate };
-    setEditingRecord(recordToEdit);
-    setIsEditModalOpen(true);
-  };
-
-  const monthlyTotals = useMemo(() => {
-    const totals = { current: 0, next: 0, twoMonths: 0 };
-    if (!cheques) return totals;
-    const now = new Date();
-    const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-    const twoMonthsLaterStart = new Date(now.getFullYear(), now.getMonth() + 2, 1);
-    const threeMonthsLaterStart = new Date(now.getFullYear(), now.getMonth() + 3, 1);
-    cheques.forEach(cheque => {
-      const dueDate = cheque.fechaCobro.toDate();
-      if (dueDate >= currentMonthStart && dueDate < nextMonthStart) { totals.current += cheque.monto; }
-      else if (dueDate >= nextMonthStart && dueDate < twoMonthsLaterStart) { totals.next += cheque.monto; }
-      else if (dueDate >= twoMonthsLaterStart && dueDate < threeMonthsLaterStart) { totals.twoMonths += cheque.monto; }
-    });
-    return totals;
+  // --- CAMBIO: Nuevo useMemo para calcular el total de cheques pendientes ---
+  const totalPendingChecksValue = useMemo(() => {
+    if (!cheques) return 0;
+    // Suma todos los cheques que no están 'cobrado' (aunque fetchData ya filtra)
+    return cheques.reduce((sum, cheque) => sum + cheque.monto, 0);
   }, [cheques]);
+  // --- FIN CAMBIO ---
 
-  const totalPayable = useMemo(() => {
-    if (!accountsPayable) return 0;
-    return accountsPayable.reduce((acc, payable) => acc + payable.monto, 0);
-  }, [accountsPayable]);
-
+  // --- Paginación ---
   const totalPages = Math.ceil(financialRecords.length / RECORDS_PER_PAGE);
   const indexOfLastRecord = currentPage * RECORDS_PER_PAGE;
   const indexOfFirstRecord = indexOfLastRecord - RECORDS_PER_PAGE;
@@ -346,29 +138,13 @@ function FinancialManager() {
   const handleNextPage = () => { if (currentPage < totalPages) setCurrentPage(currentPage + 1); };
   const handlePrevPage = () => { if (currentPage > 1) setCurrentPage(currentPage - 1); };
 
-  const getPayableRowClass = (payable) => {
-    if (!payable.fechaVencimiento) return '';
-    const dueDate = payable.fechaVencimiento.toDate();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const diffTime = dueDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    if (diffDays < 0) return styles.overdue;
-    else if (diffDays <= DUE_SOON_THRESHOLD_DAYS) return styles.dueSoon;
-    return '';
-  };
-
-  const getChequeRowClass = (cheque) => {
-    if (!cheque.fechaCobro) return '';
-    const collectDate = cheque.fechaCobro.toDate();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (collectDate <= today) return styles.collectible;
-    return '';
-  };
+  // --- Funciones de estilo ---
+  const getPayableRowClass = (payable) => { if (!payable.fechaVencimiento) return ''; const dueDate = payable.fechaVencimiento.toDate(); const today = new Date(); today.setHours(0, 0, 0, 0); const diffTime = dueDate.getTime() - today.getTime(); const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); if (diffDays < 0) return styles.overdue; else if (diffDays <= DUE_SOON_THRESHOLD_DAYS) return styles.dueSoon; return ''; };
+  const getChequeRowClass = (cheque) => { if (!cheque.fechaCobro) return ''; const collectDate = cheque.fechaCobro.toDate(); const today = new Date(); today.setHours(0, 0, 0, 0); if (collectDate <= today) return styles.collectible; return ''; };
 
   return (
     <>
+      {/* ... (Secciones Hitos, Gráficos, Registro Manual, Historial - SIN CAMBIOS) ... */}
       <div className={styles.milestonesGrid}>
         <div className={styles.milestoneCard}><h4>Primer Ingreso</h4>{firstIncome ? (<><p className={styles.milestoneValue}>{formatCurrency(firstIncome.amount)}</p><span className={styles.milestoneDate}>{firstIncome.date.toDate().toLocaleDateString('es-AR')}</span><span className={styles.milestoneConcept}>{firstIncome.concept}</span></>) : <p>No hay ingresos registrados.</p>}</div>
         <div className={styles.milestoneCard}><h4>Primer Gasto</h4>{firstExpense ? (<><p className={`${styles.milestoneValue} ${styles.expenseText}`}>{formatCurrency(firstExpense.amount)}</p><span className={styles.milestoneDate}>{firstExpense.date.toDate().toLocaleDateString('es-AR')}</span><span className={styles.milestoneConcept}>{firstExpense.concept}</span></>) : <p>No hay gastos registrados.</p>}</div>
@@ -389,64 +165,24 @@ function FinancialManager() {
       <hr className={styles.sectionDivider} />
       <h2 className={styles.sectionTitle}>Gestión de Cuentas por Pagar</h2>
       <div className={styles.chequeManagerGrid}>
-        <div className={styles.chequeFormCard}>
-            <h3>Cargar Nueva Cuenta</h3>
-            <form onSubmit={handleAddPayable}>
-                <div className={styles.formGroup}><label>Proveedor</label><input type="text" name="proveedor" value={newPayable.proveedor} onChange={handlePayableInputChange} required /></div>
-                <div className={styles.formGroup}><label>Concepto (Opcional)</label><input type="text" name="concepto" value={newPayable.concepto} onChange={handlePayableInputChange} /></div>
-                <div className={styles.formGroup}><label>Monto</label><input type="number" step="0.01" name="monto" value={newPayable.monto} onChange={handlePayableInputChange} required /></div>
-                <div className={styles.formGroup}><label>Fecha de Vencimiento</label><input type="date" name="fechaVencimiento" value={newPayable.fechaVencimiento} onChange={handlePayableInputChange} required /></div>
-                <button type="submit" className={styles.submitButton}>Guardar Cuenta</button>
-            </form>
-        </div>
-        <div className={styles.chequeSummaryCard}>
-            <h3>Resumen de Pagos Pendientes</h3>
-            <div className={styles.monthlySummaryGrid} style={{gridTemplateColumns: '1fr'}}><div className={styles.summaryBox}><h4>Total Pendiente</h4><p className={styles.expenseText}>{formatCurrency(totalPayable)}</p></div></div>
-            <div style={{maxHeight: '300px', overflowY: 'auto'}}>
-                <table className={styles.chequeTable}>
-                    <thead><tr><th>Vencimiento</th><th>Proveedor</th><th>Concepto</th><th>Monto</th><th>Estado</th><th>Acción</th></tr></thead>
-                    <tbody>
-                        {loading ? (<tr><td colSpan="6">Cargando...</td></tr>) : accountsPayable.length === 0 ? (<tr><td colSpan="6">No hay cuentas pendientes.</td></tr>) : (
-                        accountsPayable.map(payable => (
-                            <tr key={payable.id} className={getPayableRowClass(payable)}>
-                                <td>{payable.fechaVencimiento?.toDate().toLocaleDateString('es-AR') || 'N/A'}</td>
-                                <td>{payable.proveedor}</td>
-                                <td>{payable.concepto || 'N/A'}</td>
-                                <td>{formatCurrency(payable.monto)}</td>
-                                <td><select value={payable.status} onChange={(e) => handlePayableStatusChange(payable, e.target.value)} className={`${styles.statusSelect} ${styles[`status-${payable.status}`]}`}><option value="pendiente">Pendiente</option><option value="pagado">Pagado</option></select></td>
-                                <td>
-                                  <button
-                                    className={styles.deleteButton}
-                                    onClick={() => handleDeletePayable(payable.id, payable.proveedor)}
-                                    title="Eliminar Cuenta"
-                                  >
-                                    <FaTrash />
-                                  </button>
-                                </td>
-                            </tr>
-                        ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <div className={styles.chequeFormCard}><h3>Cargar Nueva Cuenta</h3><form onSubmit={handleAddPayable}><div className={styles.formGroup}><label>Proveedor</label><input type="text" name="proveedor" value={newPayable.proveedor} onChange={handlePayableInputChange} required /></div><div className={styles.formGroup}><label>Concepto (Opcional)</label><input type="text" name="concepto" value={newPayable.concepto} onChange={handlePayableInputChange} /></div><div className={styles.formGroup}><label>Monto</label><input type="number" step="0.01" name="monto" value={newPayable.monto} onChange={handlePayableInputChange} required /></div><div className={styles.formGroup}><label>Fecha de Vencimiento</label><input type="date" name="fechaVencimiento" value={newPayable.fechaVencimiento} onChange={handlePayableInputChange} required /></div><button type="submit" className={styles.submitButton}>Guardar Cuenta</button></form></div>
+        <div className={styles.chequeSummaryCard}><h3>Resumen de Pagos Pendientes</h3><div className={styles.monthlySummaryGrid} style={{gridTemplateColumns: '1fr'}}><div className={styles.summaryBox}><h4>Total Pendiente</h4><p className={styles.expenseText}>{formatCurrency(totalPayable)}</p></div></div><div style={{maxHeight: '300px', overflowY: 'auto'}}><table className={styles.chequeTable}><thead><tr><th>Vencimiento</th><th>Proveedor</th><th>Concepto</th><th>Monto</th><th>Estado</th><th>Acción</th></tr></thead><tbody>{loading ? (<tr><td colSpan="6">Cargando...</td></tr>) : accountsPayable.length === 0 ? (<tr><td colSpan="6">No hay cuentas pendientes.</td></tr>) : (accountsPayable.map(payable => (<tr key={payable.id} className={getPayableRowClass(payable)}><td>{payable.fechaVencimiento?.toDate().toLocaleDateString('es-AR') || 'N/A'}</td><td>{payable.proveedor}</td><td>{payable.concepto || 'N/A'}</td><td>{formatCurrency(payable.monto)}</td><td><select value={payable.status} onChange={(e) => handlePayableStatusChange(payable, e.target.value)} className={`${styles.statusSelect} ${styles[`status-${payable.status}`]}`}><option value="pendiente">Pendiente</option><option value="pagado">Pagado</option></select></td><td><button className={styles.deleteButton} onClick={() => handleDeletePayable(payable.id, payable.proveedor)} title="Eliminar Cuenta"><FaTrash /></button></td></tr>)))}</tbody></table></div></div>
       </div>
 
       <hr className={styles.sectionDivider} />
       <h2 className={styles.sectionTitle}>Gestión de Cheques Pendientes</h2>
       <div className={styles.chequeManagerGrid}>
-        <div className={styles.chequeFormCard}>
-            <h3>Cargar Nuevo Cheque</h3>
-            <form onSubmit={handleAddCheque}>
-                <div className={styles.formGroup}><label>Emisor</label><input type="text" name="emisor" value={newCheque.emisor} onChange={handleChequeInputChange} required /></div>
-                <div className={styles.formGroup}><label>Monto</label><input type="number" step="0.01" name="monto" value={newCheque.monto} onChange={handleChequeInputChange} required /></div>
-                <div className={styles.formGroup}><label>Fecha de Cobro</label><input type="date" name="fechaCobro" value={newCheque.fechaCobro} onChange={handleChequeInputChange} required /></div>
-                <button type="submit" className={styles.submitButton}>Guardar Cheque</button>
-            </form>
-        </div>
+        <div className={styles.chequeFormCard}><h3>Cargar Nuevo Cheque</h3><form onSubmit={handleAddCheque}><div className={styles.formGroup}><label>Emisor</label><input type="text" name="emisor" value={newCheque.emisor} onChange={handleChequeInputChange} required /></div><div className={styles.formGroup}><label>Monto</label><input type="number" step="0.01" name="monto" value={newCheque.monto} onChange={handleChequeInputChange} required /></div><div className={styles.formGroup}><label>Fecha de Cobro</label><input type="date" name="fechaCobro" value={newCheque.fechaCobro} onChange={handleChequeInputChange} required /></div><button type="submit" className={styles.submitButton}>Guardar Cheque</button></form></div>
         <div className={styles.chequeSummaryCard}>
             <h3>Resumen de Cobros Futuros</h3>
-            <div className={styles.monthlySummaryGrid}><div className={styles.summaryBox}><h4>Mes Actual</h4><p>{formatCurrency(monthlyTotals.current)}</p></div><div className={styles.summaryBox}><h4>Próximo Mes</h4><p>{formatCurrency(monthlyTotals.next)}</p></div><div className={styles.summaryBox}><h4>En 2 Meses</h4><p>{formatCurrency(monthlyTotals.twoMonths)}</p></div></div>
+            {/* --- CAMBIO: Añadimos el nuevo summaryBox para el total --- */}
+            <div className={styles.monthlySummaryGrid}>
+                <div className={styles.summaryBox}><h4>Mes Actual</h4><p>{formatCurrency(monthlyTotals.current)}</p></div>
+                <div className={styles.summaryBox}><h4>Próximo Mes</h4><p>{formatCurrency(monthlyTotals.next)}</p></div>
+                <div className={styles.summaryBox}><h4>En 2 Meses</h4><p>{formatCurrency(monthlyTotals.twoMonths)}</p></div>
+                <div className={`${styles.summaryBox} ${styles.totalPendingBox}`}><h4>Total Pendiente</h4><p>{formatCurrency(totalPendingChecksValue)}</p></div> {/* Nuevo cuadro */}
+            </div>
+            {/* --- FIN CAMBIO --- */}
             <div style={{maxHeight: '300px', overflowY: 'auto'}}>
                 <table className={styles.chequeTable}>
                     <thead><tr><th>Fecha Cobro</th><th>Emisor</th><th>Monto</th><th>Estado</th><th>Acción</th></tr></thead>
