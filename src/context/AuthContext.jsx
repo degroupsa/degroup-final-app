@@ -5,7 +5,7 @@ import { auth, db, rtdb } from '../firebase/config.js';
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
-  signOut, 
+  signOut,  
   onAuthStateChanged,
   sendEmailVerification,
   reload

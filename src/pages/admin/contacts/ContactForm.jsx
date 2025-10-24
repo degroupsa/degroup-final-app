@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../../../firebase/config';
 import { collection, addDoc, doc, updateDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import toast from 'react-hot-toast';
-import modalStyles from '../../../components/admin/production/ProductionLogModal.module.css'; // Usamos estructura modal
+import modalStyles from '../../../components/admin/production/ProductionLogModal.module.css'; // Asegúrate que esta ruta es correcta para los estilos de modal
 import formStyles from './ContactForm.module.css'; // Estilos específicos del formulario
 import { FaTimes, FaSave, FaUser } from 'react-icons/fa';
 
@@ -90,9 +90,7 @@ const ContactForm = ({ contactToEdit, onClose, onContactSaved }) => {
 
   return (
     <div className={modalStyles.modalOverlay}>
-      {/* --- CAMBIO: Aumentamos max-width un poco --- */}
       <div className={`${modalStyles.modalContent} ${formStyles.contactModalContent}`}>
-      {/* --- FIN CAMBIO --- */}
         <div className={modalStyles.modalHeader}>
           <h3><FaUser /> {contactToEdit ? 'Editar Contacto' : 'Añadir Nuevo Contacto'}</h3>
           <button onClick={onClose} className={modalStyles.closeButton}><FaTimes /></button>
@@ -113,11 +111,11 @@ const ContactForm = ({ contactToEdit, onClose, onContactSaved }) => {
             <div className={`${formStyles.formGroup} ${formStyles.fullWidth}`}><label htmlFor="notes">Notas / Observaciones</label><textarea id="notes" name="notes" rows="3" value={formData.notes} onChange={handleInputChange}></textarea></div>
           </div>
 
-          {/* --- CAMBIO: Usamos clases estándar para acciones --- */}
+          {/* --- CAMBIO: Aseguramos las clases correctas para el botón de guardar --- */}
           <div className={modalStyles.modalActions}>
             <button
               type="submit"
-              className={`${modalStyles.actionButton} ${modalStyles.submitButton}`} // Clases estándar
+              className={`${modalStyles.actionButton} ${modalStyles.submitButton}`} // Estas clases deben proporcionar el estilo deseado
               disabled={isSubmitting}
             >
               <FaSave /> {isSubmitting ? 'Guardando...' : (contactToEdit ? 'Guardar Cambios' : 'Añadir Contacto')}
