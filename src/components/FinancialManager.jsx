@@ -11,7 +11,7 @@ import { FaChevronLeft, FaChevronRight, FaInfoCircle, FaTrash } from 'react-icon
 const formatCurrency = (value, withDecimals = false) => {
   return new Intl.NumberFormat('es-AR', {
     style: 'currency',
-    currency: 'ARS',
+    currency: 'ARS', 
     minimumFractionDigits: withDecimals ? 2 : 0,
     maximumFractionDigits: withDecimals ? 2 : 0,
   }).format(value || 0);

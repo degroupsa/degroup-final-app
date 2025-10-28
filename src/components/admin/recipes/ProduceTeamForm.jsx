@@ -2,21 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../../../firebase/config';
 import { collection, getDocs, doc, writeBatch, serverTimestamp, getDoc } from 'firebase/firestore';
 import toast from 'react-hot-toast';
-import { FaCogs, FaTimes, FaSave } from 'react-icons/fa';
-// --- CORRECCIÓN CLAVE: La importación ahora apunta al archivo .css correcto ---
+import { FaCogs, FaTimes, FaSave, FaUserPlus, FaUserCheck } from 'react-icons/fa';
 import './ProduceTeamForm.css';
- 
-// --- CAMBIO 1: Código de seguimiento mucho más robusto ---
+
 const generateTrackingCode = () => {
   const prefix = "DE-PROD-";
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789'; // Caracteres amigables (sin I, O)
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
   let result = '';
   for (let i = 0; i < 6; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  return `${prefix}${result}`; // Ej: DE-PROD-A8K4T9
+  return `${prefix}${result}`;
 };
-// --- FIN CAMBIO 1 ---
 
 const FIRST_PRODUCTION_STEP = 'Pedido Recibido';
 
@@ -29,9 +26,10 @@ const ProduceTeamForm = ({ recipe, onProductionDone, onClose }) => {
   const [allClients, setAllClients] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedClient, setSelectedClient] = useState(null);
+  // --- CAMBIO: De un cliente a múltiples clientes seleccionados ---
+  const [selectedClients, setSelectedClients] = useState([]);
+  // --- FIN CAMBIO ---
   
-  // --- NUEVO: Estado para cargar los productos ---
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -41,7 +39,6 @@ const ProduceTeamForm = ({ recipe, onProductionDone, onClose }) => {
         const clientsData = clientsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setAllClients(clientsData);
 
-        // --- NUEVO: Cargamos los productos para buscar el precio ---
         const productsSnapshot = await getDocs(collection(db, 'products'));
         const productsData = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setProducts(productsData);
@@ -55,9 +52,13 @@ const ProduceTeamForm = ({ recipe, onProductionDone, onClose }) => {
   }, []);
 
   useEffect(() => {
-    if (searchTerm.length > 1 && !selectedClient) {
+    if (searchTerm.length > 1) {
       const lowercasedFilter = searchTerm.toLowerCase();
+      // Filtramos clientes que NO estén ya seleccionados
       const filtered = allClients.filter(client => {
+        const isAlreadySelected = selectedClients.some(sel => sel.id === client.id);
+        if (isAlreadySelected) return false;
+        
         const fullName = `${client.name || ''} ${client.lastName || ''}`.toLowerCase();
         const cuit = client.cuit || '';
         return fullName.includes(lowercasedFilter) || cuit.includes(lowercasedFilter);
@@ -66,67 +67,82 @@ const ProduceTeamForm = ({ recipe, onProductionDone, onClose }) => {
     } else {
       setSearchResults([]);
     }
-  }, [searchTerm, allClients, selectedClient]);
+  }, [searchTerm, allClients, selectedClients]);
 
-  const handleSelectClient = (client) => {
-    setSelectedClient(client);
-    setSearchTerm(`${client.name || ''} ${client.lastName || ''} (${client.cuit || 'Sin CUIT'})`.trim());
+  // --- CAMBIO: Lógica para añadir un cliente a la lista ---
+  const handleAddClient = (client) => {
+    setSelectedClients(prev => [...prev, client]);
+    setSearchTerm(''); // Limpiamos el buscador
     setSearchResults([]);
   };
 
+  // --- CAMBIO: Lógica para quitar un cliente de la lista ---
+  const handleRemoveClient = (clientId) => {
+    setSelectedClients(prev => prev.filter(client => client.id !== clientId));
+  };
+  // --- FIN CAMBIO ---
+
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-    if (selectedClient) {
-      setSelectedClient(null);
-    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (quantity <= 0) return toast.error("La cantidad debe ser mayor a cero.");
-    if (productionType === 'for_delivery' && !selectedClient) {
-      return toast.error("Para producir para entrega, debes seleccionar un cliente.");
+    // --- CAMBIO: Verificamos si hay al menos un cliente seleccionado ---
+    if (productionType === 'for_delivery' && selectedClients.length === 0) {
+      return toast.error("Para producir para entrega, debes seleccionar al menos un cliente.");
     }
+    // --- FIN CAMBIO ---
 
     setIsProcessing(true);
     toast.loading("Registrando nuevo pedido...");
 
     try {
       const batch = writeBatch(db);
-      const trackingCode = generateTrackingCode(); // Usa la nueva función mejorada
+      const trackingCode = generateTrackingCode();
       const productionOrderRef = doc(collection(db, 'productionOrders'));
       
       let salePrice = 0;
       if (productionType === 'for_delivery') {
-          // Buscamos el precio en la lista de productos ya cargada
           const productInfo = products.find(p => p.name === recipe.productName);
           if (productInfo) {
               salePrice = productInfo.price || 0;
           } else {
-              toast.error(`No se encontró el precio para "${recipe.productName}" en "Productos Publicados". El valor de venta será 0.`);
+              toast.error(`No se encontró el precio para "${recipe.productName}". El valor de venta será 0.`);
           }
       }
 
+      // --- CAMBIO: Preparamos los datos de los clientes seleccionados ---
+      const visibleToUserIds = selectedClients.map(client => client.id);
+      // Creamos un string con los nombres para mostrar en AdminProductionPage
+      const linkedClientNames = selectedClients.map(client => 
+        `${client.name || ''} ${client.lastName || ''}`.trim()
+      ).join(', ');
+      // --- FIN CAMBIO ---
+
       const orderData = {
         recipeId: recipe.id,
-        trackingCode: trackingCode, // Este es el número de serie único
+        trackingCode: trackingCode,
         productName: recipe.productName,
         productSKU: recipe.productSKU || '',
         quantity: Number(quantity),
         productionType: productionType,
         currentStatus: FIRST_PRODUCTION_STEP,
         statusHistory: [{ stepName: FIRST_PRODUCTION_STEP, completed: true, updatedAt: new Date() }],
-        // --- CAMBIO 2: Inicializa la bitácora de producción ---
-        productionLog: [], // Array vacío para futuras observaciones
-        // --- FIN CAMBIO 2 ---
+        productionLog: [],
         createdAt: serverTimestamp(),
         estimatedDeliveryDate: estimatedDelivery || null,
-        linkedClientId: selectedClient ? selectedClient.id : null,
-        linkedClientName: selectedClient ? `${selectedClient.name || ''} ${selectedClient.lastName || ''}`.trim() : null,
-        // Guardamos el precio de venta en la orden
+        // --- CAMBIO: Guardamos el array de IDs y el string de Nombres ---
+        visibleToUserIds: visibleToUserIds, // Array de IDs
+        linkedClientName: linkedClientNames || null, // String de nombres (o null si es para stock)
+        // --- FIN CAMBIO ---
         unitSalePrice: salePrice,
         totalSaleValue: salePrice * Number(quantity)
       };
+      
+      // Eliminamos linkedClientId (obsoleto) si existía
+      delete orderData.linkedClientId; 
 
       batch.set(productionOrderRef, orderData);
       
@@ -175,24 +191,47 @@ const ProduceTeamForm = ({ recipe, onProductionDone, onClose }) => {
             </div>
           </div>
           
+          {/* --- CAMBIO: Lógica de buscador multi-cliente --- */}
           {productionType === 'for_delivery' && (
             <div className="form-group search-client-group">
-              <label htmlFor="clientSearch">Vincular a Cliente</label>
+              <label htmlFor="clientSearch">Vincular Clientes (puedes añadir varios)</label>
+              
+              {/* Lista de clientes ya seleccionados */}
+              <div className="selected-clients-list">
+                {selectedClients.length === 0 ? (
+                  <p>No hay clientes seleccionados.</p>
+                ) : (
+                  selectedClients.map(client => (
+                    <div key={client.id} className="selected-client-tag">
+                      <span>{client.name} {client.lastName}</span>
+                      <button type="button" onClick={() => handleRemoveClient(client.id)} title="Quitar">
+                        <FaTimes />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Buscador de clientes */}
               <div className="search-container">
+                <FaUserPlus className="search-icon" />
                 <input
                   type="text"
                   id="clientSearch"
                   value={searchTerm}
                   onChange={handleSearchChange}
-                  placeholder="Busca por nombre, apellido o CUIT..."
+                  placeholder="Buscar por nombre o CUIT para añadir..."
                   autoComplete="off"
                 />
                 {searchResults.length > 0 && (
                   <ul className="search-results">
                     {searchResults.slice(0, 5).map(client => (
-                      <li key={client.id} onClick={() => handleSelectClient(client)}>
-                        <strong>{client.name} {client.lastName}</strong>
-                        <span>{client.cuit || client.email}</span>
+                      <li key={client.id} onClick={() => handleAddClient(client)}>
+                        <FaUserCheck />
+                        <div>
+                          <strong>{client.name} {client.lastName}</strong>
+                          <span>{client.cuit || client.email}</span>
+                        </div>
                       </li>
                     ))}
                   </ul>
@@ -200,6 +239,7 @@ const ProduceTeamForm = ({ recipe, onProductionDone, onClose }) => {
               </div>
             </div>
           )}
+          {/* --- FIN CAMBIO --- */}
 
           <div className="form-actions">
             <button type="button" className="cancel-btn" onClick={onClose}><FaTimes/> Cancelar</button>
