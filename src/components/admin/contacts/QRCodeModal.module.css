@@ -49,3 +49,34 @@
     max-width: 100%;
     height: auto;
 }
+
+/* ... (Estilos anteriores) ... */
+
+/* --- ▼▼▼ ESTILOS AÑADIDOS PARA BOTÓN DESCARGAR ▼▼▼ --- */
+
+.downloadButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem; /* Espacio sobre el botón */
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #0d6efd; /* Azul */
+  background-color: #e7f1ff; /* Azul muy claro */
+  border: 1px solid #b6d4fe; /* Borde azul claro */
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.downloadButton:hover {
+  background-color: #cfe2ff;
+  border-color: #a9c7fe;
+  color: #0a58ca; /* Azul más oscuro */
+}
+
+.downloadButton svg {
+  margin-bottom: -1px; /* Alineación icono */
+}
+/* --- ▲▲▲ FIN ESTILOS AÑADIDOS ▲▲▲ --- */

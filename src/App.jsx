@@ -12,7 +12,6 @@ import AdminRoute from './components/AdminRoute.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { useAuth } from './context/AuthContext.jsx';
 
-
 // Páginas Públicas
 import OrderSuccessPage from './pages/OrderSuccessPage.jsx';
 import FeedPage from './pages/FeedPage.jsx';
@@ -44,13 +43,13 @@ import AdminOrdersPage from './pages/admin/AdminOrdersPage.jsx';
 import AdminUsersPage from './pages/admin/AdminUsersPage.jsx';
 import AdminRealtimePage from './pages/admin/AdminRealtimePage.jsx';
 import AdminClientsPage from './pages/admin/AdminClientsPage.jsx';
-// --- ▼▼▼ IMPORTAMOS LA NUEVA PÁGINA DE CONTACTOS ▼▼▼ ---
-import AdminContactsPage from './pages/admin/AdminContactsPage.jsx'; // Asegúrate de crear este archivo
-// --- ▲▲▲ FIN IMPORTACIÓN ▲▲▲ ---
-
+import AdminContactsPage from './pages/admin/AdminContactsPage.jsx';
+// --- Importamos la página de detalle de ítem ---
+import AdminItemDetailPage from './pages/admin/AdminItemDetailPage.jsx';
 
 import './App.css';
 
+// Componente para redirección condicional de Admin
 function AdminIndexRedirect() {
   const { user } = useAuth();
   if (user?.role === 'admin') { return <Navigate to="/admin/dashboard" replace />; }
@@ -58,23 +57,42 @@ function AdminIndexRedirect() {
   else { return <Navigate to="/" replace />; }
 }
 
-
 function App() {
   return (
     <>
       <ScrollToTop />
-      <Toaster position="top-right" containerStyle={{ zIndex: 9999 }} toastOptions={{ /* ... */ }} />
+      
+      <Toaster 
+        position="top-right"
+        containerStyle={{ zIndex: 9999 }}
+        toastOptions={{
+          style: {
+            background: '#212529',
+            color: '#f8f9fa',
+            border: '1px solid #495057',
+            padding: '16px',
+            borderRadius: '8px',
+          },
+          duration: 5000,
+          success: { style: { background: '#28a745', color: 'white' } },
+          error: { style: { background: '#dc3545', color: 'white' } },
+        }}
+      />
 
       <Routes>
         {/* --- MUNDO DE ADMINISTRACIÓN --- */}
-        <Route
+        <Route 
           path="/admin"
           element={<AdminRoute><AdminLayout /></AdminRoute>}
-        >
-          <Route index element={<AdminIndexRedirect />} />
+        > 
+          <Route index element={<AdminIndexRedirect />} /> 
           <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="inventario" element={<AdminInventoryPage />} />
-          <Route path="clientes" element={<AdminClientsPage />} /> {/* Gestión Clientes + Flota */}
+          
+          {/* --- RUTA AÑADIDA PARA DETALLE DE ÍTEM --- */}
+          <Route path="inventario/item/:itemCode" element={<AdminItemDetailPage />} />
+          
+          <Route path="clientes" element={<AdminClientsPage />} />
           <Route path="recetas" element={<AdminRecipesPage />} />
           <Route path="productos" element={<AdminProductsPage />} />
           <Route path="ordenes" element={<AdminOrdersPage />} />
@@ -82,16 +100,12 @@ function App() {
           <Route path="produccion" element={<AdminProductionPage />} />
           <Route path="precios" element={<AdminBulkPriceEditorPage />} />
           <Route path="en-linea" element={<AdminRealtimePage />} />
-          <Route path="mensajes" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
+          <Route path="mensajes" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} /> 
           <Route path="mensajes/:chatId" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
-
-          {/* --- ▼▼▼ AÑADIMOS LA NUEVA RUTA PARA CONTACTOS ▼▼▼ --- */}
           <Route path="contactos" element={<AdminContactsPage />} />
-          {/* --- ▲▲▲ FIN NUEVA RUTA ▲▲▲ --- */}
-
         </Route>
 
-        {/* --- MUNDO PÚBLICO (sin cambios) --- */}
+        {/* --- MUNDO PÚBLICO (RUTAS RESTAURADAS) --- */}
         <Route path="/" element={<PublicLayout />}>
           <Route path="/solicitud-enviada" element={<OrderSuccessPage />} />
           <Route index element={<HomePage />} />

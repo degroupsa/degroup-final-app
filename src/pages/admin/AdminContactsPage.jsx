@@ -3,9 +3,9 @@ import { db } from '../../firebase/config';
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, query, orderBy, Timestamp } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import styles from './AdminContactsPage.module.css';
-import ContactForm from './contacts/ContactForm'; // Ruta corregida
+import ContactForm from './contacts/ContactForm'; // Ruta corregida según tu estructura
 import ConfirmationModal from '../../components/ui/ConfirmationModal';
-import QRCodeModal from '../../components/admin/contacts/QRCodeModal';
+import QRCodeModal from '../../components/admin/contacts/QRCodeModal'; // Importamos el modal QR genérico
 import { FaUserPlus, FaSearch, FaEdit, FaTrash, FaQrcode } from 'react-icons/fa';
 
 const AGENTES = ["Todos", "Sin Asignar", "Emanuel", "Antonella", "Lautaro"];
@@ -22,26 +22,27 @@ const AdminContactsPage = () => {
   const [filterAgent, setFilterAgent] = useState(AGENTES[0]);
   const [filterStatus, setFilterStatus] = useState(ESTADOS_CONTACTO[0]);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
-  const [qrCodePhone, setQrCodePhone] = useState('');
+  const [qrCodeValue, setQrCodeValue] = useState(''); // Estado para el valor del QR (ahora contiene tel:)
+  const [qrCodeTitle, setQrCodeTitle] = useState(''); // Estado para el título del modal QR
 
-  // --- fetchContacts con DEBUG LOGS ---
+  // --- fetchContacts CON LOGS DETALLADOS ---
   const fetchContacts = useCallback(async () => {
     console.log("[fetchContacts] Iniciando carga..."); // Log 1: Inicio
     setLoading(true); // Asegura que loading esté true al empezar
     try {
       // Ordenamos por Apellido, luego Nombre
       const q = query(collection(db, 'contacts'), orderBy('lastName'), orderBy('firstName'));
+      console.log("[fetchContacts] Ejecutando consulta..."); // Log antes de getDocs
       const querySnapshot = await getDocs(q);
       console.log("[fetchContacts] Consulta ejecutada. Documentos encontrados:", querySnapshot.size); // Log 2: Documentos encontrados
       const contactsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      console.log("[fetchContacts] Datos mapeados:", contactsData); // Log 3: Datos mapeados
+      console.log("[fetchContacts] Datos mapeados:", contactsData.length > 0 ? contactsData[0] : 'N/A (si hay 0)'); // Log 3: Muestra el primer dato o N/A
       setContacts(contactsData);
-      // setLoading(false); // Movemos setLoading(false) al finally
+      // setLoading(false); // Movido al finally
     } catch (error) {
       toast.error("Error al cargar los contactos. Revisa la consola.");
-      console.error("Error fetching contacts: ", error); // Log 4: Error detallado
-      // Si hay error, también debemos quitar el estado de carga
-      // setLoading(false); // Movemos setLoading(false) al finally
+      console.error("[fetchContacts] Error fetching contacts: ", error); // Log 4: Error detallado
+      // setLoading(false); // Movido al finally
     } finally {
       console.log("[fetchContacts] Finalizando carga, setLoading(false)."); // Log 5: Fin
       setLoading(false); // Asegura que loading se ponga en false SIEMPRE
@@ -53,19 +54,34 @@ const AdminContactsPage = () => {
     fetchContacts(); // Llama a fetchContacts al montar el componente
   }, [fetchContacts]); // La dependencia es correcta
 
-  // --- Resto de Handlers (sin cambios funcionales) ---
+  // --- Handlers ---
   const handleOpenCreateForm = () => { setContactToEdit(null); setIsFormOpen(true); };
   const handleOpenEditForm = (contact) => { setContactToEdit(contact); setIsFormOpen(true); };
   const handleCloseForm = () => { setIsFormOpen(false); setContactToEdit(null); };
-  const handleContactSaved = () => { handleCloseForm(); fetchContacts(); }; // Recarga al guardar
+  const handleContactSaved = () => { handleCloseForm(); fetchContacts(); };
   const openDeleteConfirm = (contact) => { setContactToDelete(contact); setIsDeleteModalOpen(true); };
   const closeDeleteConfirm = () => { setIsDeleteModalOpen(false); setContactToDelete(null); };
   const handleDeleteContact = async () => { if (!contactToDelete) return; toast.loading('Eliminando...'); try { await deleteDoc(doc(db, 'contacts', contactToDelete.id)); toast.dismiss(); toast.success('¡Eliminado!'); fetchContacts(); } catch (error) { toast.dismiss(); toast.error('Error al eliminar.'); console.error(error); } finally { closeDeleteConfirm(); } };
-  const openQrModal = (phone) => { setQrCodePhone(phone); setIsQrModalOpen(true); };
-  const closeQrModal = () => { setIsQrModalOpen(false); setQrCodePhone(''); };
+
+  // Función openQrModal específica para Contactos (formatea con tel:)
+  const openQrModal = (phone) => {
+    if (!phone) return;
+    const cleanedPhone = phone.replace(/[\s-()]/g, '');
+    const internationalPhone = cleanedPhone.startsWith('+') ? cleanedPhone : `+54${cleanedPhone}`;
+    const telUri = `tel:${internationalPhone}`;
+    console.log("[openQrModal] Opening QR Modal for contact:", phone, "URI:", telUri);
+    setQrCodeValue(telUri); // Guardamos la URI formateada
+    setQrCodeTitle(`QR Teléfono: ${phone}`); // Título descriptivo
+    setIsQrModalOpen(true);
+  };
+  const closeQrModal = () => {
+    setIsQrModalOpen(false);
+    setQrCodeValue('');
+    setQrCodeTitle('');
+  };
   // --- Fin Handlers ---
 
-  // --- useMemo para Filtrado (sin cambios funcionales) ---
+  // --- useMemo para Filtrado ---
   const filteredContacts = useMemo(() => {
     const lowerSearch = searchTerm.toLowerCase().trim();
     return contacts.filter(contact => {
@@ -77,7 +93,7 @@ const AdminContactsPage = () => {
   }, [contacts, searchTerm, filterAgent, filterStatus]);
   // --- Fin useMemo ---
 
-  // --- Helpers (sin cambios funcionales) ---
+  // --- Helpers ---
   const formatDate = (timestamp) => { if (!timestamp) return 'N/A'; try { const date = timestamp instanceof Timestamp ? timestamp.toDate() : new Date(timestamp); return date.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' }); } catch (e) { console.error("Error formatting date:", timestamp, e); return 'Fecha Inválida'; } };
   const getStatusClass = (status) => { const normalizedStatus = status?.replace(/\s+/g, '') || 'Nuevo'; return styles[`status-${normalizedStatus}`] || styles.statusNuevo; };
   // --- Fin Helpers ---
@@ -87,27 +103,20 @@ const AdminContactsPage = () => {
       <header className={styles.pageHeader}>
         <h1>Base de Datos de Contactos</h1>
         <div className={styles.headerActions}>
-          {/* Filtros */}
           <div className={styles.filtersContainer}>
              <select value={filterAgent} onChange={(e) => setFilterAgent(e.target.value)} className={styles.filterSelect}>{AGENTES.map(agent => <option key={agent} value={agent}>{agent === "Todos" ? "Todos los Agentes" : agent}</option>)}</select>
              <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className={styles.filterSelect}>{ESTADOS_CONTACTO.map(status => <option key={status} value={status}>{status === "Todos" ? "Todos los Estados" : status}</option>)}</select>
           </div>
-          {/* Buscador */}
           <div className={styles.searchContainer}><FaSearch className={styles.searchIcon} /><input type="text" placeholder="Buscar..." className={styles.searchInput} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} /></div>
-          {/* Botón Añadir */}
           <button className={styles.addButton} onClick={handleOpenCreateForm}><FaUserPlus /> Añadir Contacto</button>
         </div>
       </header>
 
-      {/* Modales */}
       {isFormOpen && ( <ContactForm contactToEdit={contactToEdit} onClose={handleCloseForm} onContactSaved={handleContactSaved} /> )}
-      {isQrModalOpen && <QRCodeModal value={qrCodePhone} title={`QR Teléfono: ${qrCodePhone}`} onClose={closeQrModal} />}
-      {/* Contenedor de la Tabla */}
-      <div className={styles.tableContainer}>
-        {/* --- Indicador de Carga --- */}
-        {loading && ( <p style={{ textAlign: 'center', padding: '2rem' }}>Cargando contactos...</p> )}
+      {isQrModalOpen && <QRCodeModal value={qrCodeValue} title={qrCodeTitle} onClose={closeQrModal} />}
 
-        {/* --- Tabla (solo se muestra si NO está cargando) --- */}
+      <div className={styles.tableContainer}>
+        {loading && ( <p style={{ textAlign: 'center', padding: '2rem', fontSize: '1.2rem' }}>Cargando contactos...</p> )}
         {!loading && (
           <table className={styles.contactsTable}>
             <thead>
@@ -137,21 +146,13 @@ const AdminContactsPage = () => {
                   </tr>
                 ))
               ) : (
-                <tr>
-                  <td colSpan="8" className={styles.noContactsMessage}>
-                    {/* Mensaje si no hay resultados */}
-                    {searchTerm || filterAgent !== AGENTES[0] || filterStatus !== ESTADOS_CONTACTO[0]
-                      ? 'No se encontraron contactos con los filtros aplicados.'
-                      : 'No hay contactos registrados.'}
-                  </td>
-                </tr>
+                <tr><td colSpan="8" className={styles.noContactsMessage}>{searchTerm || filterAgent !== AGENTES[0] || filterStatus !== ESTADOS_CONTACTO[0] ? 'No se encontraron contactos con los filtros aplicados.' : 'No hay contactos registrados.'}</td></tr>
               )}
             </tbody>
           </table>
         )}
       </div>
 
-      {/* Modal de Confirmación Eliminar */}
       {isDeleteModalOpen && contactToDelete && ( <ConfirmationModal title="Eliminar Contacto" message={`¿Estás seguro de eliminar a ${contactToDelete.firstName || ''} ${contactToDelete.lastName || ''}?`} onConfirm={handleDeleteContact} onCancel={closeDeleteConfirm} confirmText="Sí, Eliminar" isDestructive={true} /> )}
     </div>
   );

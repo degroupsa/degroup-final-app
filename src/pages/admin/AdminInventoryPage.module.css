@@ -21,7 +21,7 @@
 }
 .full-width-card {
   margin-top: 2rem;
-}
+} 
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -337,3 +337,38 @@
   margin-bottom: 1.25rem;
   border: 1px solid #e9ecef;
 }
+/* ... (Todos los estilos anteriores) ... */
+
+/* --- ▼▼▼ ESTILOS AÑADIDOS PARA QR EN TABLA DE INVENTARIO ▼▼▼ --- */
+
+/* Ancho columna QR (ajustar si es necesario) */
+.colQr {
+  width: 5%;
+  text-align: center; /* Centramos el contenido */
+}
+.qrCell {
+  text-align: center;
+  padding-top: 0.6rem; /* Ajuste para centrar mejor el botón */
+  padding-bottom: 0.6rem;
+}
+
+/* Estilo del botón QR dentro de la tabla */
+.qrButtonInventory {
+  background: none;
+  border: none;
+  color: #6c757d; /* Gris sutil */
+  cursor: pointer;
+  padding: 0.2rem;
+  margin: 0;
+  font-size: 1.1rem; /* Tamaño del icono */
+  line-height: 1;
+  transition: color 0.2s, transform 0.1s;
+  display: inline-flex; /* Para centrar bien */
+  align-items: center;
+  justify-content: center;
+}
+.qrButtonInventory:hover {
+  color: #0d6efd; /* Azul al pasar el mouse */
+  transform: scale(1.1); /* Efecto ligero al pasar el mouse */
+}
+/* --- ▲▲▲ FIN ESTILOS AÑADIDOS ▲▲▲ --- */

@@ -2,11 +2,11 @@ import React, { useState, useContext } from 'react';
 import { NavLink, Link, Outlet, Navigate } from 'react-router-dom';
 import styles from './AdminLayout.module.css';
 import NavigationArrows from '../components/ui/NavigationArrows';
-import { useAuth } from '../context/AuthContext'; // No necesitas importar AuthContext aquí
+import { useAuth } from '../context/AuthContext';
 import {
   FaTachometerAlt, FaWarehouse, FaSitemap, FaTruckLoading,
   FaBoxOpen, FaFileInvoiceDollar, FaUsers, FaArrowLeft, FaWifi,
-  FaAddressBook, FaExclamationCircle, FaAddressCard
+  FaAddressBook, FaExclamationCircle, FaAddressCard, FaHome // Añadimos FaHome si queremos otro icono
 } from 'react-icons/fa';
 
 const allAdminLinks = [
@@ -20,7 +20,6 @@ const allAdminLinks = [
   { path: '/admin/productos', icon: FaBoxOpen, label: 'Productos Publicados', roles: ['admin'] },
   { path: '/admin/usuarios', icon: FaUsers, label: 'Usuarios Registrados', roles: ['admin'] },
   { path: '/admin/en-linea', icon: FaWifi, label: 'Usuarios en Línea', roles: ['admin'] },
-  // { path: '/admin/reclamos', icon: FaExclamationCircle, label: 'Gestion de Reclamos', roles: ['admin', 'gestion'] },
   { path: '/admin/contactos', icon: FaAddressCard, label: 'Contactos', roles: ['admin', 'gestion'] },
 ];
 
@@ -40,12 +39,6 @@ function AdminLayout() {
     return <div>Cargando...</div>;
   }
 
-  // AdminRoute ya maneja la redirección si no hay usuario o rol incorrecto
-  // if (!user || (user.role !== 'admin' && user.role !== 'gestion')) {
-  //     return <Navigate to="/" replace />;
-  // }
-
-  // Aseguramos tener un userRole incluso si user es null temporalmente (aunque no debería pasar aquí)
   const userRole = user?.role || '';
   const visibleLinks = allAdminLinks.filter(link =>
     link.roles.includes(userRole)
@@ -55,13 +48,18 @@ function AdminLayout() {
     <div className={`${styles.adminLayout} ${!isSidebarOpen ? styles.sidebarCollapsed : ''}`}>
       <aside className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
-          {/* --- CAMBIO: Título actualizado --- */}
           <h2>{userRole === 'admin' ? 'Administración' : 'Gestion DE Group'}</h2>
-          {/* --- FIN CAMBIO --- */}
           <button onClick={toggleSidebar} className={styles.toggleButton}>
             <FaArrowLeft />
           </button>
         </div>
+
+        {/* --- ▼▼▼ EL BOTÓN "VOLVER AL INICIO" SE MOVIO AQUÍ ▼▼▼ --- */}
+        <Link to="/" className={styles.backToSiteButtonTop} title="Volver al Sitio Principal">
+          <FaHome /><span>Ir al Inicio</span> {/* Cambié el texto y el icono para que sea más claro */}
+        </Link>
+        {/* --- ▲▲▲ FIN MOVIMIENTO ▲▲▲ --- */}
+
         <nav className={styles.nav}>
           <ul className={styles.navList}>
             {visibleLinks.map(link => (
@@ -76,9 +74,7 @@ function AdminLayout() {
             ))}
           </ul>
         </nav>
-        <Link to="/" className={styles.backToSiteButton} title="Volver al Sitio Principal">
-          <FaArrowLeft /><span>Volver al Inicio</span>
-        </Link>
+        {/* El botón ya no está aquí */}
       </aside>
       <main className={styles.content}>
         <Outlet />
