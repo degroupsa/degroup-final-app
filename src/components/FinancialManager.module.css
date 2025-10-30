@@ -456,3 +456,101 @@ tr.overdue select, tr.dueSoon select, tr.collectible select {
 .deleteButton:hover {
   color: #dc3545;
 }
+/* ... (Estilos anteriores van aquí) ... */
+
+/* --- ▼▼▼ ESTILOS AÑADIDOS PARA PAGOS PARCIALES ▼▼▼ --- */
+
+/* Estilo para las columnas de montos en la tabla de pagos */
+.colMonto {
+  text-align: right !important; /* Alinea números a la derecha */
+  font-family: monospace; /* Fuente monoespaciada para números */
+  font-size: 0.95rem;
+  padding-right: 1rem !important; /* Más espacio a la derecha */
+}
+
+/* Estilo para el monto restante (destacado) */
+.restanteText {
+  font-weight: 600;
+  color: #c0392b; /* Rojo de egreso */
+}
+
+/* Estilo para la celda de acciones (para 2 botones) */
+.actionsCell {
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Botón de pago (verde) */
+.paymentButton {
+  background: none;
+  border: none;
+  color: #6c757d; /* Gris por defecto */
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  font-size: 1rem;
+  line-height: 1;
+  transition: color 0.2s;
+  vertical-align: middle;
+  margin-right: 0.5rem; /* Espacio entre botones */
+}
+.paymentButton:hover {
+  color: #198754; /* Verde al pasar el mouse */
+}
+
+/* --- ▲▲▲ FIN ESTILOS AÑADIDOS ▲▲▲ --- */
+/* ... (Estilos anteriores van aquí) ... */
+
+/* --- ▼▼▼ ESTILOS AÑADIDOS PARA PAGOS PARCIALES Y EDICIÓN ▼▼▼ --- */
+
+.colMonto {
+  text-align: right !important;
+  font-family: monospace;
+  font-size: 0.95rem;
+  padding-right: 1rem !important;
+}
+
+.restanteText {
+  font-weight: 600;
+  color: #c0392b;
+}
+
+.actionsCell {
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Botón de pago (verde) */
+.paymentButton {
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  font-size: 1rem;
+  line-height: 1;
+  transition: color 0.2s;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+.paymentButton:hover {
+  color: #198754; /* Verde */
+}
+
+/* Botón de edición pequeño (azul) */
+.editButtonSmall {
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.9rem; /* Un poco más pequeño que el de borrar */
+  line-height: 1;
+  transition: color 0.2s;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+.editButtonSmall:hover {
+  color: #0d6efd; /* Azul */
+}
+
+/* --- ▲▲▲ FIN ESTILOS AÑADIDOS ▲▲▲ --- */
