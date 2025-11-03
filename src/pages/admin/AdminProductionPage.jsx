@@ -1,5 +1,3 @@
-// src/pages/admin/AdminProductionPage.jsx
-
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { db } from '../../firebase/config.js';
 import { collection, getDocs, doc, updateDoc, deleteDoc, arrayUnion, runTransaction, Timestamp, query, orderBy, writeBatch, serverTimestamp } from 'firebase/firestore';
@@ -38,8 +36,13 @@ const AdminProductionPage = () => {
     try {
       const ordersSnapshot = await getDocs(query(collection(db, 'productionOrders'), orderBy('createdAt', 'desc')));
       setOrders(ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      
+      // --- CORREGIDO: Aseguramos que 'products' tenga el SKU ---
+      // Asumimos que la colección 'products' tiene un campo 'sku'
       const productsSnapshot = await getDocs(collection(db, 'products'));
       setProducts(productsSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()})));
+      // --- FIN CORRECCIÓN ---
+
       const recipesSnapshot = await getDocs(collection(db, 'productRecipes'));
       setRecipes(recipesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       const itemsSnapshot = await getDocs(collection(db, 'inventoryItems'));
@@ -63,9 +66,7 @@ const AdminProductionPage = () => {
     }
     return orders.filter(order => {
       const productName = order.productName || '';
-      // --- CAMBIO: Buscamos en el string de nombres múltiples ---
       const clientName = order.linkedClientName || ''; 
-      // --- FIN CAMBIO ---
       const trackingCode = order.trackingCode || '';
       return (
         productName.toLowerCase().includes(lowerSearch) ||
@@ -91,7 +92,8 @@ const AdminProductionPage = () => {
   const closeQrModal = () => { setIsQrModalOpen(false); setQrCodeValue(''); setQrCodeTitle(''); };
   
   const advanceStatus = async (order) => {
-    const { id, currentStatus, quantity, recipeId, productName, productionType, trackingCode } = order;
+    // --- CORREGIDO: Extraemos productSKU de la orden ---
+    const { id, currentStatus, quantity, recipeId, productName, productionType, trackingCode, productSKU } = order;
     const currentIndex = PRODUCTION_STEPS.indexOf(currentStatus);
     
     if (currentIndex >= PRODUCTION_STEPS.length - 1) {
@@ -127,17 +129,27 @@ const AdminProductionPage = () => {
             transaction.update(doc(db, 'productRecipes', recipeId), { stockFinished: newFinishedStock });
           } 
           else if (productionType === 'for_delivery') {
-            const productInfo = products.find(p => p.name === productName);
-            if (!productInfo) throw new Error("No se encontró el producto para registrar el ingreso.");
+            
+            // --- CORRECCIÓN 1: Buscar producto por SKU en lugar de por Nombre ---
+            const productInfo = products.find(p => p.sku === productSKU);
+            
+            // --- CORRECCIÓN 1.B: Mejorar el mensaje de error ---
+            if (!productInfo) {
+              throw new Error(`No se encontró el producto (SKU: ${productSKU}) para registrar el ingreso.`);
+            }
+            // --- FIN CORRECCIÓN 1 ---
             
             if (user && user.role === 'admin') {
               const incomeRecordRef = doc(collection(db, 'registrosFinancieros'));
               const incomeAmount = (productInfo.price || 0) * quantity;
               transaction.set(incomeRecordRef, {
                   amount: incomeAmount,
-                  concept: `Venta por producción directa de ${quantity} x "${productName}"`,
+                  concept: `Venta por producción directa de ${quantity} x "${productName}" (SKU: ${productSKU})`,
+                  category: 'Venta de Productos', // Añadido para consistencia
                   date: Timestamp.now(),
-                  type: 'ingreso'
+                  type: 'ingreso',
+                  isManual: false, // Es automático
+                  linkedOrderId: id // Enlace a la orden de producción
               });
             } else {
               console.log("Usuario es GESTION, omitiendo registro financiero.");
@@ -158,8 +170,65 @@ const AdminProductionPage = () => {
     }
   };
 
-  const forceAdvanceStatus = async (order) => { /* ... (sin cambios) ... */ };
-  const handleDeleteOrder = async (orderId, trackingCode) => { /* ... (sin cambios) ... */ };
+  // --- CORRECCIÓN 2: Implementar la lógica de forceAdvanceStatus ---
+  const forceAdvanceStatus = async (order) => {
+    const { id, currentStatus } = order;
+    const currentIndex = PRODUCTION_STEPS.indexOf(currentStatus);
+    
+    if (currentIndex >= PRODUCTION_STEPS.length - 1) {
+      toast.error("El equipo ya está en el último paso (Entregado).");
+      return;
+    }
+
+    const nextStatus = PRODUCTION_STEPS[currentIndex + 1];
+
+    if (!window.confirm(`¿Está seguro de FORZAR el avance a "${nextStatus}"? \n\nEsta acción omitirá todas las validaciones de stock e ingresos financieros.`)) {
+      return;
+    }
+
+    toast.loading(`Forzando avance a "${nextStatus}"...`);
+    try {
+      const orderRef = doc(db, 'productionOrders', id);
+      const updateData = {
+        currentStatus: nextStatus,
+        statusHistory: arrayUnion({ 
+          stepName: nextStatus, 
+          completed: true, 
+          updatedAt: new Date(),
+          forced: true, // Añadimos un flag para la bitácora
+          forcedBy: user?.email || 'unknown'
+        })
+      };
+      
+      await updateDoc(orderRef, updateData);
+      
+      toast.dismiss();
+      toast.success("Estado forzado con éxito.");
+      fetchAllData();
+    } catch (error) {
+      toast.dismiss();
+      toast.error(`Error al forzar: ${error.message}`);
+      console.error(error);
+    }
+  };
+  // --- FIN CORRECCIÓN 2 ---
+
+  const handleDeleteOrder = async (orderId, trackingCode) => {
+    if (!window.confirm(`¿Seguro que quieres eliminar el pedido ${trackingCode}? Esta acción no se puede deshacer.`)) return;
+    
+    toast.loading('Eliminando pedido...');
+    try {
+      await deleteDoc(doc(db, 'productionOrders', orderId));
+      toast.dismiss();
+      toast.success('Pedido eliminado.');
+      fetchAllData(); // Recargamos los datos
+    } catch (error) {
+      toast.dismiss();
+      toast.error('Error al eliminar el pedido.');
+      console.error(error);
+    }
+  };
+  
   const getNextStep = (currentStatus) => { const currentIndex = PRODUCTION_STEPS.indexOf(currentStatus); return currentIndex < PRODUCTION_STEPS.length - 1 ? PRODUCTION_STEPS[currentIndex + 1] : 'Ninguno'; };
   const getRecipeForOrder = (order) => recipes.find(r => r.id === order.recipeId);
 
@@ -190,9 +259,7 @@ const AdminProductionPage = () => {
         </div>
 
         <div className={styles.orderCardBody}>
-          {/* --- CAMBIO: Se muestra el string de nombres --- */}
           <p><strong>Cliente:</strong> {order.linkedClientName || 'Sin cliente'}</p>
-          {/* --- FIN CAMBIO --- */}
           <p><strong>Entrega Estimada:</strong> {order.estimatedDeliveryDate ? new Date(order.estimatedDeliveryDate).toLocaleDateString('es-AR', { timeZone: 'UTC' }) : 'No definida'}</p>
           <p><strong>Estado Actual:</strong> <span className={styles.statusBadge}>{order.currentStatus}</span></p>
         </div>

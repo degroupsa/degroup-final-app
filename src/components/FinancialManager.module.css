@@ -74,6 +74,10 @@
   flex-direction: column;
   align-items: center;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  
+  /* --- ▼▼▼ LÍNEA AÑADIDA ▼▼▼ --- */
+  /* Esto "recortará" cualquier contenido (como la leyenda) que se desborde. */
+  overflow: hidden; 
 }
 .chartCard:hover {
   transform: translateY(-5px);
@@ -554,3 +558,106 @@ tr.overdue select, tr.dueSoon select, tr.collectible select {
 }
 
 /* --- ▲▲▲ FIN ESTILOS AÑADIDOS ▲▲▲ --- */
+
+
+/* --- ▼▼▼ NUEVO: Estilos para Subida de Comprobantes ▼▼▼ --- */
+
+/* Contenedor del input de archivo personalizado */
+.fileInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* Botón falso que activa el input[type=file] */
+.fileInputButton {
+  display: inline-block;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #3498db;
+  border: 1px solid #3498db;
+  background-color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.fileInputButton:hover {
+  background-color: #f0faff;
+  color: #2980b9;
+}
+
+/* Muestra el nombre del archivo seleccionado */
+.fileInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.9rem;
+  color: #495057;
+  /* Evita que el nombre del archivo rompa el layout */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-grow: 1; /* Ocupa el espacio restante */
+}
+
+/* Botón para quitar el archivo seleccionado */
+.clearFileButton {
+  background: none;
+  border: none;
+  color: #95a5a6;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  line-height: 1;
+}
+.clearFileButton:hover {
+  color: #c0392b;
+}
+.clearFileButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Barra de progreso */
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  margin-top: 0.75rem;
+  overflow: hidden;
+}
+
+.progressBarInner {
+  height: 100%;
+  background-color: #3498db;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Botón/Icono para ver comprobante en la tabla */
+.receiptButton {
+  display: inline-block;
+  padding: 0.4rem 0.5rem;
+  font-size: 1.1rem;
+  color: #6c757d; /* Gris sutil */
+  background: none;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.receiptButton:hover {
+  color: #34495e; /* Oscuro al pasar el mouse */
+  background-color: #f8f9fa; /* Fondo ligero */
+}
+
+/* --- ▲▲▲ FIN de nuevos estilos ▲▲▲ --- */

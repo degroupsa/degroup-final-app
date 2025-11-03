@@ -15,6 +15,9 @@
   position: fixed;
   top: 0;
   left: 0;
+  
+  /* --- ▼▼▼ ARREGLO 1: Z-INDEX ▼▼▼ --- */
+  z-index: 1000; /* Asegura que el sidebar esté por encima del contenido */
 }
 
 .sidebarHeader {
@@ -147,6 +150,9 @@
   background-color: #f8f9fa;
   transition: margin-left 0.3s ease;
   margin-left: 240px;
+
+  /* --- ▼▼▼ ARREGLO 2: SCROLL HORIZONTAL ▼▼▼ --- */
+  overflow-x: hidden; /* Evita que el contenido desbordado cree un scroll de PÁGINA */
 }
 
 /* --- ESTILOS COLAPSADOS --- */
