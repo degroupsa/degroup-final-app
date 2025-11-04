@@ -199,3 +199,27 @@
 .nav::-webkit-scrollbar-thumb:hover {
   background: #777;
 }
+
+/* ... (todos tus estilos anteriores van aquí) ... */
+
+/* --- ▼▼▼ NUEVO: Arreglo Responsive para Móviles ▼▼▼ --- */
+
+@media (max-width: 768px) {
+  /* Reduce el padding (relleno) del área de contenido en pantallas pequeñas.
+    Pasamos de 2rem (32px) a 1rem (16px), dándole más espacio a las tarjetas.
+  */
+  .content {
+    padding: 1.5rem 1rem;
+  }
+
+  /* Opcional: Oculta el botón de toggle (flecha) si el menú está abierto 
+    y flotando por encima (para evitar que quede "atrás" del menú).
+    Descomenta las siguientes líneas si tienes ese problema.
+  */
+  /*
+  .adminLayout:not(.sidebarCollapsed) .toggleButton {
+    display: none;
+  }
+  */
+}
+/* --- ▲▲▲ FIN Arreglo Responsive ▲▲▲ --- */

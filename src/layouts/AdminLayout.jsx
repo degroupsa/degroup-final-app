@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import {
   FaTachometerAlt, FaWarehouse, FaSitemap, FaTruckLoading,
   FaBoxOpen, FaFileInvoiceDollar, FaUsers, FaArrowLeft, FaWifi,
-  FaAddressBook, FaExclamationCircle, FaAddressCard, FaHome // Añadimos FaHome si queremos otro icono
+  FaAddressBook, FaExclamationCircle, FaAddressCard, FaHome
 } from 'react-icons/fa';
 
 const allAdminLinks = [
@@ -28,7 +28,12 @@ const getNavLinkClass = ({ isActive }) => {
 };
 
 function AdminLayout() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  // --- ▼▼▼ LÍNEA MODIFICADA ▼▼▼ ---
+  // Ahora comprueba el ancho de la pantalla. Si es < 768px (móvil/tablet), 
+  // el sidebar empieza cerrado (false).
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768);
+  // --- ▲▲▲ FIN DE LÍNEA MODIFICADA ▲▲▲ ---
+  
   const { user, loading } = useAuth();
 
   const toggleSidebar = () => {
