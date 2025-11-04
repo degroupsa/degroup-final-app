@@ -74,9 +74,6 @@
   flex-direction: column;
   align-items: center;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  
-  /* --- ▼▼▼ LÍNEA AÑADIDA ▼▼▼ --- */
-  /* Esto "recortará" cualquier contenido (como la leyenda) que se desborde. */
   overflow: hidden; 
 }
 .chartCard:hover {
@@ -242,7 +239,6 @@
   font-weight: 600;
   color: #212529;
   white-space: nowrap; /* Asegura una sola línea */
-  /* Ya no hay overflow: hidden ni text-overflow: ellipsis */
 }
 
 .totalPendingBox {
@@ -417,12 +413,60 @@
   .chequeManagerGrid, .chartsGrid, .milestonesGrid { grid-template-columns: 1fr; }
   .manualRecordContainer { grid-template-columns: 1fr; }
 }
+
+/* --- ▼▼▼ SECCIÓN RESPONSIVE PARA CELULARES CORREGIDA ▼▼▼ --- */
 @media (max-width: 768px) {
   .monthlySummaryGrid {
       grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   }
-  .manualRecordGrid { grid-template-columns: 1fr; }
+  .manualRecordGrid { 
+    grid-template-columns: 1fr; /* Asegura 1 columna en el form chico */
+  }
+
+  /* --- NUEVO: Reducción de padding para móviles --- */
+  .milestoneCard,
+  .chartCard,
+  .manualRecordCard,
+  .chequeFormCard,
+  .chequeSummaryCard,
+  .backupCard,
+  .historyCard,
+  .editModalContent {
+    padding: 1rem; /* Reduce el padding general de las tarjetas */
+  }
+
+  .sectionTitle {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .manualRecordContainer {
+    gap: 1.5rem; /* Reduce el espacio entre tarjetas */
+  }
+  
+  /* Reduce padding en tablas para que entre más info */
+  .chequeTable th, .chequeTable td {
+    padding: 0.6rem 0.3rem;
+  }
+  .historyTable th, .historyTable td {
+    padding: 0.7rem 0.5rem;
+  }
+
+  /* Ajuste del input de archivo en móvil */
+  .fileInputWrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .fileInfo {
+    font-size: 0.8rem;
+    padding: 0.6rem 0.8rem;
+  }
+  .fileInputButton {
+    text-align: center;
+  }
 }
+/* --- ▲▲▲ FIN DE SECCIÓN RESPONSIVE CORREGIDA ▲▲▲ --- */
+
 
 /* --- ESTILOS PARA ALERTAS VISUALES --- */
 tr.overdue {

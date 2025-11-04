@@ -344,14 +344,24 @@ function FinancialManager() {
               <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}><label>Concepto General</label><input type="text" name="concept" value={manualRecord.concept} onChange={handleRecordInputChange} placeholder={iaProcessedData ? "Ej: Compra en Ferretería (leído por IA)" : "Ej: Compra de insumos"} required readOnly={iaProcessedData} disabled={isProcessingIA} /></div>
             </div>
 
-            {/* --- SECCIÓN DE COMPROBANTE (sin cambios en JSX) --- */}
+            {/* --- SECCIÓN DE COMPROBANTE --- */}
             <div className={styles.formGroup}>
               <label>Comprobante (Opcional)</label>
               <div className={styles.fileInputWrapper}>
                 <label htmlFor="receiptUpload" className={`${styles.fileInputButton} ${receiptFile ? styles.fileInputButtonDisabled : ''}`}>
                   {receiptFile ? 'Archivo Adjuntado' : 'Adjuntar (Activa IA)'}
                 </label>
-                <input type="file" id="receiptUpload" accept="image/*" capture="environment" onChange={handleFileChange} style={{ display: 'none' }} disabled={isProcessingIA || iaProcessedData || receiptFile} />
+                
+                {/* --- LÍNEA CORREGIDA: 'capture="environment"' FUE ELIMINADO --- */}
+                <input 
+                  type="file" 
+                  id="receiptUpload" 
+                  accept="image/*" 
+                  onChange={handleFileChange} 
+                  style={{ display: 'none' }} 
+                  disabled={isProcessingIA || iaProcessedData || receiptFile} 
+                />
+                
                 {receiptFile && (
                   <div className={styles.fileInfo}>
                     <span>{receiptFile.name}</span>
