@@ -57,6 +57,12 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   display: flex;
   flex-direction: column;
+  
+  /* --- ▼▼▼ ARREGLO 1: EVITAR DESBORDAMIENTO DEL CONTENEDOR ▼▼▼ --- */
+  /* Esto asegura que la tarjeta no intente ser más ancha que la pantalla */
+  max-width: 100%;
+  overflow-x: hidden; 
+  /* --- ▲▲▲ FIN ARREGLO 1 ▲▲▲ --- */
 }
 
 .chartContainer h3 {
@@ -65,12 +71,26 @@
   margin-bottom: 1.5rem;
   font-size: 1.1rem;
   color: #495057;
+
+  /* --- ▼▼▼ ARREGLO 2: EVITAR DESBORDAMIENTO DEL TEXTO ▼▼▼ --- */
+  /* Si el título es muy largo, se romperá en dos líneas */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  /* --- ▲▲▲ FIN ARREGLO 2 ▲▲▲ --- */
 }
 
 .chartWrapper {
   flex-grow: 1;
   position: relative;
   min-height: 300px; /* Altura mínima para los gráficos */
+
+  /* --- ▼▼▼ ARREGLO 3: FORZAR AL GRÁFICO A ADAPTARSE ▼▼▼ --- */
+  /* El gráfico (canvas) se adaptará al 100% del ancho de este div,
+     y si es muy ancho, permitirá scroll HORIZONTAL SÓLO DENTRO del gráfico.
+  */
+  max-width: 100%;
+  overflow-x: auto; 
+  /* --- ▲▲▲ FIN ARREGLO 3 ▲▲▲ --- */
 }
 
 .divider {
@@ -94,56 +114,53 @@
   }
 }
 
-/* ... (todos tus estilos anteriores van aquí) ... */
-
-/* --- ▼▼▼ NUEVO: Arreglo Responsive para Móviles ▼▼▼ --- */
+/* --- ▼▼▼ Arreglo Responsive (MODIFICADO) ▼▼▼ --- */
+/* (Este bloque ya lo tenías, lo dejamos igual) */
 
 @media (max-width: 992px) {
-  /* En tablets, permitimos que los gráficos principales (barra) 
-     se pongan en una sola columna si no caben.
-     Cambiamos el minmax de 400px a 300px.
-  */
   .mainChartsGrid {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
-  /* En móviles, forzamos TODO a una sola columna */
-  
   .kpiGrid,
   .mainChartsGrid,
   .dualPieChartContainer,
   .bottomWidgetsGrid {
-    grid-template-columns: 1fr; /* ¡La regla mágica! */
-    gap: 1.5rem; /* Mantenemos un espacio vertical */
+    grid-template-columns: 1fr; 
+    gap: 1.5rem;
   }
 
-  /* Reducimos el padding de las tarjetas de gráficos en móviles */
   .chartContainer,
   .card {
     padding: 1rem;
   }
 
-  /* Damos un alto fijo a los gráficos de torta/dona para que se vean bien */
   .dualPieChartContainer .chartWrapper {
     min-height: 280px; 
   }
 
-  /* Damos un alto fijo a los gráficos de barra */
   .mainChartsGrid .chartWrapper,
   .bottomWidgetsGrid .chartWrapper {
     min-height: 320px;
   }
 
   .pageContent h1 {
-    font-size: 1.8rem; /* Achicamos el título principal */
+    font-size: 1.8rem;
   }
 
   .subtitle {
     font-size: 0.9rem;
     margin-bottom: 1.5rem;
   }
-}
 
+  /* --- ▼▼▼ NUEVA REGLA DENTRO DEL MEDIA QUERY ▼▼▼ --- */
+  /* Esto es extra, para asegurar que los gráficos de barra 
+     tengan scroll en móvil si es necesario */
+  .chartWrapper {
+    overflow-x: auto;
+  }
+  /* --- ▲▲▲ FIN NUEVA REGLA ▲▲▲ --- */
+}
 /* --- ▲▲▲ FIN Arreglo Responsive ▲▲▲ --- */
