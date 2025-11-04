@@ -661,3 +661,91 @@ tr.overdue select, tr.dueSoon select, tr.collectible select {
 }
 
 /* --- ▲▲▲ FIN de nuevos estilos ▲▲▲ --- */
+
+/* ... (Todos tus estilos anteriores van aquí) ... */
+
+/* --- ▼▼▼ NUEVO: Estilos para el Flujo de IA ▼▼▼ --- */
+
+/* Botón de "Adjuntar" deshabilitado cuando ya hay un archivo */
+.fileInputButtonDisabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  border-color: #ced4da;
+  cursor: not-allowed;
+}
+
+/* Botón de "Cancelar" (la 'x' en el archivo) */
+.clearFileButton {
+  background: none;
+  border: none;
+  color: #6c757d;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  line-height: 1;
+}
+.clearFileButton:hover {
+  color: #dc3545;
+}
+.clearFileButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Botón de "Confirmar y Guardar" (verde) */
+.submitButtonConfirm {
+  background-color: #198754; /* Verde */
+}
+.submitButtonConfirm:hover {
+  background-color: #157347;
+}
+
+/* Sección de resultados de IA */
+.iaResultsSection {
+  border-top: 2px dashed #ced4da;
+  border-bottom: 2px dashed #ced4da;
+  padding: 1.5rem 1rem;
+  margin: 1.5rem 0;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+.iaResultsSection h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #0d6efd;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Lista de ítems leídos */
+.iaItemsList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  max-height: 150px;
+  overflow-y: auto;
+}
+.iaItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 0.9rem;
+}
+.iaItem:last-child {
+  border-bottom: none;
+}
+.iaItemDetail {
+  color: #212529;
+  padding-right: 1rem;
+}
+.iaItemPrice {
+  color: #495057;
+  font-weight: 500;
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+/* --- ▲▲▲ FIN de nuevos estilos ▲▲▲ --- */
