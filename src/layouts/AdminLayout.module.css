@@ -15,9 +15,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  
-  /* --- ▼▼▼ ARREGLO 1: Z-INDEX ▼▼▼ --- */
-  z-index: 1000; /* Asegura que el sidebar esté por encima del contenido */
+  z-index: 1000;
 }
 
 .sidebarHeader {
@@ -54,20 +52,19 @@
   font-size: 14px;
 }
 
-/* --- NUEVA CLASE PARA EL BOTÓN "IR AL INICIO" (Arriba) --- */
 .backToSiteButtonTop {
   display: flex;
   align-items: center;
   gap: 1rem;
   color: #ffffff;
   text-decoration: none;
-  padding: 0.6rem 1rem; /* Un poco más compacto */
+  padding: 0.6rem 1rem;
   border-radius: 5px;
-  margin-top: 1rem; /* Separación del header */
-  margin-bottom: 1rem; /* Separación del nav */
-  border: 1px solid #6c757d; /* Borde más discreto */
-  background-color: #343a40; /* Fondo más oscuro */
-  font-size: 0.95rem; /* Letra un poco más pequeña */
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #6c757d;
+  background-color: #343a40;
+  font-size: 0.95rem;
   white-space: nowrap;
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   flex-shrink: 0;
@@ -79,22 +76,13 @@
   border-color: #ffd000;
 }
 
-/*
-  CONTENEDOR DE ENLACES (EL QUE DEBE HACER SCROLL)
-  - Crece para ocupar el espacio disponible.
-  - Muestra scroll si el contenido se desborda.
-*/
 .nav {
-  flex-grow: 1;      /* Ocupa todo el espacio vertical disponible */
-  /* margin-top: 1rem; */ /* Ya no lo necesita, el botón de arriba lo separa */
-  overflow-y: auto;   /* ¡LA CLAVE! Añade scroll SÓLO a esta lista */
-  overflow-x: hidden; /* Oculta scroll horizontal */
-  min-height: 0;      /* Truco de Flexbox para que overflow funcione */
-  padding-right: 5px; /* Espacio para la barra de scroll */
-  
-  /* --- ▼▼▼ LÍNEA AÑADIDA ▼▼▼ --- */
-  padding-bottom: 1.5rem; /* Espacio al final de la lista, antes del borde */
-  /* --- ▲▲▲ FIN LÍNEA AÑADIDA ▲▲▲ --- */
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  padding-right: 5px;
+  padding-bottom: 1.5rem;
 }
 
 .navList {
@@ -116,17 +104,14 @@
   white-space: nowrap;
 }
 
-/* --- ESTILOS PARA TODOS LOS ICONOS DEL SIDEBAR --- */
-/* Soluciona el problema de los iconos pequeños */
-.navLink svg, .backToSiteButtonTop svg { /* Asegurarse de incluir la nueva clase */
-  font-size: 1rem;  /* Tamaño base */
-  width: 1.1em;       /* Ancho relativo al font-size */
-  height: 1.1em;      /* Alto relativo al font-size */
+.navLink svg, .backToSiteButtonTop svg {
+  font-size: 1rem;
+  width: 1.1em;
+  height: 1.1em;
   text-align: center;
   flex-shrink: 0;
   line-height: 1;
 }
-/* --- FIN ESTILOS ICONOS --- */
 
 .navLink:hover {
   color: #ffd000;
@@ -137,12 +122,10 @@
   color: #ffd000;
 }
 
-.navLink span, .backToSiteButtonTop span { /* Asegurarse de incluir la nueva clase */
+.navLink span, .backToSiteButtonTop span {
   opacity: 1;
   transition: opacity 0.2s ease;
 }
-
-/* El estilo .backToSiteButton antiguo ya no es necesario */
 
 .content {
   flex-grow: 1;
@@ -150,9 +133,7 @@
   background-color: #f8f9fa;
   transition: margin-left 0.3s ease;
   margin-left: 240px;
-
-  /* --- ▼▼▼ ARREGLO 2: SCROLL HORIZONTAL ▼▼▼ --- */
-  overflow-x: hidden; /* Evita que el contenido desbordado cree un scroll de PÁGINA */
+  overflow-x: hidden;
 }
 
 /* --- ESTILOS COLAPSADOS --- */
@@ -160,12 +141,20 @@
   width: 35px;
   padding: 1rem 0.9rem;
 }
+
+/* --- ▼▼▼ CORRECCIÓN REVERTIDA ▼▼▼ --- */
+/* Volvemos a los 65px originales, que eran correctos.
+   El ancho total del menú colapsado es 35px (ancho) + ~15px (pad) + ~15px (pad) = ~65px.
+*/
 .sidebarCollapsed .content {
-  margin-left: 65px;
+  margin-left: 65px; 
 }
+/* --- ▲▲▲ FIN DE LA CORRECCIÓN ▲▲▲ --- */
+
+
 .sidebarCollapsed .sidebar h2,
 .sidebarCollapsed .navLink span,
-.sidebarCollapsed .backToSiteButtonTop span { /* Asegurarse de incluir la nueva clase */
+.sidebarCollapsed .backToSiteButtonTop span {
   opacity: 0;
   width: 0;
   overflow: hidden;
@@ -174,7 +163,7 @@
   transform: rotate(180deg);
 }
 .sidebarCollapsed .navLink,
-.sidebarCollapsed .backToSiteButtonTop { /* Asegurarse de incluir la nueva clase */
+.sidebarCollapsed .backToSiteButtonTop {
   justify-content: center;
   padding-left: 0;
   padding-right: 0;
@@ -200,26 +189,14 @@
   background: #777;
 }
 
-/* ... (todos tus estilos anteriores van aquí) ... */
-
-/* --- ▼▼▼ NUEVO: Arreglo Responsive para Móviles ▼▼▼ --- */
-
+/* --- Arreglo Responsive para Móviles --- */
 @media (max-width: 768px) {
-  /* Reduce el padding (relleno) del área de contenido en pantallas pequeñas.
-    Pasamos de 2rem (32px) a 1rem (16px), dándole más espacio a las tarjetas.
-  */
   .content {
-    padding: 1.5rem 1rem;
+    padding: 1.5rem 1rem; /* Menos padding en móviles */
   }
 
-  /* Opcional: Oculta el botón de toggle (flecha) si el menú está abierto 
-    y flotando por encima (para evitar que quede "atrás" del menú).
-    Descomenta las siguientes líneas si tienes ese problema.
-  */
-  /*
-  .adminLayout:not(.sidebarCollapsed) .toggleButton {
-    display: none;
+  /* Nos aseguramos que el margen colapsado sea el correcto */
+  .sidebarCollapsed .content {
+    margin-left: 65px; 
   }
-  */
 }
-/* --- ▲▲▲ FIN Arreglo Responsive ▲▲▲ --- */

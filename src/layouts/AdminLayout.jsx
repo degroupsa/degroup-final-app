@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react'; // Importamos useEffect y useCallback
 import { NavLink, Link, Outlet, Navigate } from 'react-router-dom';
 import styles from './AdminLayout.module.css';
 import NavigationArrows from '../components/ui/NavigationArrows';
@@ -28,13 +28,32 @@ const getNavLinkClass = ({ isActive }) => {
 };
 
 function AdminLayout() {
-  // --- ▼▼▼ LÍNEA MODIFICADA ▼▼▼ ---
-  // Ahora comprueba el ancho de la pantalla. Si es < 768px (móvil/tablet), 
-  // el sidebar empieza cerrado (false).
+  // El estado inicial sigue siendo inteligente: detecta si es móvil al cargar
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768);
-  // --- ▲▲▲ FIN DE LÍNEA MODIFICADA ▲▲▲ ---
-  
   const { user, loading } = useAuth();
+
+  // --- ▼▼▼ NUEVO HOOK de useEffect ▼▼▼ ---
+  // Esta función se ejecutará cada vez que el usuario cambie el tamaño de la ventana
+  const handleResize = useCallback(() => {
+    if (window.innerWidth < 768) {
+      // Si la pantalla es pequeña (móvil/tablet vertical), FORZAMOS el cierre
+      setIsSidebarOpen(false);
+    }
+  }, []); // El array vacío significa que la función 'handleResize' nunca cambia
+
+  useEffect(() => {
+    // Añadimos el "escuchador" de eventos cuando el componente se monta
+    window.addEventListener('resize', handleResize);
+
+    // Lo ejecutamos una vez al inicio por si acaso
+    handleResize();
+
+    // Limpiamos el "escuchador" cuando el componente se desmonta
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [handleResize]); // La dependencia es la función que creamos
+  // --- ▲▲▲ FIN DEL NUEVO HOOK ▲▲▲ ---
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -59,11 +78,9 @@ function AdminLayout() {
           </button>
         </div>
 
-        {/* --- ▼▼▼ EL BOTÓN "VOLVER AL INICIO" SE MOVIO AQUÍ ▼▼▼ --- */}
         <Link to="/" className={styles.backToSiteButtonTop} title="Volver al Sitio Principal">
-          <FaHome /><span>Ir al Inicio</span> {/* Cambié el texto y el icono para que sea más claro */}
+          <FaHome /><span>Ir al Inicio</span>
         </Link>
-        {/* --- ▲▲▲ FIN MOVIMIENTO ▲▲▲ --- */}
 
         <nav className={styles.nav}>
           <ul className={styles.navList}>
@@ -79,7 +96,6 @@ function AdminLayout() {
             ))}
           </ul>
         </nav>
-        {/* El botón ya no está aquí */}
       </aside>
       <main className={styles.content}>
         <Outlet />
