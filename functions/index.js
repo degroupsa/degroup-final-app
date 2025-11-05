@@ -63,7 +63,7 @@ exports.processReceipt = onCall(async (request) => {
       .map(item => {
         const detail = item.properties.find(p => p.type === 'line_item_description')?.mentionText || 'Ítem';
         const price = parseFloat(item.properties.find(p => p.type === 'line_item_amount')?.mentionText) || 0;
-        return { detail, price };
+        return { detail, price }; 
       });
 
     // 4. Devolver los datos al frontend
