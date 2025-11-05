@@ -11,7 +11,7 @@ const client = new DocumentProcessorServiceClient();
 // !! REEMPLAZA ESTOS VALORES !!
 const projectId = 'web-de-group'; // Tu Project ID
 const location = 'us-central1'; // Región de la función
-const processorId = '[ID_PRIVADO_DEL_USUARIO]'; // El ID de tu "Expense Parser"
+const processorId = '773519c2b12aca46'; // El ID de tu "Expense Parser"
 
 const name = `projects/${projectId}/locations/${location}/processors/${processorId}`;
 // --- FIN DE CONFIGURACIÓN ---
