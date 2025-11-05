@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-// --- ACTUALIZADO: Importamos storage, 'app' Y AHORA 'functions' ---
-import { db, storage, app, functions } from '../firebase/config.js'; 
+// --- ACTUALIZADO: Quitamos la importación de 'functions' ---
+import { db, storage, app } from '../firebase/config.js'; 
 import { collection, getDocs, addDoc, serverTimestamp, deleteDoc, doc, query, orderBy, where, Timestamp, updateDoc, limit, increment } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import imageCompression from 'browser-image-compression';
 
-// --- NUEVO: Import de Firebase Functions (asegúrate de correr 'npm install firebase') ---
-import { httpsCallable } from 'firebase/functions';
+// --- QUITADO: Ya no usamos httpsCallable ---
+// import { httpsCallable } from 'firebase/functions';
 
 import toast from 'react-hot-toast';
 import styles from './FinancialManager.module.css';
@@ -76,7 +76,7 @@ function FinancialManager() {
   const [receiptURL, setReceiptURL] = useState(''); // Para guardar la URL de la imagen después de subirla
 
   
-  // 'functions' ahora se importa desde config.js, así que esta línea se elimina
+  // 'functions' ya no se usa
   // const functions = getFunctions(app);
 
   const fetchData = async () => { /* ... (sin cambios) ... */ setLoading(true); try { const checksQuery = query( collection(db, 'pendingChecks'), where('status', 'in', ['pendiente', 'para_cobrar']), orderBy('status'), orderBy('fechaCobro', 'asc') ); const checksSnapshot = await getDocs(checksQuery); setCheques(checksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))); const payablesQuery = query( collection(db, 'pendingPayables'), where('status', '==', 'pendiente'), orderBy('fechaVencimiento', 'asc') ); const payablesSnapshot = await getDocs(payablesQuery); setAccountsPayable(payablesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))); const recordsQuery = query(collection(db, 'registrosFinancieros'), orderBy('date', 'desc')); const recordsSnapshot = await getDocs(recordsQuery); const records = recordsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); setFinancialRecords(records); const firstIncomeQuery = query(collection(db, 'registrosFinancieros'), where('type', '==', 'ingreso'), orderBy('date', 'asc'), limit(1)); const firstExpenseQuery = query(collection(db, 'registrosFinancieros'), where('type', '==', 'egreso'), orderBy('date', 'asc'), limit(1)); const [firstIncomeSnap, firstExpenseSnap] = await Promise.all([getDocs(firstIncomeQuery), getDocs(firstExpenseQuery)]); setFirstIncome(firstIncomeSnap.empty ? null : firstIncomeSnap.docs[0].data()); setFirstExpense(firstExpenseSnap.empty ? null : firstExpenseSnap.docs[0].data()); const processChartData = (type) => { const categoryMap = (records || []).filter(r => r.type === type).reduce((acc, record) => { const category = record.category || `Sin Categoría (${type})`; acc[category] = (acc[category] || 0) + record.amount; return acc; }, {}); return Object.entries(categoryMap).map(([name, value]) => ({ name, value })); }; setChartData({ income: processChartData('ingreso'), expense: processChartData('egreso') }); } catch (error) { console.error("Error al cargar los datos:", error); toast.error("No se pudieron cargar los datos."); if(error.code === 'failed-precondition') { toast.error("Error: Se requiere un índice de Firestore. Revisa la consola (F12) para crearlo."); } } finally { setLoading(false); } };
@@ -216,13 +216,36 @@ function FinancialManager() {
 
           // 3. Llamar a la Cloud Function (¡AQUÍ ESTÁ LA MAGIA!)
           try {
-            // 'processReceipt' es el nombre que le daremos a nuestra Cloud Function
-            // 'functions' es la instancia importada de config.js (con la región us-central1)
-            const processReceipt = httpsCallable(functions, 'processReceipt');
-            const result = await processReceipt({ imageUrl: downloadURL });
             
-            // La IA nos devuelve los datos
-            const data = result.data; // Asumimos que devuelve { concept: '...', amount: 123, items: [...] }
+            // --- BLOQUE CORREGIDO: Usamos fetch a la URL pública ---
+            const functionUrl = 'https://processreceipt-505795840819.us-central1.run.app';
+            
+            const response = await fetch(functionUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              // El body debe coincidir con lo que espera el backend
+              body: JSON.stringify({
+                data: { imageUrl: downloadURL } 
+              })
+            });
+
+            if (!response.ok) {
+              // Si el servidor responde con un error, capturarlo
+              const errorData = await response.json().catch(() => ({ data: { error: 'Error desconocido del servidor' } }));
+              throw new Error(errorData.data?.error || 'Error en la respuesta del servidor');
+            }
+
+            const result = await response.json();
+            
+            // El backend público envuelve la respuesta en { data: ... }
+            if (!result.data) {
+              throw new Error("La respuesta del servidor no tiene el formato esperado.");
+            }
+            const data = result.data; 
+            // --- FIN DEL BLOQUE CORREGIDO ---
+
 
             // 4. Autocompletar el formulario
             setIaProcessedData(data); // Guardamos los ítems y datos
