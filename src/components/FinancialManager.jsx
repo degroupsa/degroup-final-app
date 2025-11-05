@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-// --- ACTUALIZADO: Importamos storage, y AHORA TAMBIÉN 'app' ---
-import { db, storage, app } from '../firebase/config.js'; 
+// --- ACTUALIZADO: Importamos storage, 'app' Y AHORA 'functions' ---
+import { db, storage, app, functions } from '../firebase/config.js'; 
 import { collection, getDocs, addDoc, serverTimestamp, deleteDoc, doc, query, orderBy, where, Timestamp, updateDoc, limit, increment } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import imageCompression from 'browser-image-compression';
 
 // --- NUEVO: Import de Firebase Functions (asegúrate de correr 'npm install firebase') ---
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import { httpsCallable } from 'firebase/functions';
 
 import toast from 'react-hot-toast';
 import styles from './FinancialManager.module.css';
@@ -76,8 +76,8 @@ function FinancialManager() {
   const [receiptURL, setReceiptURL] = useState(''); // Para guardar la URL de la imagen después de subirla
 
   
-  // Inicializa Firebase Functions
-  const functions = getFunctions(app);
+  // 'functions' ahora se importa desde config.js, así que esta línea se elimina
+  // const functions = getFunctions(app);
 
   const fetchData = async () => { /* ... (sin cambios) ... */ setLoading(true); try { const checksQuery = query( collection(db, 'pendingChecks'), where('status', 'in', ['pendiente', 'para_cobrar']), orderBy('status'), orderBy('fechaCobro', 'asc') ); const checksSnapshot = await getDocs(checksQuery); setCheques(checksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))); const payablesQuery = query( collection(db, 'pendingPayables'), where('status', '==', 'pendiente'), orderBy('fechaVencimiento', 'asc') ); const payablesSnapshot = await getDocs(payablesQuery); setAccountsPayable(payablesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))); const recordsQuery = query(collection(db, 'registrosFinancieros'), orderBy('date', 'desc')); const recordsSnapshot = await getDocs(recordsQuery); const records = recordsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); setFinancialRecords(records); const firstIncomeQuery = query(collection(db, 'registrosFinancieros'), where('type', '==', 'ingreso'), orderBy('date', 'asc'), limit(1)); const firstExpenseQuery = query(collection(db, 'registrosFinancieros'), where('type', '==', 'egreso'), orderBy('date', 'asc'), limit(1)); const [firstIncomeSnap, firstExpenseSnap] = await Promise.all([getDocs(firstIncomeQuery), getDocs(firstExpenseQuery)]); setFirstIncome(firstIncomeSnap.empty ? null : firstIncomeSnap.docs[0].data()); setFirstExpense(firstExpenseSnap.empty ? null : firstExpenseSnap.docs[0].data()); const processChartData = (type) => { const categoryMap = (records || []).filter(r => r.type === type).reduce((acc, record) => { const category = record.category || `Sin Categoría (${type})`; acc[category] = (acc[category] || 0) + record.amount; return acc; }, {}); return Object.entries(categoryMap).map(([name, value]) => ({ name, value })); }; setChartData({ income: processChartData('ingreso'), expense: processChartData('egreso') }); } catch (error) { console.error("Error al cargar los datos:", error); toast.error("No se pudieron cargar los datos."); if(error.code === 'failed-precondition') { toast.error("Error: Se requiere un índice de Firestore. Revisa la consola (F12) para crearlo."); } } finally { setLoading(false); } };
 
@@ -217,6 +217,7 @@ function FinancialManager() {
           // 3. Llamar a la Cloud Function (¡AQUÍ ESTÁ LA MAGIA!)
           try {
             // 'processReceipt' es el nombre que le daremos a nuestra Cloud Function
+            // 'functions' es la instancia importada de config.js (con la región us-central1)
             const processReceipt = httpsCallable(functions, 'processReceipt');
             const result = await processReceipt({ imageUrl: downloadURL });
             
@@ -341,7 +342,19 @@ function FinancialManager() {
             <div className={styles.manualRecordGrid}>
               <div className={styles.formGroup}><label>Tipo</label><select name="type" value={manualRecord.type} onChange={handleRecordInputChange} disabled={isProcessingIA || iaProcessedData}><option value="ingreso">Ingreso</option><option value="egreso">Gasto</option></select></div>
               <div className={styles.formGroup}><label>Categoría</label><select name="category" value={manualRecord.category} onChange={handleRecordInputChange} disabled={isProcessingIA}>{(manualRecord.type === 'ingreso' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map(cat => (<option key={cat} value={cat}>{cat}</option>))}</select></div>
-              <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}><label>Concepto General</label><input type="text" name="concept" value={manualRecord.concept} onChange={handleRecordInputChange} placeholder={iaProcessedData ? "Ej: Compra en Ferretería (leído por IA)" : "Ej: Compra de insumos"} required readOnly={iaProcessedData} disabled={isProcessingIA} /></div>
+              <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
+                <label>Concepto General</label>
+                <input 
+                  type="text" 
+                  name="concept" 
+                  value={manualRecord.concept} 
+                  onChange={handleRecordInputChange} 
+                  placeholder={iaProcessedData ? "Ej: Compra en Ferretería (leído por IA)" : "Ej: Compra de insumos"} 
+                  required={!receiptFile} 
+                  readOnly={iaProcessedData} 
+                  disabled={isProcessingIA} 
+                />
+              </div>
             </div>
 
             {/* --- SECCIÓN DE COMPROBANTE --- */}
@@ -404,7 +417,7 @@ function FinancialManager() {
                 value={manualRecord.amount} 
                 onChange={handleRecordInputChange} 
                 placeholder="$ 0.00" 
-                required 
+                required={!receiptFile} 
                 readOnly={iaProcessedData} // Si la IA lo procesó, se bloquea
                 disabled={isProcessingIA}
               />
@@ -514,7 +527,12 @@ function FinancialManager() {
                                 <td>{cheque.fechaCobro?.toDate().toLocaleDateString('es-AR') || 'N/A'}</td>
                                 <td>{cheque.emisor}</td>
                                 <td>{formatCurrency(cheque.monto)}</td>
-                                <td><select value={cheque.status} onChange={(e) => handleStatusChange(cheque, e.target.value)} className={`${styles.statusSelect} ${styles[`status-${cheque.status.replace(' ', '_')}`]}`}><option value="pendiente">Pendiente</option><option value="para_cobrar">Para Cobrar</option><option value="cobrado">Cobrado</option></select></td>
+                                <td><select value={cheque.status} onChange={(e) => handleStatusChange(cheque, e.target.value)} className={`${styles.statusSelect} ${styles[`status-${cheque.status.replace(' ', '_')}`]}`}>
+                                  {/* LÍNEA CORREGIDA ABAJO */}
+                                  <option value="pendiente">Pendiente</option>
+                                  <option value="para_cobrar">Para Cobrar</option>
+                                  <option value="cobrado">Cobrado</option>
+                                </select></td>
                                 <td>
                                   <button className={styles.deleteButton} onClick={() => handleDeleteCheque(cheque.id, cheque.emisor)} title="Eliminar Cheque">
                                     <FaTrash />
@@ -534,7 +552,10 @@ function FinancialManager() {
         <DataExporter />
       </div>
       
-      {isEditModalOpen && editingRecord && ( <div className={styles.editModalOverlay}> <div className={styles.editModalContent}> <h2>Editar Movimiento</h2> <form onSubmit={handleEditSubmit}> <div className={styles.formGroup}><label>Fecha</label><input type="date" name="date" value={editingRecord.date} onChange={handleEditingRecordChange} /></div> <div className={styles.formGroup}><label>Tipo</label><select name="type" value={editingRecord.type} onChange={handleEditingRecordChange}> <option value="ingreso">Ingreso</option> <option value="egreso">Gasto</option> </select></div> <div className={styles.formGroup}><label>Categoría</label><select name="category" value={editingRecord.category} onChange={handleEditingRecordChange}> {(editingRecord.type === 'ingreso' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map(cat => (<option key={cat} value={cat}>{cat}</option>))} </select></div> <div className={styles.formGroup}><label>Concepto</label><input type="text" name="concept" value={editingRecord.concept} onChange={handleEditingRecordChange} /></div> <div className={styles.formGroup}><label>Monto</label><input type="number" step="0.01" name="amount" value={editingRecord.amount} onChange={handleEditingRecordChange} /></div> <div className={styles.editModalActions}> <button type="button" onClick={() => setIsEditModalOpen(false)}>Cancelar</button> <button type="submit">Guardar Cambios</button> </div> </form> </div> </div> )}
+      {isEditModalOpen && editingRecord && ( <div className={styles.editModalOverlay}> <div className={styles.editModalContent}> <h2>Editar Movimiento</h2> <form onSubmit={handleEditSubmit}> <div className={styles.formGroup}><label>Fecha</label><input type="date" name="date" value={editingRecord.date} onChange={handleEditingRecordChange} /></div> <div className={styles.formGroup}><label>Tipo</label><select name="type" value={editingRecord.type} onChange={handleEditingRecordChange}> <option value="ingreso">Ingreso</option> <option value="egreso">Gasto</option> </select></div> <div className={styles.formGroup}><label>Categoría</label><select name="category" value={editingRecord.category} onChange={handleEditingRecordChange}> {(editingRecord.type === 'ingreso' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map(cat => (<option key={cat} value={cat}>{cat}</option>))} </select></div> <div className={styles.formGroup}><label>Concepto</label><input type="text" name="concept" value={editingRecord.concept} onChange={handleEditingRecordChange} /></div> 
+        {/* LÍNEA CORREGIDA ABAJO */}
+        <div className={styles.formGroup}><label>Monto</label><input type="number" step="0.01" name="amount" value={editingRecord.amount} onChange={handleEditingRecordChange} /></div> 
+        <div className={styles.editModalActions}> <button type="button" onClick={() => setIsEditModalOpen(false)}>Cancelar</button> <button type="submit">Guardar Cambios</button> </div> </form> </div> </div> )}
     </>
   );
 }

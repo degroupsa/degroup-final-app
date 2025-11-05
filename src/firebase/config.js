@@ -3,7 +3,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getDatabase } from "firebase/database";
-import { getFunctions } from 'firebase/functions';
+import { getFunctions } from 'firebase/functions'; // Importar esto
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -19,9 +19,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Exportar servicios
-export const auth = getAuth(app);
+export const auth = getAuth(app); 
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const rtdb = getDatabase(app);
-export const functions = getFunctions(app);
-export { app }; // <-- ¡ESTA ES LA LÍNEA QUE FALTABA!
+
+// ¡ESTA ES LA LÍNEA DE CORRECCIÓN!
+// Le dice a la app que llame a la región 'us-central1'
+export const functions = getFunctions(app, 'us-central1');
+
+export { app };
