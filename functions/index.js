@@ -1,7 +1,8 @@
-// Importa los módulos necesarios
-const { onCall, HttpsError } = require("firebase-functions/v2/https");
+// Importa los módulos
+const { onRequest } = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
-const axios = require("axios"); // Para descargar la imagen
+const axios = require("axios");
+const cors = require("cors")({ origin: true }); // Habilita CORS
 
 // --- CONFIGURACIÓN DE DOCUMENT AI ---
 const { DocumentProcessorServiceClient } = require('@google-cloud/documentai').v1;
@@ -16,68 +17,65 @@ const name = `projects/${projectId}/locations/${location}/processors/${processor
 // --- FIN DE CONFIGURACIÓN ---
 
 
-exports.processReceipt = onCall(async (request) => {
+// Usamos onRequest en lugar de onCall
+exports.processReceipt = onRequest((request, response) => {
+  
+  // Envolvemos la función en 'cors' para evitar errores en el navegador
+  cors(request, response, async () => {
 
-  // 1. Verificación de autenticación
-  if (!request.auth) {
-    logger.error("Intento de llamada no autenticada.");
-    throw new HttpsError('unauthenticated', 'Debes estar logueado.');
-  }
+    // Verificamos que sea una llamada POST
+    if (request.method !== 'POST') {
+      response.status(405).send('Method Not Allowed');
+      return;
+    }
 
-  // 2. Obtenemos la URL de la imagen
-  const imageUrl = request.data.imageUrl;
-  if (!imageUrl) {
-    logger.error("Llamada sin 'imageUrl'");
-    throw new HttpsError('invalid-argument', 'No se proporcionó "imageUrl".');
-  }
+    // Obtenemos la URL (ahora viene en request.body.data)
+    const imageUrl = request.body.data?.imageUrl;
+    if (!imageUrl) {
+      logger.error("Llamada sin 'imageUrl'");
+      response.status(400).json({ data: { error: 'No se proporcionó "imageUrl".' } });
+      return;
+    }
 
-  logger.info(`Usuario ${request.auth.uid} procesando imagen...`);
+    logger.info(`Procesando imagen (público): ${imageUrl}`);
 
-  try {
-    // --- LÓGICA REAL DE DOCUMENT AI ---
-    
-    // 1. Descargar la imagen de Firebase Storage
-    const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-    const imageBuffer = Buffer.from(imageResponse.data, 'binary');
+    try {
+      // --- LÓGICA REAL DE DOCUMENT AI (idéntica a antes) ---
+      const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+      const imageBuffer = Buffer.from(imageResponse.data, 'binary');
+      const encodedImage = imageBuffer.toString('base64');
 
-    // 2. Preparar la imagen para Document AI (convertir a base64)
-    const encodedImage = imageBuffer.toString('base64');
-
-    const [result] = await client.processDocument({
-      name: name,
-      rawDocument: {
-        content: encodedImage,
-        mimeType: 'image/jpeg', // Asumimos jpeg o png.
-      },
-    });
-
-    // 3. Procesar el resultado
-    const { document } = result;
-    
-    // Función helper para buscar entidades
-    const getEntity = (type) => document.entities.find(e => e.type === type)?.mentionText || null;
-    
-    // Mapear los ítems
-    const items = document.entities
-      .filter(e => e.type === 'line_item')
-      .map(item => {
-        const detail = item.properties.find(p => p.type === 'line_item_description')?.mentionText || 'Ítem';
-        const price = parseFloat(item.properties.find(p => p.type === 'line_item_amount')?.mentionText) || 0;
-        return { detail, price }; 
+      const [result] = await client.processDocument({
+        name: name,
+        rawDocument: {
+          content: encodedImage,
+          mimeType: 'image/jpeg',
+        },
       });
 
-    // 4. Devolver los datos al frontend
-    const processedData = {
-      concept: getEntity('supplier_name') || 'Concepto General',
-      amount: parseFloat(getEntity('total_amount')) || 0,
-      items: items
-    };
+      const { document } = result;
+      const getEntity = (type) => document.entities.find(e => e.type === type)?.mentionText || null;
+      const items = document.entities
+        .filter(e => e.type === 'line_item')
+        .map(item => {
+          const detail = item.properties.find(p => p.type === 'line_item_description')?.mentionText || 'Ítem';
+          const price = parseFloat(item.properties.find(p => p.type === 'line_item_amount')?.mentionText) || 0;
+          return { detail, price };
+        });
 
-    logger.info("Documento procesado con éxito.");
-    return processedData;
+      const processedData = {
+        concept: getEntity('supplier_name') || 'Concepto General',
+        amount: parseFloat(getEntity('total_amount')) || 0,
+        items: items
+      };
 
-  } catch (error) {
-    logger.error("Error procesando el documento:", error);
-    throw new HttpsError('internal', 'Error al procesar el documento con IA.');
-  }
+      logger.info("Documento procesado con éxito.");
+      // Devolvemos el resultado envuelto en un objeto 'data'
+      response.status(200).json({ data: processedData });
+
+    } catch (error) {
+      logger.error("Error procesando el documento:", error);
+      response.status(500).json({ data: { error: 'Error al procesar el documento con IA.' } });
+    }
+  });
 });
