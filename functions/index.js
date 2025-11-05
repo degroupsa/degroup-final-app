@@ -8,15 +8,19 @@ const express = require("express"); // Importar Express
 const { DocumentProcessorServiceClient } = require('@google-cloud/documentai').v1;
 const client = new DocumentProcessorServiceClient();
 
-// !! REEMPLAZA ESTOS VALORES !!
-const projectId = 'web-de-group'; // Tu Project ID
-const location = 'us-central1'; // Región de la función
-const processorId = '773519c2b12aca46'; // El ID de tu "Expense Parser"
+// ------------------------------------------------------------------
+//  ¡¡¡ATENCIÓN!!!
+//  REEMPLAZA ESTE VALOR CON TU ID DE PROCESADOR DE DOCUMENT AI
+// ------------------------------------------------------------------
+const processorId = '[ID_PRIVADO_DEL_USUARIO]'; 
 
+// --- Configuración de variables (NO TOCAR) ---
+const projectId = 'web-de-group'; 
+const location = 'us-central1';
 const name = `projects/${projectId}/locations/${location}/processors/${processorId}`;
 // --- FIN DE CONFIGURACIÓN ---
 
-// Esta es la LÓGICA de la función que ya teníamos
+// Esta es la LÓGICA de la función que necesitamos
 const processReceiptLogic = async (request, response) => {
   // Envolvemos la función en 'cors'
   cors(request, response, async () => {
@@ -27,7 +31,7 @@ const processReceiptLogic = async (request, response) => {
       return;
     }
 
-    // Obtenemos la URL (ahora viene en request.body.data)
+    // Obtenemos la URL (viene en request.body.data)
     const imageUrl = request.body.data?.imageUrl;
     if (!imageUrl) {
       logger.error("Llamada sin 'imageUrl'");
@@ -51,7 +55,6 @@ const processReceiptLogic = async (request, response) => {
         },
       });
 
-      // ... (Procesar resultado) ...
       const { document } = result;
       const getEntity = (type) => document.entities.find(e => e.type === type)?.mentionText || null;
       const items = document.entities
@@ -78,11 +81,12 @@ const processReceiptLogic = async (request, response) => {
   });
 };
 
-// --- CÓDIGO NUEVO DEL SERVIDOR ---
+// --- CÓDIGO DEL SERVIDOR ---
 const app = express();
 app.use(express.json()); // Middleware para parsear JSON
 
 // La función ahora responde en la RUTA RAÍZ ("/") del servicio
+// (Cloud Run envía todas las peticiones a la raíz)
 app.post('/', processReceiptLogic);
 
 // Cloud Run nos da un puerto en la variable de entorno PORT (o usamos 8080)
