@@ -1,0 +1,217 @@
+/* --- TEMA OSCURO AUTOCONTENIDO --- */
+
+.panelContainer {
+  padding: 2rem;
+  /* Fondo oscuro para toda la página, para que el texto blanco sea visible */
+  background-color: #181A1B; 
+  color: #F8F9FA;
+  min-height: 100vh;
+}
+
+.header {
+  color: #F8F9FA; /* Texto blanco */
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #007BFF; /* Azul primario */
+  padding-bottom: 0.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.card {
+  background-color: #2A2E33; /* Fondo de tarjeta oscuro */
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.cardTitle {
+  color: #F8F9FA; /* Texto blanco */
+  font-size: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+/* Formulario */
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  color: #ADB5BD; /* Texto gris claro para etiquetas */
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #181A1B; /* Fondo de input más oscuro */
+  border: 1px solid #495057; /* Borde gris */
+  border-radius: 4px;
+  color: #F8F9FA; /* Texto blanco */
+  font-size: 1rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.submitButton {
+  background-color: #007BFF; /* Azul primario */
+  color: #fff;
+  border: none;
+  padding: 0.8rem 1.2rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.submitButton:hover {
+  background-color: #0056b3;
+}
+
+/* Lista de Planes */
+.divider {
+  border: 0;
+  border-top: 1px solid #495057; /* Borde gris */
+  margin: 2rem 0;
+}
+
+.listTitle {
+  color: #F8F9FA; /* Texto blanco */
+  margin-bottom: 1rem;
+}
+
+.planList {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.planItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #343A40; /* Fondo de ítem gris oscuro */
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  border-left: 5px solid;
+}
+
+.planDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.planDescription {
+  color: #F8F9FA; /* Texto blanco */
+  font-weight: 600;
+}
+
+.planAmount {
+  color: #ADB5BD; /* Texto gris claro */
+  font-size: 0.9rem;
+}
+
+.deleteButton {
+  background: none;
+  border: none;
+  color: #dc3545; /* Rojo error */
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: color 0.2s;
+}
+
+.deleteButton:hover {
+  color: #f8a5ad; /* Rojo más claro */
+}
+
+/* Prioridades */
+.alta { border-color: #dc3545; } /* Rojo */
+.media { border-color: #ffc107; } /* Amarillo */
+.baja { border-color: #28a745; } /* Verde */
+
+/* Columna de IA */
+.aiButton {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background-color: #28a745; /* Verde éxito */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.aiButton:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.aiButton:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.aiAdviceArea {
+  background-color: #181A1B; /* Fondo más oscuro */
+  border-radius: 4px;
+  padding: 1.5rem;
+  min-height: 300px;
+  color: #ADB5BD; /* Texto gris claro */
+}
+
+.aiPlaceholder {
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.aiText {
+  white-space: pre-wrap; /* Mantiene los saltos de línea */
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #F8F9FA; /* Texto blanco */
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-left-color: #28a745; /* Verde */
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 2rem auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

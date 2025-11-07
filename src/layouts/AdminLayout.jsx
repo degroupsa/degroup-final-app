@@ -6,7 +6,8 @@ import { useAuth } from '../context/AuthContext';
 import {
   FaTachometerAlt, FaWarehouse, FaSitemap, FaTruckLoading,
   FaBoxOpen, FaFileInvoiceDollar, FaUsers, FaArrowLeft, FaWifi,
-  FaAddressBook, FaExclamationCircle, FaAddressCard, FaHome
+  FaAddressBook, FaExclamationCircle, FaAddressCard, FaHome,
+  FaBrain // --- ¡AÑADIDO! ---
 } from 'react-icons/fa';
 
 const allAdminLinks = [
@@ -19,6 +20,10 @@ const allAdminLinks = [
   { path: '/admin/ordenes', icon: FaFileInvoiceDollar, label: 'Presupuestos', roles: ['admin'] },
   { path: '/admin/productos', icon: FaBoxOpen, label: 'Productos Publicados', roles: ['admin'] },
   { path: '/admin/usuarios', icon: FaUsers, label: 'Usuarios Registrados', roles: ['admin'] },
+  
+  // --- ¡AÑADIDO! Enlace al Panel de IA ---
+  { path: '/admin/ai-panel', icon: FaBrain, label: 'Panel de IA', roles: ['admin'] },
+  
   { path: '/admin/en-linea', icon: FaWifi, label: 'Usuarios en Línea', roles: ['admin'] },
   { path: '/admin/contactos', icon: FaAddressCard, label: 'Contactos', roles: ['admin', 'gestion'] },
 ];

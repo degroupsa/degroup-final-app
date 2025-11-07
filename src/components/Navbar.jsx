@@ -8,6 +8,7 @@ import {
   FaBars, FaTimes, FaUserCircle, FaComments,
   FaHome, FaBoxOpen, FaUsers, FaEnvelope, FaGlobe,
   FaSignInAlt, FaUserPlus, FaSignOutAlt, FaCog
+  // --- ¡ELIMINADO! FaBrain ya no está aquí ---
 } from 'react-icons/fa';
 
 const getNavLinkClass = ({ isActive }) => {
@@ -121,6 +122,8 @@ function Navbar() {
                 Administración
               </NavLink>
             )}
+            
+            {/* --- ¡ELIMINADO! Link al Panel de IA (Escritorio) --- */}
           </div>
         </div>
 
@@ -189,6 +192,8 @@ function Navbar() {
                 <FaCog /> <span>Administración</span>
               </NavLink>
             )}
+
+            {/* --- ¡ELIMINADO! Link al Panel de IA (Móvil) --- */}
         </div>
       </div>
     </header>
