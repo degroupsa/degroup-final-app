@@ -1,0 +1,176 @@
+/*
+ * Archivo: src/pages/admin/CashFlow.module.css
+ * CSS compartido para FixedExpensesPage.jsx y IncomingChecksPage.jsx
+ */
+
+ .cashFlowPage {
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .cashFlowPage h1 {
+    color: var(--text-color-primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  .cashFlowPage p {
+    color: var(--text-color-secondary);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+  }
+  
+  .toggleFormButton {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .toggleFormButton:hover {
+    background-color: var(--primary-color-dark);
+  }
+  
+  .form {
+    background-color: var(--background-secondary);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2.5rem;
+    border: 1px solid var(--border-color);
+  }
+  
+  .formGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .formGroup label {
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    font-size: 0.9rem;
+  }
+  
+  .formGroup input,
+  .formGroup select {
+    padding: 0.8rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: var(--background-primary);
+    color: var(--text-color-primary);
+    font-size: 1rem;
+  }
+  
+  .submitButton {
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+  
+  .submitButton:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+  }
+  
+  .list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .listItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background-color: var(--background-secondary);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+  }
+  
+  .itemInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .itemInfo span {
+    font-size: 1.1rem;
+    color: var(--text-color-primary);
+  }
+  
+  .itemAmount {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+  }
+  
+  .itemDetail {
+    font-size: 0.9rem !important;
+    color: var(--text-color-secondary) !important;
+    font-style: italic;
+  }
+  
+  .itemActions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  
+  .statusSelect {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: var(--background-primary);
+    color: var(--text-color-primary);
+  }
+  
+  .deleteButton {
+    background-color: transparent;
+    border: none;
+    color: var(--danger-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+  }
+  
+  .deleteButton:hover {
+    color: #a00;
+  }
+  
+  /* Estilos de estado para cheques */
+  .listItem.Pendiente {
+    border-left: 5px solid #ffc107; /* Amarillo */
+  }
+  .listItem.Depositado {
+    border-left: 5px solid #007bff; /* Azul */
+  }
+  .listItem.Acreditado {
+    border-left: 5px solid var(--success-color); /* Verde */
+  }

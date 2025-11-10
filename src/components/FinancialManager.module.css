@@ -203,42 +203,37 @@
   background-color: #2980b9;
 }
 
-/* --- REGLA ACTUALIZADA .monthlySummaryGrid --- */
 .monthlySummaryGrid {
   display: grid;
-  /* Permitimos que los elementos se ajusten, mínimo ~100px */
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
-/* --- REGLA ACTUALIZADA .summaryBox --- */
 .summaryBox {
-  background-color: #fff;       /* Fondo blanco */
-  border: 1px solid #e9ecef; /* Borde sutil */
-  border-radius: 8px;       /* Bordes redondeados */
-  padding: 0.8rem 1rem;     /* Padding */
+  background-color: #fff;       
+  border: 1px solid #e9ecef; 
+  border-radius: 8px;       
+  padding: 0.8rem 1rem;     
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra ligera */
-  overflow: hidden;         /* Evita desbordes extremos */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); 
+  overflow: hidden;         
 }
 
-/* --- REGLA ACTUALIZADA .summaryBox h4 --- */
 .summaryBox h4 {
   margin: 0 0 0.3rem 0;
   font-size: 0.8rem;
-  color: #6c757d;    /* Mantenemos color gris */
+  color: #6c757d;    
   font-weight: 500;
-  white-space: nowrap; /* Título en una línea */
+  white-space: nowrap; 
 }
 
-/* --- REGLA CORREGIDA .summaryBox p --- */
 .summaryBox p {
   margin: 0;
   font-size: 1.3rem;
   font-weight: 600;
   color: #212529;
-  white-space: nowrap; /* Asegura una sola línea */
+  white-space: nowrap; 
 }
 
 .totalPendingBox {
@@ -247,24 +242,6 @@
 }
 .totalPendingBox p {
     color: #0d6efd;
-}
-
-.chequeTable {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.chequeTable th, .chequeTable td {
-  padding: 0.8rem 0.5rem;
-  text-align: left;
-  border-bottom: 1px solid #dfe6e9;
-  vertical-align: middle;
-}
-
-.chequeTable th {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  color: #7f8c8d;
 }
 
 .statusSelect {
@@ -443,15 +420,11 @@
   .manualRecordContainer {
     gap: 1.5rem; /* Reduce el espacio entre tarjetas */
   }
-  
-  /* Reduce padding en tablas para que entre más info */
-  .chequeTable th, .chequeTable td {
-    padding: 0.6rem 0.3rem;
-  }
+
   .historyTable th, .historyTable td {
     padding: 0.7rem 0.5rem;
   }
-
+  
   /* Ajuste del input de archivo en móvil */
   .fileInputWrapper {
     flex-direction: column;
@@ -469,27 +442,28 @@
 
 
 /* --- ESTILOS PARA ALERTAS VISUALES --- */
-tr.overdue {
+/* --- ¡MODIFICADO! Ahora se aplica a .payableCard --- */
+.overdue {
   background-color: #f8d7da !important;
-  color: #721c24;
+  border-left-color: #dc3545 !important;
+  border-left-width: 4px;
 }
-tr.dueSoon {
+.dueSoon {
   background-color: #fff3cd !important;
-  color: #856404;
+  border-left-color: #ffc107 !important;
+  border-left-width: 4px;
 }
-tr.collectible {
+.collectible {
   background-color: #cce5ff !important;
-  color: #004085;
+  border-left-color: #0d6efd !important;
+  border-left-width: 4px;
 }
-tr.overdue td, tr.dueSoon td, tr.collectible td {
-  font-weight: 500;
-}
-tr.overdue select, tr.dueSoon select, tr.collectible select {
+.overdue select, .dueSoon select, .collectible select {
    color: initial;
    border-color: rgba(0,0,0,0.1);
 }
 
-/* --- ESTILOS PARA BOTÓN ELIMINAR --- */
+/* --- ESTILOS PARA BOTÓN ELIMINAR (Deduplicado) --- */
 .deleteButton {
   background: none;
   border: none;
@@ -504,9 +478,8 @@ tr.overdue select, tr.dueSoon select, tr.collectible select {
 .deleteButton:hover {
   color: #dc3545;
 }
-/* ... (Estilos anteriores van aquí) ... */
 
-/* --- ▼▼▼ ESTILOS AÑADIDOS PARA PAGOS PARCIALES ▼▼▼ --- */
+/* --- ESTILOS PARA PAGOS PARCIALES Y EDICIÓN (Deduplicado) --- */
 
 /* Estilo para las columnas de montos en la tabla de pagos */
 .colMonto {
@@ -516,10 +489,17 @@ tr.overdue select, tr.dueSoon select, tr.collectible select {
   padding-right: 1rem !important; /* Más espacio a la derecha */
 }
 
-/* Estilo para el monto restante (destacado) */
+/* --- ¡ESTILO MEJORADO! --- */
+.restanteTextStrong {
+  font-weight: 700 !important; /* Más grueso */
+  color: #dc3545 !important; /* Rojo más fuerte */
+  font-size: 1.2rem !important; /* Un poco más grande */
+}
+
+/* Esta es la clase vieja, la mantengo por si acaso pero la nueva es la de arriba */
 .restanteText {
   font-weight: 600;
-  color: #c0392b; /* Rojo de egreso */
+  color: #c0392b;
 }
 
 /* Estilo para la celda de acciones (para 2 botones) */
@@ -545,45 +525,6 @@ tr.overdue select, tr.dueSoon select, tr.collectible select {
   color: #198754; /* Verde al pasar el mouse */
 }
 
-/* --- ▲▲▲ FIN ESTILOS AÑADIDOS ▲▲▲ --- */
-/* ... (Estilos anteriores van aquí) ... */
-
-/* --- ▼▼▼ ESTILOS AÑADIDOS PARA PAGOS PARCIALES Y EDICIÓN ▼▼▼ --- */
-
-.colMonto {
-  text-align: right !important;
-  font-family: monospace;
-  font-size: 0.95rem;
-  padding-right: 1rem !important;
-}
-
-.restanteText {
-  font-weight: 600;
-  color: #c0392b;
-}
-
-.actionsCell {
-  text-align: center;
-  white-space: nowrap;
-}
-
-/* Botón de pago (verde) */
-.paymentButton {
-  background: none;
-  border: none;
-  color: #6c757d;
-  cursor: pointer;
-  padding: 0.3rem 0.5rem;
-  font-size: 1rem;
-  line-height: 1;
-  transition: color 0.2s;
-  vertical-align: middle;
-  margin-right: 0.5rem;
-}
-.paymentButton:hover {
-  color: #198754; /* Verde */
-}
-
 /* Botón de edición pequeño (azul) */
 .editButtonSmall {
   background: none;
@@ -600,9 +541,6 @@ tr.overdue select, tr.dueSoon select, tr.collectible select {
 .editButtonSmall:hover {
   color: #0d6efd; /* Azul */
 }
-
-/* --- ▲▲▲ FIN ESTILOS AÑADIDOS ▲▲▲ --- */
-
 
 /* --- ▼▼▼ NUEVO: Estilos para Subida de Comprobantes ▼▼▼ --- */
 
@@ -644,18 +582,17 @@ tr.overdue select, tr.dueSoon select, tr.collectible select {
   padding: 0.5rem 0.8rem;
   font-size: 0.9rem;
   color: #495057;
-  /* Evita que el nombre del archivo rompa el layout */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  flex-grow: 1; /* Ocupa el espacio restante */
+  flex-grow: 1; 
 }
 
 /* Botón para quitar el archivo seleccionado */
 .clearFileButton {
   background: none;
   border: none;
-  color: #95a5a6;
+  color: #6c757d;
   font-size: 1.2rem;
   font-weight: bold;
   cursor: pointer;
@@ -663,7 +600,7 @@ tr.overdue select, tr.dueSoon select, tr.collectible select {
   line-height: 1;
 }
 .clearFileButton:hover {
-  color: #c0392b;
+  color: #dc3545;
 }
 .clearFileButton:disabled {
   opacity: 0.5;
@@ -692,7 +629,7 @@ tr.overdue select, tr.dueSoon select, tr.collectible select {
   display: inline-block;
   padding: 0.4rem 0.5rem;
   font-size: 1.1rem;
-  color: #6c757d; /* Gris sutil */
+  color: #6c757d; 
   background: none;
   border: none;
   border-radius: 5px;
@@ -700,13 +637,12 @@ tr.overdue select, tr.dueSoon select, tr.collectible select {
   transition: all 0.2s;
 }
 .receiptButton:hover {
-  color: #34495e; /* Oscuro al pasar el mouse */
-  background-color: #f8f9fa; /* Fondo ligero */
+  color: #34495e; 
+  background-color: #f8f9fa; 
 }
 
 /* --- ▲▲▲ FIN de nuevos estilos ▲▲▲ --- */
 
-/* ... (Todos tus estilos anteriores van aquí) ... */
 
 /* --- ▼▼▼ NUEVO: Estilos para el Flujo de IA ▼▼▼ --- */
 
@@ -715,25 +651,6 @@ tr.overdue select, tr.dueSoon select, tr.collectible select {
   background-color: #e9ecef;
   color: #6c757d;
   border-color: #ced4da;
-  cursor: not-allowed;
-}
-
-/* Botón de "Cancelar" (la 'x' en el archivo) */
-.clearFileButton {
-  background: none;
-  border: none;
-  color: #6c757d;
-  font-size: 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  padding: 0 0.2rem;
-  line-height: 1;
-}
-.clearFileButton:hover {
-  color: #dc3545;
-}
-.clearFileButton:disabled {
-  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -792,4 +709,119 @@ tr.overdue select, tr.dueSoon select, tr.collectible select {
   white-space: nowrap;
 }
 
-/* --- ▲▲▲ FIN de nuevos estilos ▲▲▲ --- */
+/* --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- ¡NUEVOS ESTILOS PARA LAS TARJETAS RESPONSIVE! ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+*/
+
+/* Contenedor para la Lista de Tarjetas (Responsive) */
+.payableListContainer {
+  max-height: 300px; /* Mantiene el scroll vertical */
+  overflow-y: auto;
+  padding: 5px; /* Pequeño padding para que las sombras no se corten */
+  margin: 0 -5px; /* Compensa el padding */
+}
+
+/* Lista de Tarjetas */
+.payableList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Tarjeta Individual */
+.payableCard {
+  background-color: #fff;
+  border: 1px solid #dfe6e9;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s;
+  /* El color de borde 'overdue' etc. se aplica aquí */
+}
+.payableCard:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Fila Superior (Info + Acciones) */
+.payableCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem;
+  flex-wrap: wrap; /* Para responsive */
+  gap: 1rem;
+}
+
+.payableCardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.payableCardDate {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #7f8c8d;
+  text-transform: uppercase;
+}
+
+.payableCardProveedor {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.payableCardConcepto {
+  font-size: 0.9rem;
+  color: #95a5a6;
+  font-style: italic;
+}
+
+.payableCardActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap; /* Evita que los botones se partan */
+}
+
+/* Fila Inferior (Montos) */
+.payableCardAmounts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas para montos */
+  background-color: #f8f9fa; /* Fondo ligero */
+  border-top: 1px solid #dfe6e9;
+  border-radius: 0 0 8px 8px; /* Redondeo solo abajo */
+}
+
+.payableCardAmountBox {
+  padding: 1rem;
+  text-align: center;
+  border-right: 1px solid #dfe6e9;
+}
+.payableCardAmountBox:last-child {
+  border-right: none;
+}
+.payableCardAmountBox label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #7f8c8d;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+}
+.payableCardAmountBox span {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #34495e;
+  font-family: monospace;
+}
+
+/* Color para monto de cheque (reutilizado) */
+.chequeAmountText {
+  color: #3498db !important; /* Azul */
+  font-size: 1.5rem !important;
+}

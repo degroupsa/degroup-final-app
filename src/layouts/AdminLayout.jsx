@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react'; // Importamos useEffect y useCallback
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { NavLink, Link, Outlet, Navigate } from 'react-router-dom';
 import styles from './AdminLayout.module.css';
 import NavigationArrows from '../components/ui/NavigationArrows';
@@ -7,58 +7,59 @@ import {
   FaTachometerAlt, FaWarehouse, FaSitemap, FaTruckLoading,
   FaBoxOpen, FaFileInvoiceDollar, FaUsers, FaArrowLeft, FaWifi,
   FaAddressBook, FaExclamationCircle, FaAddressCard, FaHome,
-  FaBrain // --- ¡AÑADIDO! ---
+  FaBrain, FaReceipt, FaMoneyCheckAlt
 } from 'react-icons/fa';
 
+// --- ¡NUEVA ESTRUCTURA DE LINKS! ---
+// Ahora incluimos "títulos" de sección
 const allAdminLinks = [
-  { path: '/admin/dashboard', icon: FaTachometerAlt, label: 'Dashboard Financiero', roles: ['admin'] },
-  { path: '/admin/inventario', icon: FaWarehouse, label: 'Dashboard de Inventario', roles: ['admin', 'gestion'] },
-  { path: '/admin/clientes', icon: FaAddressBook, label: 'Gestión de Clientes', roles: ['admin'] },
-  { path: '/admin/recetas', icon: FaSitemap, label: 'Equipos para Produccion', roles: ['admin'] },
-  { path: '/admin/produccion', icon: FaTruckLoading, label: 'Gestion de Producción', roles: ['admin', 'gestion'] },
-  { path: '/admin/precios', icon: FaFileInvoiceDollar, label: 'Gestion de Precios', roles: ['admin'] },
-  { path: '/admin/ordenes', icon: FaFileInvoiceDollar, label: 'Presupuestos', roles: ['admin'] },
-  { path: '/admin/productos', icon: FaBoxOpen, label: 'Productos Publicados', roles: ['admin'] },
-  { path: '/admin/usuarios', icon: FaUsers, label: 'Usuarios Registrados', roles: ['admin'] },
+  // Grupo 1: Finanzas
+  { type: 'title', label: 'FINANZAS', roles: ['admin'] },
+  { path: '/admin/dashboard', icon: FaTachometerAlt, label: 'Dashboard Financiero', roles: ['admin'], type: 'link' },
+  { path: '/admin/gastos-fijos', icon: FaReceipt, label: 'Gastos Fijos', roles: ['admin'], type: 'link' },
+  { path: '/admin/cheques', icon: FaMoneyCheckAlt, label: 'Cheques a Cobrar', roles: ['admin'], type: 'link' },
+  { path: '/admin/ai-panel', icon: FaBrain, label: 'Panel de IA', roles: ['admin'], type: 'link' },
   
-  // --- ¡AÑADIDO! Enlace al Panel de IA ---
-  { path: '/admin/ai-panel', icon: FaBrain, label: 'Panel de IA', roles: ['admin'] },
+  // Grupo 2: Operaciones
+  { type: 'title', label: 'OPERACIONES', roles: ['admin', 'gestion'] },
+  { path: '/admin/inventario', icon: FaWarehouse, label: 'Dashboard de Inventario', roles: ['admin', 'gestion'], type: 'link' },
+  { path: '/admin/clientes', icon: FaAddressBook, label: 'Gestión de Clientes', roles: ['admin'], type: 'link' },
+  { path: '/admin/recetas', icon: FaSitemap, label: 'Equipos para Produccion', roles: ['admin'], type: 'link' },
+  { path: '/admin/produccion', icon: FaTruckLoading, label: 'Gestion de Producción', roles: ['admin', 'gestion'], type: 'link' },
+  { path: '/admin/precios', icon: FaFileInvoiceDollar, label: 'Gestion de Precios', roles: ['admin'], type: 'link' },
+  { path: '/admin/ordenes', icon: FaFileInvoiceDollar, label: 'Presupuestos', roles: ['admin'], type: 'link' },
+  { path: '/admin/productos', icon: FaBoxOpen, label: 'Productos Publicados', roles: ['admin'], type: 'link' },
   
-  { path: '/admin/en-linea', icon: FaWifi, label: 'Usuarios en Línea', roles: ['admin'] },
-  { path: '/admin/contactos', icon: FaAddressCard, label: 'Contactos', roles: ['admin', 'gestion'] },
+  // Grupo 3: Administración
+  { type: 'title', label: 'ADMINISTRACIÓN', roles: ['admin', 'gestion'] },
+  { path: '/admin/usuarios', icon: FaUsers, label: 'Usuarios Registrados', roles: ['admin'], type: 'link' },
+  { path: '/admin/en-linea', icon: FaWifi, label: 'Usuarios en Línea', roles: ['admin'], type: 'link' },
+  { path: '/admin/contactos', icon: FaAddressCard, label: 'Contactos', roles: ['admin', 'gestion'], type: 'link' },
 ];
+// --- FIN DE LA NUEVA ESTRUCTURA ---
+
 
 const getNavLinkClass = ({ isActive }) => {
   return isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink;
 };
 
 function AdminLayout() {
-  // El estado inicial sigue siendo inteligente: detecta si es móvil al cargar
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768);
   const { user, loading } = useAuth();
 
-  // --- ▼▼▼ NUEVO HOOK de useEffect ▼▼▼ ---
-  // Esta función se ejecutará cada vez que el usuario cambie el tamaño de la ventana
   const handleResize = useCallback(() => {
     if (window.innerWidth < 768) {
-      // Si la pantalla es pequeña (móvil/tablet vertical), FORZAMOS el cierre
       setIsSidebarOpen(false);
     }
-  }, []); // El array vacío significa que la función 'handleResize' nunca cambia
+  }, []); 
 
   useEffect(() => {
-    // Añadimos el "escuchador" de eventos cuando el componente se monta
     window.addEventListener('resize', handleResize);
-
-    // Lo ejecutamos una vez al inicio por si acaso
     handleResize();
-
-    // Limpiamos el "escuchador" cuando el componente se desmonta
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [handleResize]); // La dependencia es la función que creamos
-  // --- ▲▲▲ FIN DEL NUEVO HOOK ▲▲▲ ---
+  }, [handleResize]); 
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -89,16 +90,30 @@ function AdminLayout() {
 
         <nav className={styles.nav}>
           <ul className={styles.navList}>
-            {visibleLinks.map(link => (
-              <NavLink
-                key={link.path}
-                to={link.path}
-                className={getNavLinkClass}
-                title={link.label}
-              >
-                <link.icon /><span>{link.label}</span>
-              </NavLink>
-            ))}
+            
+            {/* --- ¡NUEVA LÓGICA DE RENDERIZADO! --- */}
+            {visibleLinks.map((link, index) => {
+              // Si es un título, renderiza un título
+              if (link.type === 'title') {
+                return <li key={index} className={styles.navTitle}><span>{link.label}</span></li>;
+              }
+              // Si es un link, renderiza un NavLink
+              if (link.type === 'link') {
+                return (
+                  <NavLink
+                    key={link.path}
+                    to={link.path}
+                    className={getNavLinkClass}
+                    title={link.label}
+                  >
+                    <link.icon /><span>{link.label}</span>
+                  </NavLink>
+                );
+              }
+              return null; // Por si acaso
+            })}
+            {/* --- FIN DE LA NUEVA LÓGICA --- */}
+
           </ul>
         </nav>
       </aside>

@@ -200,3 +200,20 @@
     margin-left: 65px; 
   }
 }
+/* ... (todo tu código CSS existente) ... */
+
+/* --- ¡NUEVO! Estilos para el Título del Menú --- */
+.navTitle {
+  padding: 10px 15px 5px 15px;
+  margin-top: 15px;
+  color: #888; /* Un color gris sutil */
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Cuando el menú está colapsado, oculta los títulos */
+.sidebarCollapsed .navTitle span {
+  display: none;
+}

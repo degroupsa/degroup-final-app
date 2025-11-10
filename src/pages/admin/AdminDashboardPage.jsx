@@ -14,7 +14,7 @@ import FinancialManager from '../../components/FinancialManager.jsx';
 import styles from './AdminDashboardPage.module.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
-
+ 
 const formatCurrency = (value) => {
     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(value || 0);
 };

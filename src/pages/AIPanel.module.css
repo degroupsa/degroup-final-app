@@ -1,18 +1,16 @@
-/* --- TEMA OSCURO AUTOCONTENIDO --- */
-
+/* --- TEMA OSCURO AUTOCONTENIDO (EXISTENTE) --- */
 .panelContainer {
   padding: 2rem;
-  /* Fondo oscuro para toda la página, para que el texto blanco sea visible */
   background-color: #181A1B; 
   color: #F8F9FA;
   min-height: 100vh;
 }
 
 .header {
-  color: #F8F9FA; /* Texto blanco */
+  color: #F8F9FA; 
   font-size: 2rem;
   margin-bottom: 2rem;
-  border-bottom: 2px solid #007BFF; /* Azul primario */
+  border-bottom: 2px solid #007BFF; 
   padding-bottom: 0.5rem;
 }
 
@@ -23,27 +21,26 @@
 }
 
 .card {
-  background-color: #2A2E33; /* Fondo de tarjeta oscuro */
+  background-color: #2A2E33; 
   border-radius: 8px;
   padding: 2rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .cardTitle {
-  color: #F8F9FA; /* Texto blanco */
+  color: #F8F9FA; 
   font-size: 1.5rem;
   margin-top: 0;
   margin-bottom: 1.5rem;
 }
 
-/* Formulario */
 .formGroup {
   margin-bottom: 1.5rem;
 }
 
 .formGroup label {
   display: block;
-  color: #ADB5BD; /* Texto gris claro para etiquetas */
+  color: #ADB5BD; 
   margin-bottom: 0.5rem;
   font-weight: 500;
 }
@@ -52,10 +49,10 @@
 .formGroup select {
   width: 100%;
   padding: 0.75rem;
-  background-color: #181A1B; /* Fondo de input más oscuro */
-  border: 1px solid #495057; /* Borde gris */
+  background-color: #181A1B; 
+  border: 1px solid #495057; 
   border-radius: 4px;
-  color: #F8F9FA; /* Texto blanco */
+  color: #F8F9FA; 
   font-size: 1rem;
 }
 
@@ -66,7 +63,7 @@
 }
 
 .submitButton {
-  background-color: #007BFF; /* Azul primario */
+  background-color: #007BFF; 
   color: #fff;
   border: none;
   padding: 0.8rem 1.2rem;
@@ -84,134 +81,397 @@
   background-color: #0056b3;
 }
 
-/* Lista de Planes */
-.divider {
-  border: 0;
-  border-top: 1px solid #495057; /* Borde gris */
-  margin: 2rem 0;
-}
+/* ... (Todos los demás estilos del Panel IA se mantienen) ... */
+.divider { border: 0; border-top: 1px solid #495057; margin: 2rem 0; }
+.planList { max-height: 300px; overflow-y: auto; padding-right: 0.5rem; }
+.planItem { display: flex; justify-content: space-between; align-items: center; background-color: #343A40; padding: 1rem; border-radius: 4px; margin-bottom: 0.5rem; border-left: 5px solid; }
+.planDetails { display: flex; flex-direction: column; }
+.planDescription { color: #F8F9FA; font-weight: 600; }
+.planAmount { color: #ADB5BD; font-size: 0.9rem; }
+.deleteButton { background: none; border: none; color: #dc3545; cursor: pointer; font-size: 1.2rem; transition: color 0.2s; }
+.deleteButton:hover { color: #f8a5ad; }
+.alta { border-color: #dc3545; } 
+.media { border-color: #ffc107; } 
+.baja { border-color: #28a745; } 
+.aiButton { width: 100%; padding: 1rem; font-size: 1.1rem; font-weight: 600; background-color: #28a745; color: #fff; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+.aiButton:disabled { background-color: #555; cursor: not-allowed; }
+.aiButton:hover:not(:disabled) { background-color: #218838; }
+.aiAdviceArea { background-color: #181A1B; border-radius: 4px; padding: 1.5rem; min-height: 300px; color: #ADB5BD; }
+.aiPlaceholder { font-style: italic; line-height: 1.6; }
+.aiText { white-space: pre-wrap; font-family: inherit; font-size: 1rem; line-height: 1.7; color: #F8F9FA; }
+.spinner { border: 4px solid rgba(255, 255, 255, 0.1); border-left-color: #28a745; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 2rem auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
 
-.listTitle {
-  color: #F8F9FA; /* Texto blanco */
-  margin-bottom: 1rem;
-}
+/*
+ * ====================================================
+ * INICIO: ESTILOS PARA PÁGINAS FINANCIERAS (REDISENADOS)
+ * ====================================================
+ */
 
-.planList {
-  max-height: 300px;
-  overflow-y: auto;
-  padding-right: 0.5rem;
-}
+ .cashFlowPage {
+    padding: 2rem 3rem; 
+    max-width: 1100px;  
+    margin: 0 auto;
+    background-color: #F8F9FA; /* Fondo de página CLARO */
+    color: #212529; /* Texto principal oscuro */
+    min-height: 100vh;
+    border-radius: 8px; 
+    box-shadow: 0 0 15px rgba(0,0,0,0.05); 
+ }
 
-.planItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #343A40; /* Fondo de ítem gris oscuro */
-  padding: 1rem;
-  border-radius: 4px;
-  margin-bottom: 0.5rem;
-  border-left: 5px solid;
-}
-
-.planDetails {
-  display: flex;
-  flex-direction: column;
-}
-
-.planDescription {
-  color: #F8F9FA; /* Texto blanco */
-  font-weight: 600;
-}
-
-.planAmount {
-  color: #ADB5BD; /* Texto gris claro */
-  font-size: 0.9rem;
-}
-
-.deleteButton {
-  background: none;
-  border: none;
-  color: #dc3545; /* Rojo error */
-  cursor: pointer;
-  font-size: 1.2rem;
-  transition: color 0.2s;
-}
-
-.deleteButton:hover {
-  color: #f8a5ad; /* Rojo más claro */
-}
-
-/* Prioridades */
-.alta { border-color: #dc3545; } /* Rojo */
-.media { border-color: #ffc107; } /* Amarillo */
-.baja { border-color: #28a745; } /* Verde */
-
-/* Columna de IA */
-.aiButton {
-  width: 100%;
-  padding: 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  background-color: #28a745; /* Verde éxito */
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-}
-
-.aiButton:disabled {
-  background-color: #555;
-  cursor: not-allowed;
-}
-
-.aiButton:hover:not(:disabled) {
-  background-color: #218838;
-}
-
-.aiAdviceArea {
-  background-color: #181A1B; /* Fondo más oscuro */
-  border-radius: 4px;
-  padding: 1.5rem;
-  min-height: 300px;
-  color: #ADB5BD; /* Texto gris claro */
-}
-
-.aiPlaceholder {
-  font-style: italic;
-  line-height: 1.6;
-}
-
-.aiText {
-  white-space: pre-wrap; /* Mantiene los saltos de línea */
-  font-family: inherit;
-  font-size: 1rem;
-  line-height: 1.7;
-  color: #F8F9FA; /* Texto blanco */
-}
-
-.spinner {
-  border: 4px solid rgba(255, 255, 255, 0.1);
-  border-left-color: #28a745; /* Verde */
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  animation: spin 1s linear infinite;
-  margin: 2rem auto;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-  .grid {
-    grid-template-columns: 1fr;
+  /* --- Encabezado de Página --- */
+  .pageHeader {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;    
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #DEE2E6; 
+    text-align: center;
   }
-}
+
+  .pageTitle {
+    color: #007BFF; 
+    font-size: 2.5rem; 
+    font-weight: 800; 
+    margin: 0;
+    letter-spacing: -0.5px; 
+    text-transform: uppercase; 
+  }
+
+  .pageSubtitle { 
+    color: #6C757D; 
+    font-size: 1.1rem;
+    margin-top: 0.75rem;
+    max-width: 600px; 
+  }
+  
+  .toggleFormButton {
+    background-color: #28a745; 
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s;
+    margin-top: 2rem; 
+  }
+  
+  .toggleFormButton:hover {
+    background-color: #218838;
+  }
+
+  /* --- NUEVO: Resumen de Cobros (Tarjetas) --- */
+  
+  /* Tarjeta de Resumen (para el Total) */
+  .totalSummaryCard {
+    background-color: #007BFF; 
+    border-color: #007BFF;
+    color: #FFFFFF;
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem; /* Espacio antes de la grilla */
+    box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+  }
+  .totalSummaryCard label {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #E9ECEF; 
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+  }
+  .totalSummaryCard span {
+    display: block;
+    font-size: 2.5rem; 
+    font-weight: 700;
+    color: #FFFFFF; 
+  }
+
+  /* Grilla de 12 Tarjetas Mensuales */
+  .monthlyCardGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columnas */
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .monthCard {
+    background-color: #FFFFFF;
+    border: 1px solid #DEE2E6;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: all 0.2s ease-in-out;
+  }
+  .monthCard:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  }
+
+  .monthCardTitle {
+    font-size: 0.85rem; /* Más chico */
+    font-weight: 600;
+    color: #6C757D;
+    text-transform: uppercase;
+    border-bottom: 1px solid #E9ECEF;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    white-space: nowrap;
+  }
+
+  .monthCardAmount {
+    font-size: 1.6rem; /* Tamaño principal */
+    font-weight: 700;
+    color: #007BFF; /* Ingresos en Azul */
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+  
+  /* ¡NUEVO! Estilo para los gastos en la tarjeta */
+  .monthCardExpenses {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #dc3545; /* Rojo */
+    margin-bottom: 0.5rem;
+  }
+
+  .monthCardNet { /* Tamaño secundario */
+    font-size: 1rem;
+    font-weight: 600;
+    border-top: 1px solid #E9ECEF;
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+  }
+  .positiveNet {
+    color: #28a745; /* Verde */
+  }
+  .negativeNet {
+    color: #dc3545; /* Rojo */
+  }
+  /* --- FIN: Resumen de Cobros --- */
+
+
+  /* --- Título de la Lista y Filtro --- */
+  .listHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #E9ECEF; 
+  }
+
+  .listSubTitle { 
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #343A40; 
+    margin: 0;
+  }
+  
+  .filterToggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6C757D;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+  .filterToggle input {
+    margin-right: 5px;
+    transform: scale(1.1); 
+  }
+  
+  .list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  
+  .listItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background-color: #FFFFFF;
+    color: #212529;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    border: 1px solid #DEE2E6;
+    border-left-width: 6px;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .listItem:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); 
+  }
+  
+  .itemInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .itemEmisor {
+    font-size: 1.15rem;
+    color: #212529;
+    font-weight: 600;
+  }
+  
+  .itemAmount {
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: #007BFF;
+    margin: 0.25rem 0 0.5rem 0;
+  }
+  
+  .itemDetail {
+    font-size: 0.9rem !important;
+    color: #495057 !important;
+    font-style: normal;
+    font-family: inherit; 
+  }
+
+  /* ¡NUEVO! Estilo para el rango de fechas en la lista de gastos */
+  .itemDateRange {
+    font-size: 0.9rem !important;
+    color: #495057 !important;
+    font-family: monospace;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .itemActions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  
+  /* --- ¡MEJORA! Estilo del Desplegable --- */
+  .statusSelect {
+    appearance: none; /* Oculta la flecha nativa */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    
+    padding: 0.6rem 2.5rem 0.6rem 1rem; /* Espacio para la flecha */
+    border-radius: 8px;
+    border: 1px solid #CED4DA;
+    background-color: #F8F9FA;
+    color: #212529;
+    font-size: 0.9rem;
+    font-weight: 600; /* Más grueso */
+    cursor: pointer;
+
+    /* Flecha custom (SVG inline) */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+  }
+  
+  .deleteButton {
+    color: #dc3545;
+  }
+  
+  /* Estados de Borde */
+  .pendiente {
+    border-left-color: #ffc107; /* Amarillo */
+  }
+  .depositado {
+    border-left-color: #007bff; /* Azul */
+  }
+  .cobrado {
+    border-left-color: #28a745; /* Verde */
+    opacity: 0.7; 
+  }
+  
+  /* Formulario de Gasto Fijo */
+  .expenseItemAmount {
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: #dc3545; /* Rojo para gastos */
+    margin: 0.25rem 0 0.5rem 0;
+  }
+
+  /* Estilos para los campos del formulario */
+  .cashFlowPage .form { 
+    background-color: #FFFFFF; 
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+
+  .cashFlowPage .formGroup label {
+    color: #343A40; 
+  }
+  .cashFlowPage .formGroup input,
+  .cashFlowPage .formGroup select {
+    background-color: #F8F9FA; 
+    border: 1px solid #CED4DA; 
+    color: #212529; 
+  }
+
+  /* Responsive */
+  @media (max-width: 1000px) { /* Ajuste para que la grilla de 12 se vea mejor */
+    .monthlyCardGrid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .cashFlowPage {
+      padding: 1.5rem;
+    }
+    .pageTitle {
+      font-size: 1.8rem;
+    }
+    .pageSubtitle {
+      font-size: 1rem;
+    }
+    .toggleFormButton {
+      width: 100%;
+      margin-top: 1.5rem;
+    }
+    
+    .monthlyCardGrid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .listHeader {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .listItem {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .itemActions {
+      width: 100%;
+      justify-content: flex-end;
+    }
+    .formGrid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 500px) {
+    .monthlyCardGrid {
+      grid-template-columns: 1fr;
+    }
+  }

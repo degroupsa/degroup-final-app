@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 // --- ACTUALIZADO: Quitamos la importación de 'functions' ---
 import { db, storage, app } from '../firebase/config.js'; 
 import { collection, getDocs, addDoc, serverTimestamp, deleteDoc, doc, query, orderBy, where, Timestamp, updateDoc, limit, increment } from 'firebase/firestore';
@@ -341,7 +341,7 @@ function FinancialManager() {
 
   return (
     <>
-      {/* ... (Hitos, Gráficos - sin cambios) ... */}
+      {/* ... (Hitos, Gráficos, Registro Manual, Historial, Modales - Sin cambios) ... */}
       <div className={styles.milestonesGrid}>
         <div className={styles.milestoneCard}><h4>Primer Ingreso</h4>{firstIncome ? (<><p className={styles.milestoneValue}>{formatCurrency(firstIncome.amount)}</p><span className={styles.milestoneDate}>{firstIncome.date.toDate().toLocaleDateString('es-AR')}</span><span className={styles.milestoneConcept}>{firstIncome.concept}</span></>) : <p>No hay ingresos registrados.</p>}</div>
         <div className={styles.milestoneCard}><h4>Primer Gasto</h4>{firstExpense ? (<><p className={`${styles.milestoneValue} ${styles.expenseText}`}>{formatCurrency(firstExpense.amount)}</p><span className={styles.milestoneDate}>{firstExpense.date.toDate().toLocaleDateString('es-AR')}</span><span className={styles.milestoneConcept}>{firstExpense.concept}</span></>) : <p>No hay gastos registrados.</p>}</div>
@@ -351,73 +351,39 @@ function FinancialManager() {
         <div className={styles.chartCard}><h3>Ingresos por Categoría</h3>{chartData.income.length > 0 ? (<ResponsiveContainer width="100%" height={300}><PieChart><Pie data={chartData.income} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={70} outerRadius={110} labelLine={false} label={<PercentLabel />} paddingAngle={5}>{chartData.income.map((entry, index) => ( <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} /> ))}</Pie><Tooltip formatter={(value) => formatCurrency(value)} /><Legend iconType="circle" /></PieChart></ResponsiveContainer>) : <p className={styles.noDataText}>No hay datos de ingresos.</p>}</div>
         <div className={styles.chartCard}><h3>Gastos por Categoría</h3>{chartData.expense.length > 0 ? (<ResponsiveContainer width="100%" height={300}><PieChart><Pie data={chartData.expense} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={70} outerRadius={110} labelLine={false} label={<PercentLabel />} paddingAngle={5}>{chartData.expense.map((entry, index) => ( <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} /> ))}</Pie><Tooltip formatter={(value) => formatCurrency(value)} /><Legend iconType="circle" /></PieChart></ResponsiveContainer>) : <p className={styles.noDataText}>No hay datos de gastos.</p>}</div>
       </div>
-
-
       <hr className={styles.sectionDivider} /><h2 className={styles.sectionTitle}>Registro de Movimientos</h2>
       <div className={styles.manualRecordContainer}>
         <div className={styles.manualRecordCard}>
           <h3>Registro Manual {iaProcessedData ? '(Asistido por IA)' : ''}</h3>
-          
-          {/* --- FORMULARIO DE REGISTRO MANUAL (MODIFICADO) --- */}
           <form onSubmit={handleRecordSubmit}>
-            
-            {/* --- SECCIÓN DE DATOS BÁSICOS --- */}
             <div className={styles.manualRecordGrid}>
               <div className={styles.formGroup}><label>Tipo</label><select name="type" value={manualRecord.type} onChange={handleRecordInputChange} disabled={isProcessingIA || iaProcessedData}><option value="ingreso">Ingreso</option><option value="egreso">Gasto</option></select></div>
               <div className={styles.formGroup}><label>Categoría</label><select name="category" value={manualRecord.category} onChange={handleRecordInputChange} disabled={isProcessingIA}>{(manualRecord.type === 'ingreso' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map(cat => (<option key={cat} value={cat}>{cat}</option>))}</select></div>
               <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
                 <label>Concepto General</label>
-                <input 
-                  type="text" 
-                  name="concept" 
-                  value={manualRecord.concept} 
-                  onChange={handleRecordInputChange} 
-                  placeholder={iaProcessedData ? "Ej: Compra en Ferretería (leído por IA)" : "Ej: Compra de insumos"} 
-                  required={!receiptFile} 
-                  readOnly={iaProcessedData} 
-                  disabled={isProcessingIA} 
-                />
+                <input type="text" name="concept" value={manualRecord.concept} onChange={handleRecordInputChange} placeholder={iaProcessedData ? "Ej: Compra en Ferretería (leído por IA)" : "Ej: Compra de insumos"} required={!receiptFile} readOnly={iaProcessedData} disabled={isProcessingIA} />
               </div>
             </div>
-
-            {/* --- SECCIÓN DE COMPROBANTE --- */}
             <div className={styles.formGroup}>
               <label>Comprobante (Opcional)</label>
               <div className={styles.fileInputWrapper}>
                 <label htmlFor="receiptUpload" className={`${styles.fileInputButton} ${receiptFile ? styles.fileInputButtonDisabled : ''}`}>
                   {receiptFile ? 'Archivo Adjuntado' : 'Adjuntar (Activa IA)'}
                 </label>
-                
-                {/* --- LÍNEA CORREGIDA: 'capture="environment"' FUE ELIMINADO --- */}
-                <input 
-                  type="file" 
-                  id="receiptUpload" 
-                  accept="image/*" 
-                  onChange={handleFileChange} 
-                  style={{ display: 'none' }} 
-                  disabled={isProcessingIA || iaProcessedData || receiptFile} 
-                />
-                
+                <input type="file" id="receiptUpload" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} disabled={isProcessingIA || iaProcessedData || receiptFile} />
                 {receiptFile && (
                   <div className={styles.fileInfo}>
                     <span>{receiptFile.name}</span>
-                    <button type="button" onClick={resetManualRecordForm} className={styles.clearFileButton} title="Cancelar y empezar de nuevo" disabled={isProcessingIA}>
-                      <FaTimes />
-                    </button>
+                    <button type="button" onClick={resetManualRecordForm} className={styles.clearFileButton} title="Cancelar y empezar de nuevo" disabled={isProcessingIA}> <FaTimes /> </button>
                   </div>
                 )}
               </div>
               {isUploading && ( <div className={styles.progressBar}><div className={styles.progressBarInner} style={{ width: `${uploadProgress}%` }}></div></div> )}
             </div>
-
-
-            {/* --- NUEVO: SECCIÓN DE ÍTEMS LEÍDOS POR IA --- */}
             {iaProcessedData && (
               <div className={styles.iaResultsSection}>
                 <h4>Ítems detectados por IA</h4>
-                {(!iaProcessedData.items || iaProcessedData.items.length === 0) ? (
-                  <p>La IA no detectó ítems detallados, pero sí el monto total.</p>
-                ) : (
+                {(!iaProcessedData.items || iaProcessedData.items.length === 0) ? ( <p>La IA no detectó ítems detallados, pero sí el monto total.</p> ) : (
                   <ul className={styles.iaItemsList}>
                     {iaProcessedData.items.map((item, index) => (
                       <li key={index} className={styles.iaItem}>
@@ -429,43 +395,31 @@ function FinancialManager() {
                 )}
               </div>
             )}
-            
-            {/* --- SECCIÓN DE MONTO TOTAL --- */}
             <div className={styles.formGroup} style={{marginTop: '1.5rem'}}>
               <label>Monto Total</label>
-              <input 
-                type="number" 
-                step="0.01" 
-                name="amount" 
-                value={manualRecord.amount} 
-                onChange={handleRecordInputChange} 
-                placeholder="$ 0.00" 
-                required={!receiptFile} 
-                readOnly={iaProcessedData} // Si la IA lo procesó, se bloquea
-                disabled={isProcessingIA}
-              />
+              <input type="number" step="0.01" name="amount" value={manualRecord.amount} onChange={handleRecordInputChange} placeholder="$ 0.00" required={!receiptFile} readOnly={iaProcessedData} disabled={isProcessingIA} />
             </div>
-            
-            {/* --- BOTÓN DE ACCIÓN --- */}
             <button type="submit" className={`${styles.submitButton} ${iaProcessedData ? styles.submitButtonConfirm : ''}`} disabled={isProcessingIA || isUploading}>
               {getSubmitButtonText()}
             </button>
           </form>
         </div>
-
-        {/* ... (Ajuste de Saldo Inicial - sin cambios) ... */}
         <div className={`${styles.manualRecordCard} ${styles.initialBalanceCard}`}><h3>Ajuste de Saldo Inicial <FaInfoCircle className={styles.infoIcon} title="Usa esta opción una única vez..." /></h3><p>Registra tu saldo inicial...</p><form onSubmit={handleInitialBalanceSubmit}><div className={styles.formGroup}><label>Saldo Inicial</label><input type="number" step="0.01" value={initialBalance.amount} onChange={(e) => setInitialBalance({...initialBalance, amount: e.target.value})} placeholder="$ 0.00" required /></div><div className={styles.formGroup}><label>Fecha del Saldo</label><input type="date" value={initialBalance.date} onChange={(e) => setInitialBalance({...initialBalance, date: e.target.value})} required /></div><button type="submit" className={`${styles.submitButton} ${styles.balanceButton}`}>Guardar Saldo Inicial</button></form></div>
       </div>
-
-
-      {/* ... (Resto del componente: Historial, Modales, Cuentas por Pagar, Cheques, Backup - sin cambios) ... */}
       <hr className={styles.sectionDivider} /><h2 className={styles.sectionTitle}>Historial de Movimientos</h2>
       <div className={styles.historyCard}><div style={{ overflowX: 'auto' }}><table className={styles.historyTable}><thead><tr><th>Fecha</th><th>Tipo</th><th>Categoría</th><th>Concepto</th><th>Monto</th><th>Comprob.</th><th>Acción</th></tr></thead><tbody>{loading ? ( <tr><td colSpan="7" style={{textAlign: 'center'}}>Cargando...</td></tr> ) : currentRecords.map(record => (<tr key={record.id}><td>{record.date.toDate().toLocaleDateString('es-AR')}</td><td className={record.type === 'ingreso' ? styles.incomeText : styles.expenseText}>{record.type}</td><td>{record.category || 'N/A'}</td><td>{record.concept}</td><td>{formatCurrency(record.amount)}</td><td style={{ textAlign: 'center' }}> {record.receiptURL ? ( <a href={record.receiptURL} target="_blank" rel="noopener noreferrer" className={styles.receiptButton} title="Ver Comprobante"> <FaFileInvoice /> </a> ) : ( '--' )} </td><td><button className={styles.editButton} onClick={() => openEditModal(record)}>Editar</button></td></tr>))}</tbody></table></div><div className={styles.paginationControls}><button onClick={handlePrevPage} disabled={currentPage === 1} className={styles.paginationButton}><FaChevronLeft /> Anterior</button><span className={styles.pageInfo}>Página {currentPage} de {totalPages}</span><button onClick={handleNextPage} disabled={currentPage === totalPages} className={styles.paginationButton}>Siguiente <FaChevronRight /></button></div></div>
       {isPaymentModalOpen && ( <AddPaymentModal payable={payableToPay} onClose={closePaymentModal} onPaymentDone={handlePaymentDone} /> )}
       {isPayableEditModalOpen && payableToEdit && ( <div className={styles.editModalOverlay}> <div className={styles.editModalContent} style={{ maxWidth: '600px' }}> <h2>Editar Cuenta por Pagar</h2> <form onSubmit={handlePayableEditSubmit}> <div className={styles.formGrid}> <div className={styles.formGroup}><label>Proveedor</label><input type="text" name="proveedor" value={payableToEdit.proveedor} onChange={handlePayableEditingChange} required /></div> <div className={styles.formGroup}><label>Concepto (Opcional)</label><input type="text" name="concepto" value={payableToEdit.concepto} onChange={handlePayableEditingChange} /></div> <div className={styles.formGroup}><label>Monto Total</label><input type="number" step="0.01" name="montoTotal" value={payableToEdit.montoTotal} onChange={handlePayableEditingChange} required /></div> <div className={styles.formGroup}><label>Fecha de Vencimiento</label><input type="date" name="fechaVencimiento" value={payableToEdit.fechaVencimiento} onChange={handlePayableEditingChange} required /></div> </div> <div className={styles.editModalActions}> <button type="button" onClick={closePayableEditModal}>Cancelar</button> <button type="submit">Guardar Cambios</button> </div> </form> </div> </div> )}
+      
+      
+      {/* --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+        --- ¡AQUÍ ESTÁ EL REDISEÑO! SECCIÓN DE CUENTAS POR PAGAR ---
+        --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+      */}
       <hr className={styles.sectionDivider} />
       <h2 className={styles.sectionTitle}>Gestión de Cuentas por Pagar</h2>
       <div className={styles.chequeManagerGrid}>
+        {/* --- FORMULARIO (Sin cambios) --- */}
         <div className={styles.chequeFormCard}>
             <h3>Cargar Nueva Cuenta</h3>
             <form onSubmit={handleAddPayable}>
@@ -476,53 +430,77 @@ function FinancialManager() {
                 <button type="submit" className={styles.submitButton}>Guardar Cuenta</button>
             </form>
         </div>
+
+        {/* --- TARJETA DE RESUMEN Y LISTA --- */}
         <div className={styles.chequeSummaryCard}>
             <h3>Resumen de Pagos Pendientes</h3>
             <div className={styles.monthlySummaryGrid} style={{gridTemplateColumns: '1fr'}}><div className={styles.summaryBox}><h4>Total Restante</h4><p className={styles.expenseText}>{formatCurrency(totalPayable)}</p></div></div>
-            <div style={{maxHeight: '300px', overflowY: 'auto'}}>
-                <table className={styles.chequeTable}>
-                    <thead><tr><th>Vencimiento</th><th>Proveedor</th><th>Concepto</th><th className={styles.colMonto}>Total</th><th className={styles.colMonto}>Pagado</th><th className={styles.colMonto}>Restante</th><th>Estado</th><th>Acción</th></tr></thead>
-                    <tbody>
-                        {loading ? (<tr><td colSpan="8">Cargando...</td></tr>) : accountsPayable.length === 0 ? (<tr><td colSpan="8">No hay cuentas pendientes.</td></tr>) : (
-                        accountsPayable.map(payable => {
-                            const montoTotal = payable.montoTotal !== undefined ? payable.montoTotal : (payable.monto || 0);
-                            const montoPagado = payable.montoPagado || 0;
-                            const montoRestante = montoTotal - montoPagado;
-                            return (
-                                <tr key={payable.id} className={getPayableRowClass(payable)}>
-                                    <td>{payable.fechaVencimiento?.toDate().toLocaleDateString('es-AR') || 'N/A'}</td>
-                                    <td>{payable.proveedor}</td>
-                                    <td>{payable.concepto || 'N/A'}</td>
-                                    <td className={styles.colMonto}>{formatCurrency(montoTotal)}</td>
-                                    <td className={styles.colMonto}>{formatCurrency(montoPagado)}</td>
-                                    <td className={`${styles.colMonto} ${styles.restanteText}`}>{formatCurrency(montoRestante)}</td>
-                                    <td>
-                                      <select
-                                        value={payable.status || 'pendiente'}
-                                        onChange={(e) => handlePayableStatusChange(payable, e.target.value)}
-                                        className={`${styles.statusSelect} ${styles[`status-${payable.status || 'pendiente'}`]}`}
-                                      >
-                                          <option value="pendiente">Pendiente</option>
-                                          <option value="pagado">Pagado</option>
-                                      </select>
-                                    </td>
-                                    <td className={styles.actionsCell}>
-                                      <button className={styles.paymentButton} onClick={() => openPaymentModal(payable)} title="Registrar Pago Parcial"><FaDollarSign /></button>
-                                      <button className={styles.editButtonSmall} onClick={() => openPayableEditModal(payable)} title="Editar Cuenta"><FaEdit /></button>
-                                      <button className={styles.deleteButton} onClick={() => handleDeletePayable(payable.id, payable.proveedor)} title="Eliminar Cuenta"><FaTrash /></button>
-                                    </td>
-                                </tr>
-                            )
-                        })
-                        )}
-                    </tbody>
-                </table>
+            
+            {/* --- ¡NUEVO DISEÑO DE LISTA DE TARJETAS! --- */}
+            <div className={styles.payableListContainer}>
+              <ul className={styles.payableList}>
+                {loading ? (<li>Cargando...</li>) : accountsPayable.length === 0 ? (<li className={styles.noDataText}>No hay cuentas pendientes.</li>) : (
+                  accountsPayable.map(payable => {
+                    const montoTotal = payable.montoTotal !== undefined ? payable.montoTotal : (payable.monto || 0);
+                    const montoPagado = payable.montoPagado || 0;
+                    const montoRestante = montoTotal - montoPagado;
+                    return (
+                      <li key={payable.id} className={`${styles.payableCard} ${getPayableRowClass(payable)}`}>
+                        {/* --- Fila Superior: Info Principal --- */}
+                        <div className={styles.payableCardHeader}>
+                          <div className={styles.payableCardInfo}>
+                            <span className={styles.payableCardDate}>
+                              Vence: {payable.fechaVencimiento?.toDate().toLocaleDateString('es-AR') || 'N/A'}
+                            </span>
+                            <span className={styles.payableCardProveedor}>{payable.proveedor}</span>
+                            <span className={styles.payableCardConcepto}>{payable.concepto || 'Sin concepto'}</span>
+                          </div>
+                          <div className={styles.payableCardActions}>
+                             <select
+                                value={payable.status || 'pendiente'}
+                                onChange={(e) => handlePayableStatusChange(payable, e.target.value)}
+                                className={`${styles.statusSelect} ${styles[`status-${payable.status || 'pendiente'}`]}`}
+                              >
+                                  <option value="pendiente">Pendiente</option>
+                                  <option value="pagado">Pagado</option>
+                              </select>
+                              <button className={styles.paymentButton} onClick={() => openPaymentModal(payable)} title="Registrar Pago Parcial"><FaDollarSign /></button>
+                              <button className={styles.editButtonSmall} onClick={() => openPayableEditModal(payable)} title="Editar Cuenta"><FaEdit /></button>
+                              <button className={styles.deleteButton} onClick={() => handleDeletePayable(payable.id, payable.proveedor)} title="Eliminar Cuenta"><FaTrash /></button>
+                          </div>
+                        </div>
+                        {/* --- Fila Inferior: Montos --- */}
+                        <div className={styles.payableCardAmounts}>
+                          <div className={styles.payableCardAmountBox}>
+                            <label>Total</label>
+                            <span>{formatCurrency(montoTotal)}</span>
+                          </div>
+                          <div className={styles.payableCardAmountBox}>
+                            <label>Pagado</label>
+                            <span>{formatCurrency(montoPagado)}</span>
+                          </div>
+                          <div className={styles.payableCardAmountBox}>
+                            <label>Restante</label>
+                            <span className={styles.restanteTextStrong}>{formatCurrency(montoRestante)}</span>
+                          </div>
+                        </div>
+                      </li>
+                    )
+                  })
+                )}
+              </ul>
             </div>
         </div>
       </div>
+      
+      {/* --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+        --- ¡AQUÍ ESTÁ EL REDISEÑO! SECCIÓN DE CHEQUES ---
+        --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+      */}
       <hr className={styles.sectionDivider} />
       <h2 className={styles.sectionTitle}>Gestión de Cheques Pendientes</h2>
       <div className={styles.chequeManagerGrid}>
+        {/* --- FORMULARIO (Sin cambios) --- */}
         <div className={styles.chequeFormCard}>
             <h3>Cargar Nuevo Cheque</h3>
             <form onSubmit={handleAddCheque}>
@@ -532,6 +510,8 @@ function FinancialManager() {
                 <button type="submit" className={styles.submitButton}>Guardar Cheque</button>
             </form>
         </div>
+        
+        {/* --- TARJETA DE RESUMEN Y LISTA --- */}
         <div className={styles.chequeSummaryCard}>
             <h3>Resumen de Cobros Futuros</h3>
             <div className={styles.monthlySummaryGrid}>
@@ -540,35 +520,52 @@ function FinancialManager() {
                 <div className={styles.summaryBox}><h4>En 2 Meses</h4><p>{formatCurrency(monthlyTotals.twoMonths)}</p></div>
                 <div className={`${styles.summaryBox} ${styles.totalPendingBox}`}><h4>Total Pendiente</h4><p>{formatCurrency(totalPendingChecksValue)}</p></div>
             </div>
-            <div style={{maxHeight: '300px', overflowY: 'auto'}}>
-                <table className={styles.chequeTable}>
-                    <thead><tr><th>Fecha Cobro</th><th>Emisor</th><th>Monto</th><th>Estado</th><th>Acción</th></tr></thead>
-                    <tbody>
-                        {loading ? (<tr><td colSpan="5">Cargando...</td></tr>) : cheques.length === 0 ? (<tr><td colSpan="5">No hay cheques pendientes.</td></tr>) : (
-                        cheques.map(cheque => (
-                            <tr key={cheque.id} className={getChequeRowClass(cheque)}>
-                                <td>{cheque.fechaCobro?.toDate().toLocaleDateString('es-AR') || 'N/A'}</td>
-                                <td>{cheque.emisor}</td>
-                                <td>{formatCurrency(cheque.monto)}</td>
-                                <td><select value={cheque.status} onChange={(e) => handleStatusChange(cheque, e.target.value)} className={`${styles.statusSelect} ${styles[`status-${cheque.status.replace(' ', '_')}`]}`}>
-                                  {/* LÍNEA CORREGIDA ABAJO */}
-                                  <option value="pendiente">Pendiente</option>
-                                  <option value="para_cobrar">Para Cobrar</option>
-                                  <option value="cobrado">Cobrado</option>
-                                </select></td>
-                                <td>
-                                  <button className={styles.deleteButton} onClick={() => handleDeleteCheque(cheque.id, cheque.emisor)} title="Eliminar Cheque">
-                                    <FaTrash />
-                                  </button>
-                                </td>
-                            </tr>
-                        ))
-                        )}
-                    </tbody>
-                </table>
+            
+            {/* --- ¡NUEVO DISEÑO DE LISTA DE TARJETAS! --- */}
+            <div className={styles.payableListContainer}> {/* Reutilizamos el estilo del contenedor */}
+              <ul className={styles.payableList}> {/* Reutilizamos la lista de tarjetas */}
+                {loading ? (<li>Cargando...</li>) : cheques.length === 0 ? (<li className={styles.noDataText}>No hay cheques pendientes.</li>) : (
+                  cheques.map(cheque => (
+                    <li key={cheque.id} className={`${styles.payableCard} ${getChequeRowClass(cheque)}`}>
+                      {/* --- Fila Superior: Info Principal --- */}
+                      <div className={styles.payableCardHeader}>
+                        <div className={styles.payableCardInfo}>
+                          <span className={styles.payableCardDate}>
+                            Cobra: {cheque.fechaCobro?.toDate().toLocaleDateString('es-AR') || 'N/A'}
+                          </span>
+                          <span className={styles.payableCardProveedor}>{cheque.emisor}</span>
+                        </div>
+                        <div className={styles.payableCardActions}>
+                          <select 
+                            value={cheque.status} 
+                            onChange={(e) => handleStatusChange(cheque, e.target.value)} 
+                            className={`${styles.statusSelect} ${styles[`status-${cheque.status.replace(' ', '_')}`]}`}
+                          >
+                            <option value="pendiente">Pendiente</option>
+                            <option value="para_cobrar">Para Cobrar</option>
+                            <option value="cobrado">Cobrado</option>
+                          </select>
+                          <button className={styles.deleteButton} onClick={() => handleDeleteCheque(cheque.id, cheque.emisor)} title="Eliminar Cheque">
+                            <FaTrash />
+                          </button>
+                        </div>
+                      </div>
+                      {/* --- Fila Inferior: Montos --- */}
+                      <div className={styles.payableCardAmounts} style={{ gridTemplateColumns: '1fr' }}>
+                        <div className={styles.payableCardAmountBox} style={{ border: 'none', justifyContent: 'center' }}>
+                          <label>Monto</label>
+                          <span className={styles.chequeAmountText}>{formatCurrency(cheque.monto)}</span>
+                        </div>
+                      </div>
+                    </li>
+                  ))
+                )}
+              </ul>
             </div>
         </div>
       </div>
+      
+      {/* --- (Resto del componente: Backup, Modales - Sin cambios) --- */}
       <hr className={styles.sectionDivider} />
       <div className={styles.backupCard}>
         <h2 className={styles.sectionTitle} style={{marginTop: 0}}>Respaldo de Datos</h2>
@@ -576,7 +573,6 @@ function FinancialManager() {
       </div>
       
       {isEditModalOpen && editingRecord && ( <div className={styles.editModalOverlay}> <div className={styles.editModalContent}> <h2>Editar Movimiento</h2> <form onSubmit={handleEditSubmit}> <div className={styles.formGroup}><label>Fecha</label><input type="date" name="date" value={editingRecord.date} onChange={handleEditingRecordChange} /></div> <div className={styles.formGroup}><label>Tipo</label><select name="type" value={editingRecord.type} onChange={handleEditingRecordChange}> <option value="ingreso">Ingreso</option> <option value="egreso">Gasto</option> </select></div> <div className={styles.formGroup}><label>Categoría</label><select name="category" value={editingRecord.category} onChange={handleEditingRecordChange}> {(editingRecord.type === 'ingreso' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map(cat => (<option key={cat} value={cat}>{cat}</option>))} </select></div> <div className={styles.formGroup}><label>Concepto</label><input type="text" name="concept" value={editingRecord.concept} onChange={handleEditingRecordChange} /></div> 
-        {/* LÍNEA CORREGIDA ABAJO */}
         <div className={styles.formGroup}><label>Monto</label><input type="number" step="0.01" name="amount" value={editingRecord.amount} onChange={handleEditingRecordChange} /></div> 
         <div className={styles.editModalActions}> <button type="button" onClick={() => setIsEditModalOpen(false)}>Cancelar</button> <button type="submit">Guardar Cambios</button> </div> </form> </div> </div> )}
     </>

@@ -38,16 +38,20 @@ import AdminInventoryPage from './pages/admin/AdminInventoryPage.jsx';
 import AdminRecipesPage from './pages/admin/AdminRecipesPage.jsx';
 import AdminProductionPage from './pages/admin/AdminProductionPage.jsx';
 import AdminBulkPriceEditorPage from './pages/admin/AdminBulkPriceEditorPage.jsx';
-import AdminProductsPage from './pages/admin/AdminProductsPage.jsx';
-import AdminOrdersPage from './pages/admin/AdminOrdersPage.jsx';
-import AdminUsersPage from './pages/admin/AdminUsersPage.jsx';
-import AdminRealtimePage from './pages/admin/AdminRealtimePage.jsx';
-import AdminClientsPage from './pages/admin/AdminClientsPage.jsx';
-import AdminContactsPage from './pages/admin/AdminContactsPage.jsx';
-import AdminItemDetailPage from './pages/admin/AdminItemDetailPage.jsx';
+import AdminProductsPage from './pages/admin/AdminProductsPage.jsx'; // Corregido
+import AdminOrdersPage from './pages/admin/AdminOrdersPage.jsx'; // Corregido
+import AdminUsersPage from './pages/admin/AdminUsersPage.jsx'; // Corregido
+import AdminRealtimePage from './pages/admin/AdminRealtimePage.jsx'; // Corregido
+import AdminClientsPage from './pages/admin/AdminClientsPage.jsx'; // Corregido
+import AdminContactsPage from './pages/admin/AdminContactsPage.jsx'; // Corregido
+import AdminItemDetailPage from './pages/admin/AdminItemDetailPage.jsx'; // Corregido
 
 // --- ¡ESTA ES LA LÍNEA CORREGIDA! ---
 import AIPanel from './pages/AIPanel.jsx';
+
+// --- ¡NUEVO! Páginas de Cash Flow (Ruta Corregida) ---
+import FixedExpensesPage from './pages/admin/FixedExpensesPage.jsx';
+import IncomingChecksPage from './pages/admin/IncomingChecksPage.jsx';
 
 import './App.css';
 
@@ -108,6 +112,11 @@ function App() {
 
           {/* --- ¡AÑADIDO! Ruta del Panel de IA --- */}
           <Route path="ai-panel" element={<AIPanel />} />
+
+          {/* --- ¡NUEVO! Rutas de Cash Flow --- */}
+          <Route path="gastos-fijos" element={<FixedExpensesPage />} />
+          <Route path="cheques" element={<IncomingChecksPage />} />
+
         </Route>
 
         {/* --- MUNDO PÚBLICO (RUTAS RESTAURADAS) --- */}
