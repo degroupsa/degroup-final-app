@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase/config';
+import { db } from '../firebase/config.js'; // Asegúrate que la extensión .js esté
 import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 import toast from 'react-hot-toast';
-import styles from './AIPanel.module.css'; // Asegúrate de crear este archivo de estilos
+import styles from './AIPanel.module.css'; // Apunta al CSS unificado
 import { FaTrash, FaPlus, FaBrain } from 'react-icons/fa';
 
 // Helper para formatear moneda
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(value || 0);
 };
+
+// URL de nuestro backend
+const cloudRunUrl = 'https://processreceipt-505795840819.us-central1.run.app';
 
 function AIPanel() {
   const [plans, setPlans] = useState([]);
@@ -22,11 +25,18 @@ function AIPanel() {
     type: 'Gasto Futuro',
   });
 
-  // Estado para la respuesta de la IA
-  const [aiAdvice, setAiAdvice] = useState('');
-  const [isAiLoading, setIsAiLoading] = useState(false);
+  // --- ¡NUEVOS ESTADOS SEPARADOS! ---
+  // 1. Para el consejo diario (automático)
+  const [dailyAdvice, setDailyAdvice] = useState('');
+  const [isDailyLoading, setIsDailyLoading] = useState(true);
 
-  // Cargar los planes existentes
+  // 2. Para la asesoría a demanda (con el botón)
+  const [onDemandAdvice, setOnDemandAdvice] = useState('');
+  const [isOnDemandLoading, setIsOnDemandLoading] = useState(false);
+  // --- FIN DE NUEVOS ESTADOS ---
+
+
+  // Cargar los planes existentes (sin cambios)
   const fetchPlans = async () => {
     setLoading(true);
     try {
@@ -40,23 +50,49 @@ function AIPanel() {
     setLoading(false);
   };
 
+  // --- ¡NUEVO! useEffect para el consejo diario ---
+  // Se ejecuta UNA VEZ al cargar la página
   useEffect(() => {
-    fetchPlans();
-  }, []);
+    const fetchDailyAdvice = async () => {
+      setIsDailyLoading(true);
+      setDailyAdvice('');
+      const dailyUrl = `${cloudRunUrl}/runDailyAdvice`;
 
-  // Manejador para los inputs del formulario
+      try {
+        const response = await fetch(dailyUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.data?.error || 'Error en la respuesta de la IA');
+        }
+        setDailyAdvice(result.data.dailyAdvice);
+      } catch (error) {
+        console.error("Error al cargar consejo diario:", error);
+        setDailyAdvice('No se pudo cargar el consejo de hoy. Revisa los logs.');
+      } finally {
+        setIsDailyLoading(false);
+      }
+    };
+
+    fetchPlans();
+    fetchDailyAdvice();
+  }, []); // El array vacío asegura que se ejecute solo una vez
+
+
+  // --- (Handlers del formulario de planes - Sin cambios) ---
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewPlan(prev => ({ ...prev, [name]: value }));
   };
 
-  // Manejador para guardar un nuevo plan
   const handleSubmitPlan = async (e) => {
     e.preventDefault();
     if (!newPlan.description || !newPlan.projectedAmount) {
       return toast.error('Completa la descripción y el monto.');
     }
-
     toast.loading('Guardando plan...');
     try {
       await addDoc(collection(db, 'plannedMovements'), {
@@ -80,10 +116,8 @@ function AIPanel() {
     }
   };
 
-  // Manejador para borrar un plan
   const handleDeletePlan = async (id) => {
     if (!window.confirm('¿Seguro que quieres eliminar este plan?')) return;
-
     toast.loading('Eliminando...');
     try {
       await deleteDoc(doc(db, 'plannedMovements', id));
@@ -95,15 +129,15 @@ function AIPanel() {
       toast.error('Error al eliminar.');
     }
   };
+  // --- (Fin Handlers de planes) ---
 
-  // --- ¡ACTUALIZADO! Esta es la llamada real a la IA ---
-  const handleGetAdvice = async () => {
-    setIsAiLoading(true);
-    setAiAdvice('');
+
+  // --- Asesoría a Demanda (con el botón) ---
+  const handleGetOnDemandAdvice = async () => {
+    setIsOnDemandLoading(true);
+    setOnDemandAdvice('');
     
-    // Obtenemos la URL de nuestra función de Cloud Run
-    // Esta es la URL de tu servicio + la nueva ruta
-    const adviceUrl = 'https://processreceipt-505795840819.us-central1.run.app/getFinancialAdvice';
+    const adviceUrl = `${cloudRunUrl}/getFinancialAdvice`;
 
     try {
       const response = await fetch(adviceUrl, {
@@ -111,7 +145,6 @@ function AIPanel() {
         headers: {
           'Content-Type': 'application/json',
         },
-        // El body puede estar vacío, la función lee directo de la DB
         body: JSON.stringify({}) 
       });
 
@@ -121,24 +154,24 @@ function AIPanel() {
         throw new Error(result.data?.error || 'Error en la respuesta de la IA');
       }
 
-      setAiAdvice(result.data.advice);
+      setOnDemandAdvice(result.data.advice);
 
     } catch (error) {
-      console.error("Error al llamar a la IA:", error);
+      console.error("Error al llamar a la IA (Demanda):", error);
       toast.error(`Error de IA: ${error.message}`);
-      setAiAdvice('No se pudo obtener la recomendación. Revisa los logs.');
+      setOnDemandAdvice('No se pudo obtener la recomendación. Revisa los logs.');
     } finally {
-      setIsAiLoading(false);
+      setIsOnDemandLoading(false);
     }
   };
-  // --- (Fin de la actualización) ---
+
 
   return (
     <div className={styles.panelContainer}>
       <h1 className={styles.header}>Co-piloto Financiero de IA</h1>
       
       <div className={styles.grid}>
-        {/* --- Columna 1: Carga de Planes --- */}
+        {/* --- Columna 1: Carga de Planes (Sin cambios) --- */}
         <div className={styles.card}>
           <h2 className={styles.cardTitle}>Planificador de Movimientos</h2>
           <form onSubmit={handleSubmitPlan}>
@@ -205,21 +238,42 @@ function AIPanel() {
           </div>
         </div>
 
-        {/* --- Columna 2: Consejos de la IA --- */}
+        {/* --- Columna 2: Consejos de la IA (¡REDISEÑADA!) --- */}
         <div className={styles.card}>
-          <h2 className={styles.cardTitle}>Asesoría de IA</h2>
-          <button className={styles.aiButton} onClick={handleGetAdvice} disabled={isAiLoading || plans.length === 0} title={plans.length === 0 ? "Debes cargar al menos un plan para pedir consejo" : "Pedir consejo a la IA"}>
-            <FaBrain /> {isAiLoading ? 'Analizando...' : 'Pedir Consejo a la IA'}
+          <h2 className={styles.cardTitle}>Co-piloto de IA</h2>
+          
+          {/* --- 1. Consejo Diario (Automático) --- */}
+          <h3 className={styles.listTitle} style={{marginTop: 0}}>Consejo del Día</h3>
+          <div className={styles.aiAdviceArea} style={{marginBottom: '2rem'}}>
+            {isDailyLoading && <div className={styles.spinner}></div>}
+            {dailyAdvice ? (
+              <pre className={styles.aiText}>{dailyAdvice}</pre>
+            ) : (
+              !isDailyLoading && <p className={styles.aiPlaceholder}>No se pudo cargar el consejo de hoy.</p>
+            )}
+          </div>
+
+          <hr className={styles.divider} />
+
+          {/* --- 2. Asesoría a Demanda (Botón) --- */}
+          <h3 className={styles.listTitle}>Asesoría a Demanda</h3>
+          <button 
+            className={styles.aiButton} 
+            onClick={handleGetOnDemandAdvice} 
+            disabled={isOnDemandLoading || plans.length === 0} 
+            title={plans.length === 0 ? "Debes cargar al menos un plan para pedir consejo" : "Pedir consejo a la IA"}
+          >
+            <FaBrain /> {isOnDemandLoading ? 'Analizando...' : 'Analizar mi Flujo de Fondos'}
           </button>
 
           <div className={styles.aiAdviceArea}>
-            {isAiLoading && <div className={styles.spinner}></div>}
-            {aiAdvice ? (
-              <pre className={styles.aiText}>{aiAdvice}</pre>
+            {isOnDemandLoading && <div className={styles.spinner}></div>}
+            {onDemandAdvice ? (
+              <pre className={styles.aiText}>{onDemandAdvice}</pre>
             ) : (
               <p className={styles.aiPlaceholder}>
-                Presiona el botón para que la IA analice tus finanzas actuales
-                (ingresos/egresos) y tus planes futuros para darte una recomendación.
+                Presiona el botón para que la IA analice tu flujo de fondos (cheques vs. gastos) 
+                y tus proyectos planeados para darte una recomendación.
               </p>
             )}
           </div>
