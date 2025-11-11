@@ -5,6 +5,32 @@ import toast from 'react-hot-toast';
 import styles from '../AIPanel.module.css'; 
 import { FaTrash, FaPlus } from 'react-icons/fa';
 
+// --- ¡NUEVO! Importaciones de Chart.js ---
+import { Bar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+
+// --- ¡NUEVO! Registro de Chart.js ---
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
 // Helper para formatear moneda
 const formatCurrency = (value) => {
     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value || 0);
@@ -19,7 +45,6 @@ function IncomingChecksPage() {
   // --- Estado para el resumen de 12 meses ---
   const [summaryData, setSummaryData] = useState([]); // Array de 12 meses
   const [totalPending, setTotalPending] = useState(0);
-  const [totalMonthlyExpenses, setTotalMonthlyExpenses] = useState(0);
 
   // --- Estados del Formulario ---
   const [emisor, setEmisor] = useState(''); 
@@ -29,16 +54,10 @@ function IncomingChecksPage() {
 
   // --- Lógica para calcular el Resumen de 12 Meses + Neto ---
   const calculateSummary = (pendingChecks, fixedExpenses) => {
-    
-    // 1. Calcular el total de gastos fijos mensuales
-    const totalExpenses = fixedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-    setTotalMonthlyExpenses(totalExpenses);
-
-    // 2. Calcular el total pendiente (simple)
+    // ... (Lógica de cálculo sin cambios) ...
     const total = pendingChecks.reduce((sum, check) => sum + check.monto, 0);
     setTotalPending(total);
 
-    // 3. Calcular los 12 meses
     const now = new Date();
     const y = now.getFullYear();
     const m = now.getMonth();
@@ -47,47 +66,36 @@ function IncomingChecksPage() {
     for (let i = 0; i < 12; i++) {
       const monthDate = new Date(y, m + i, 1);
       const monthStart = new Date(y, m + i, 1);
-      const monthEnd = new Date(y, m + i + 1, 0, 23, 59, 59); // Fin de ese mes
+      const monthEnd = new Date(y, m + i + 1, 0, 23, 59, 59);
 
-      // A. Sumar ingresos (cheques) para este mes
       const ingresosEsteMes = pendingChecks
         .filter(check => {
-          // --- ¡ESTA ES LA CORRECCIÓN 1! ---
-          // Verificamos que 'fechaCobro' exista ANTES de usar .toDate()
-          if (!check.fechaCobro || !check.fechaCobro.toDate) {
-            return false; // Si no hay fecha, no suma en este mes
-          }
+          if (!check.fechaCobro || !check.fechaCobro.toDate) return false;
           const checkDate = check.fechaCobro.toDate();
           return checkDate >= monthStart && checkDate <= monthEnd;
         })
         .reduce((sum, check) => sum + check.monto, 0);
 
-      // B. Sumar gastos fijos para este mes (NUEVA LÓGICA)
       const gastosEsteMes = fixedExpenses
         .filter(expense => {
-          // Verificamos que 'startDate' exista
-          if (!expense.startDate || !expense.startDate.toDate) {
-            return false;
-          }
+          if (!expense.startDate || !expense.startDate.toDate) return false;
           const expStart = expense.startDate.toDate();
           const expEnd = (expense.endDate && expense.endDate.toDate) ? expense.endDate.toDate() : null;
-          
           return expStart <= monthEnd && (expEnd === null || expEnd >= monthStart);
         })
         .reduce((sum, exp) => sum + exp.amount, 0);
-
 
       const netoEsteMes = ingresosEsteMes - gastosEsteMes;
       
       monthlySummary.push({
         id: i,
-        month: monthDate.toLocaleString('es-AR', { month: 'long', year: 'numeric' }),
+        // ¡CAMBIO! Usamos un formato más corto para el gráfico
+        month: monthDate.toLocaleString('es-AR', { month: 'short', year: '2-digit' }), 
         ingresos: ingresosEsteMes,
         gastos: gastosEsteMes, 
         neto: netoEsteMes      
       });
     }
-    
     setSummaryData(monthlySummary);
   };
 
@@ -95,21 +103,16 @@ function IncomingChecksPage() {
   const fetchChecks = useCallback(async () => {
     setLoading(true);
     try {
-      // --- PASO 1: Traemos cheques pendientes y gastos fijos ---
+      // ... (Lógica de fetch sin cambios) ...
       const pendingQuery = query(collection(db, 'pendingChecks'), where('status', '!=', 'cobrado'));
       const expensesQuery = query(collection(db, 'pendingPayables')); 
-
       const [pendingSnapshot, expensesSnapshot] = await Promise.all([
         getDocs(pendingQuery),
         getDocs(expensesQuery)
       ]);
-
       const pendingChecksList = pendingSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       const fixedExpensesList = expensesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      
       calculateSummary(pendingChecksList, fixedExpensesList);
-
-      // --- PASO 2: Preparamos la lista para mostrar (con o sin cobrados) ---
       let checksToShow = [];
       if (showAcreditados) {
         const allQuery = query(collection(db, 'pendingChecks'));
@@ -118,15 +121,11 @@ function IncomingChecksPage() {
       } else {
         checksToShow = pendingChecksList; 
       }
-      
-      // --- ¡ESTA ES LA CORRECCIÓN 2! ---
-      // Hacemos el sort más "defensivo", por si acaso
       checksToShow.sort((a, b) => {
-          const dateA = (a.fechaCobro && a.fechaCobro.toDate) ? a.fechaCobro.toDate() : new Date(0); // Trata null como 1970
-          const dateB = (b.fechaCobro && b.fechaCobro.toDate) ? b.fechaCobro.toDate() : new Date(0); // Trata null como 1970
+          const dateA = (a.fechaCobro && a.fechaCobro.toDate) ? a.fechaCobro.toDate() : new Date(0); 
+          const dateB = (b.fechaCobro && b.fechaCobro.toDate) ? b.fechaCobro.toDate() : new Date(0); 
           return dateA - dateB;
       });
-
       setChecks(checksToShow);
     } catch (error) { 
       toast.error("Error al cargar los datos de la página."); 
@@ -176,6 +175,67 @@ function IncomingChecksPage() {
     } catch (error) { toast.error("Error al actualizar el estado."); }
   };
   // --- FIN LÓGICA ---
+
+  // --- ¡NUEVO! Datos y Opciones para el Gráfico ---
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: false,
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return `${context.dataset.label}: ${formatCurrency(context.raw)}`;
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: (value) => formatCurrency(value)
+        }
+      }
+    }
+  };
+  
+  const chartData = {
+    labels: summaryData.map(d => d.month),
+    datasets: [
+      {
+        type: 'line', // ¡Tipo Línea para el Neto!
+        label: 'Neto',
+        data: summaryData.map(d => d.neto),
+        borderColor: '#28a745', // Verde
+        backgroundColor: '#28a745',
+        tension: 0.1,
+        fill: false,
+        yAxisID: 'y',
+      },
+      {
+        type: 'bar',
+        label: 'Ingresos (Cheques)',
+        data: summaryData.map(d => d.ingresos),
+        backgroundColor: 'rgba(0, 123, 255, 0.7)', // Azul
+        yAxisID: 'y',
+      },
+      {
+        type: 'bar',
+        label: 'Gastos Fijos',
+        data: summaryData.map(d => d.gastos),
+        backgroundColor: 'rgba(220, 53, 69, 0.7)', // Rojo
+        yAxisID: 'y',
+      },
+    ]
+  };
+  // --- FIN Datos Gráfico ---
+
 
   return (
     <div className={styles.cashFlowPage}>
@@ -240,7 +300,19 @@ function IncomingChecksPage() {
         <span>{formatCurrency(totalPending)}</span>
       </div>
 
-      <div className={styles.monthlyCardGrid}>
+      {/* --- ¡NUEVO! Gráfico de 12 Meses --- */}
+      <div className={styles.summaryChartContainer}>
+        {loading ? (
+          <p>Cargando gráfico...</p>
+        ) : (
+          <Bar options={chartOptions} data={chartData} />
+        )}
+      </div>
+      {/* --- FIN Gráfico --- */}
+
+
+      {/* Grilla de 12 Tarjetas (la ocultamos por ahora, el gráfico es mejor) */}
+      {/* <div className={styles.monthlyCardGrid}>
         {summaryData.map(row => (
           <div key={row.id} className={styles.monthCard}>
             <div className={styles.monthCardTitle}>{row.month}</div>
@@ -252,6 +324,7 @@ function IncomingChecksPage() {
           </div>
         ))}
       </div>
+      */}
       {/* --- FIN Barra de Resumen --- */}
 
 
@@ -282,7 +355,6 @@ function IncomingChecksPage() {
               <strong className={styles.itemAmount}>
                 {formatCurrency(check.monto)} 
               </strong>
-              {/* ¡CORRECCIÓN 3! Verificamos que la fecha exista antes de mostrarla */}
               <span className={styles.itemDetail}>
                 Acredita: {check.fechaCobro ? check.fechaCobro.toDate().toLocaleDateString('es-AR') : 'Sin fecha'}
               </span>
