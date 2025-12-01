@@ -13,6 +13,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { useAuth } from './context/AuthContext.jsx';
 
 // Páginas Públicas
+import MarketingPage from './pages/MarketingPage.jsx';
 import OrderSuccessPage from './pages/OrderSuccessPage.jsx';
 import FeedPage from './pages/FeedPage.jsx';
 import HomePage from './pages/HomePage.jsx';
@@ -31,6 +32,8 @@ import SinglePostPage from './pages/SinglePostPage.jsx';
 import RegistrationSuccessPage from './pages/RegistrationSuccessPage';
 import ChatPage from './pages/ChatPage.jsx';
 import MessagesPage from './pages/MessagesPage.jsx';
+// --- ¡NUEVA RUTA IMPORTADA! ---
+import HomeCategoryPage from './pages/HomeCategoryPage.jsx';
 
 // Páginas de Admin
 import AdminDashboardPage from './pages/admin/AdminDashboardPage.jsx';
@@ -139,6 +142,11 @@ function App() {
           <Route path="mi-perfil" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           <Route path="perfil/:userId" element={<ProfilePage />} />
           <Route path="post/:postId" element={<ProtectedRoute><SinglePostPage /></ProtectedRoute>} />
+          
+          {/* --- ¡NUEVA RUTA AÑADIDA! --- */}
+          <Route path="categorias/:id" element={<HomeCategoryPage />} />
+          <Route path="novedades/:id" element={<MarketingPage />} />
+          
           <Route path="*" element={<h2>Página no encontrada</h2>} />
         </Route>
       </Routes>

@@ -2,11 +2,11 @@
 .header {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1001;
   
   padding: 0 2rem;
-  background-color: #000000;
-  border-bottom: 1px solid #343a40;
+  background-color: #121212; /* Fondo NEGRO */
+  border-bottom: 3px solid #FFD700; /* Borde AMARILLO-ORO */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -33,12 +33,16 @@
   justify-content: flex-start;
 }
 
+/* --- ¡CAMBIO! Alineamos el logo a la izquierda --- */
 .centerSection {
+  flex: 1;
+  justify-content: flex-start; /* Logo a la izquierda */
   gap: 2rem;
 }
 
+/* --- ¡CAMBIO! Ajustamos el Right Section --- */
 .rightSection {
-  flex: 1;
+  flex: 0 1 auto; /* No crece, no se achica, se basa en su contenido */
   justify-content: flex-end;
   gap: 1rem;
 }
@@ -53,6 +57,8 @@
 .logo {
   width: auto;
   height: 65px;
+  /* Si tu logo no es dorado, podemos aplicar un filtro */
+  /* filter: brightness(0) saturate(100%) invert(84%) sepia(99%) saturate(1450%) hue-rotate(349deg) brightness(102%) contrast(101%); */
 }
 
 .desktopNavLinks {
@@ -65,24 +71,25 @@
   position: relative;
   padding: 0.5rem 0;
   
-  color: #adb5bd;
+  color: #ADB5BD; /* GRIS claro */
   font-size: 1rem;
   font-weight: 500;
   text-decoration: none;
   
-  transition: color 0.2s ease-in-out;
+  transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  border-bottom: 2px solid transparent;
 }
 
 .link::after {
   content: '';
   position: absolute;
-  bottom: 0;
+  bottom: -3px; /* --- ¡CAMBIO! Ajustado para el borde de 3px del header --- */
   left: 50%;
   
   width: 0;
   height: 2px;
   
-  background-color: #f0c420;
+  background-color: #FFD700; /* AMARILLO-ORO */
   transition: all 0.3s ease-in-out;
 }
 
@@ -96,7 +103,7 @@
 }
 
 .activeLink {
-  color: #f0c420;
+  color: #FFD700; /* AMARILLO-ORO */
   font-weight: 600;
 }
 
@@ -104,6 +111,10 @@
   width: 100%;
   left: 0;
 }
+
+/* --- ¡ELIMINADO! Esta regla ya no es necesaria --- */
+/* .desktopNavLinks a[href="/admin"] { ... } */
+
 
 /* --- ACCIONES DE USUARIO Y MENÚ DESPLEGABLE --- */
 .navActions {
@@ -141,8 +152,8 @@
   min-width: 180px;
   padding: 0.5rem 0;
   
-  background-color: #212529;
-  border: 1px solid #495057;
+  background-color: #212529; /* GRIS oscuro */
+  border: 1px solid #495057; /* GRIS medio */
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   overflow: hidden;
@@ -173,6 +184,27 @@
   color: #dc3545;
 }
 
+/* --- ¡AQUÍ ESTÁ EL ESTILO QUE FALTABA! --- */
+/* Botón de Admin (Amarillo-Oro) en la .rightSection */
+.adminButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #FFD700;
+  color: #121212;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+.adminButton:hover {
+  background-color: #fff;
+  color: #121212;
+}
+
 /* --- ESTILOS INICIALES PARA MÓVIL (OCULTOS) --- */
 .hamburger,
 .mobileMenu {
@@ -185,10 +217,15 @@
     padding: 0 1rem;
   }
 
+  /* --- ¡CAMBIO! Centramos el logo en móvil --- */
+  .centerSection {
+    flex: 1;
+    justify-content: center;
+  }
   .rightSection {
+    flex: 1;
     gap: 0.5rem;
   }
-
   .navActions {
     gap: 0.25rem;
   }
@@ -219,19 +256,17 @@
     align-items: flex-start;
     
     width: 240px;
-    height: 65vh;
+    height: auto; /* Ajusta la altura al contenido */
     padding: 2rem;
     gap: 1.5rem;
     box-sizing: border-box;
 
-    /* --- ✨ MEJORA: Se añade un fondo sólido como fallback --- */
-    background-color: rgba(20, 20, 20, 0.85); /* Fondo para navegadores sin soporte de blur */
+    background-color: rgba(20, 20, 20, 0.9); /* Fondo NEGRO translúcido */
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     
-    /* --- ✅ TAREA CUMPLIDA: Bordes inferiores redondeados --- */
-    border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
+    border-top-right-radius: 1rem;
 
     transform: translateX(-100%);
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -271,13 +306,16 @@
     gap: 1rem;
     font-size: 1.1rem;
   }
+
+  /* --- ¡CAMBIO! Ocultamos el botón de admin de escritorio en móvil --- */
+  .adminButton {
+    display: none;
+  }
 }
 
-/* ... (todos tus estilos existentes) ... */
-
-/* --- NUEVO ESTILO PARA EL ÍCONO DE CHAT EN MÓVIL --- */
+/* --- ESTILO PARA EL ÍCONO DE CHAT EN MÓVIL --- */
 .mobileChatIcon {
-  display: block; /* Por defecto se muestra */
+  display: block; 
   color: #ffffff;
   font-size: 1.1rem;
   cursor: pointer;
@@ -286,33 +324,24 @@
   padding: 0.5rem;
 }
 
-/* Ocultamos el ícono en pantallas de escritorio */
 @media (min-width: 992px) {
   .mobileChatIcon {
     display: none;
   }
 }
 
-/* Pega este bloque completo al final de tu archivo Navbar.module.css */
-
+/* --- ¡CAMBIO! Quitamos la regla de 993px que centraba el logo --- */
 @media (min-width: 993px) {
-  /* 1. Ocultamos la sección izquierda (la del menú hamburguesa) en PC */
   .leftSection {
     display: none;
   }
-
-  /* 2. Hacemos que la sección central (con el logo y links) ocupe el espacio y se alinee a la izquierda */
   .centerSection {
-    flex: 1; /* Le permite crecer */
+    flex: 1; 
     justify-content: flex-start;
   }
-
-  /* 3. La sección derecha deja de ser flexible para quedarse en su sitio */
   .rightSection {
     flex: 0;
   }
-
-  /* 4. Nos aseguramos de que el ícono de chat de móvil (si estuviera visible) se oculte */
   .mobileChatIcon {
     display: none;
   }

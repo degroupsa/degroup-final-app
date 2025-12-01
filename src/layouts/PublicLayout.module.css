@@ -1,0 +1,12 @@
+.publicSiteWrapper {
+  /* Fondo estilo Meli/Fendt */
+  background-color: #F8F9FA; 
+  color: #212529;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.mainContent {
+  flex-grow: 1; /* Empuja el footer hacia abajo */
+}

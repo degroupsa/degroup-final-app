@@ -1,5 +1,3 @@
-// src/pages/ProductDetailPage.jsx
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { db } from '../firebase/config.js';
@@ -8,8 +6,15 @@ import { useCart } from '../context/CartContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import toast from 'react-hot-toast';
 import ItemCount from '../components/ItemCount.jsx';
-import styles from './ProductDetailPage.module.css';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import styles from './ProductDetailPage.module.css'; 
+import { FaChevronLeft, FaChevronRight, FaIndustry, FaShoppingCart } from 'react-icons/fa';
+
+// --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
+// Esta función faltaba en el archivo anterior.
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value || 0);
+};
+// --- FIN DE LA CORRECCIÓN ---
 
 function ProductDetailPage() {
   const { productId } = useParams();
@@ -56,72 +61,112 @@ function ProductDetailPage() {
     }
   };
   
-  if (loading) return <p style={{textAlign: 'center', padding: '4rem'}}>Cargando producto...</p>;
-  if (!product) return <h2 style={{textAlign: 'center', padding: '4rem'}}>Producto no encontrado</h2>;
+  if (loading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loader}></div>
+        <p>Cargando producto...</p>
+      </div>
+    );
+  }
+  
+  if (!product) {
+    return (
+      <div className={styles.loadingContainer}>
+        <h2>Producto no encontrado</h2>
+        <Link to="/productos" className={styles.quoteButton}>Volver a Productos</Link>
+      </div>
+    );
+  }
 
   const isDealer = user?.role === 'concesionario';
   
   return (
     <div className={styles.detailContainer}>
+      
+      {/* --- COLUMNA DE IMÁGENES --- */}
       <div className={styles.imageColumn}>
-        {product.imageUrls && product.imageUrls.length > 0 ? (
-          <>
+        <div className={styles.mainImageWrapper}>
+          {product.imageUrls && product.imageUrls.length > 0 ? (
             <img src={product.imageUrls[activeIndex]} alt={product.name} className={styles.mainImage} />
-            
-            {product.imageUrls.length > 1 && (
-                <>
-                    <button onClick={goToPrevSlide} className={`${styles.navArrow} ${styles.prevArrow}`}><FaChevronLeft /></button>
-                    <button onClick={goToNextSlide} className={`${styles.navArrow} ${styles.nextArrow}`}><FaChevronRight /></button>
-                </>
-            )}
-
-            <div className={styles.thumbnailGrid}>
-              {product.imageUrls.map((url, index) => (
+          ) : (
+            <div className={styles.imagePlaceholder}><FaIndustry /></div>
+          )}
+          
+          {product.imageUrls && product.imageUrls.length > 1 && (
+              <>
+                  <button onClick={goToPrevSlide} className={`${styles.navArrow} ${styles.prevArrow}`}><FaChevronLeft /></button>
+                  <button onClick={goToNextSlide} className={`${styles.navArrow} ${styles.nextArrow}`}><FaChevronRight /></button>
+              </>
+          )}
+        </div>
+        
+        {product.imageUrls && product.imageUrls.length > 1 && (
+          <div className={styles.thumbnailGrid}>
+            {product.imageUrls.map((url, index) => (
+              <div 
+                key={index}
+                className={`${styles.thumbnailWrapper} ${index === activeIndex ? styles.thumbnailActive : ''}`}
+                onClick={() => setActiveIndex(index)}
+              >
                 <img 
-                  key={index}
                   src={url}
                   alt={`Vista ${index + 1} de ${product.name}`}
-                  className={`${styles.thumbnail} ${index === activeIndex ? styles.thumbnailActive : ''}`}
-                  onClick={() => setActiveIndex(index)}
+                  className={styles.thumbnail}
                 />
-              ))}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* --- COLUMNA DE INFORMACIÓN --- */}
+      <div className={styles.infoColumn}>
+        <span className={styles.categoryLabel}>{product.category}</span>
+        <h1 className={styles.productTitle}>{product.name}</h1>
+        
+        {isDealer ? (
+          // --- VISTA PARA CONCESIONARIO ---
+          <>
+            <div className={styles.priceDisplay}>
+              <div className={styles.mainPrice}>
+                {formatCurrency(product.priceDealer)}
+                <span className={styles.priceLabel}>Precio Concesionario</span>
+              </div>
+              {product.price && (
+                <div className={styles.suggestedPrice}>
+                  Precio Sugerido Público: {formatCurrency(product.price)}
+                </div>
+              )}
             </div>
           </>
         ) : (
-          <div className={styles.imagePlaceholder}><span>Sin imagen</span></div>
+          // --- VISTA PARA CLIENTE (Precio Público) ---
+          <div className={styles.priceDisplay}>
+            <div className={styles.mainPrice}>
+              {formatCurrency(product.price)}
+              <span className={styles.priceLabel}>Precio de Lista</span>
+            </div>
+          </div>
         )}
-      </div>
-      <div className={styles.infoColumn}>
-        <span className={styles.categoryLabel}>{product.category}</span>
-        <h1>{product.name}</h1>
         
-        {/* --- CORRECCIÓN PARA MOSTRAR HTML --- */}
         <div 
           className={styles.description} 
           dangerouslySetInnerHTML={{ __html: product.description }} 
         />
 
         {isDealer ? (
-          // --- VISTA PARA CONCESIONARIO ---
-          <>
-            <div className={styles.priceDisplay}>
-              <div className={styles.mainPrice}>
-                ${new Intl.NumberFormat('es-AR').format(product.priceDealer)}
-                <span className={styles.priceLabel}>Precio Concesionario</span>
-              </div>
-              {product.price && (
-                <div className={styles.suggestedPrice}>
-                  Sugerido: ${new Intl.NumberFormat('es-AR').format(product.price)}
-                </div>
-              )}
-            </div>
+          // --- ACCIÓN PARA CONCESIONARIO ---
+          <div className={styles.actionBox}>
+            <h3 className={styles.actionTitle}>Agregar al Carrito</h3>
             <ItemCount onAdd={handleAction} />
-          </>
+          </div>
         ) : (
-          // --- VISTA PARA CLIENTE REGISTRADO O VISITANTE ---
-          <div className={styles.quoteButtonContainer}>
+          // --- ACCIÓN PARA CLIENTE ---
+          <div className={styles.actionBox}>
+            <h3 className={styles.actionTitle}>¿Interesado en este producto?</h3>
             <button className={styles.quoteButton} onClick={() => handleAction(1)}>
-              Solicitar Cotización
+              <FaShoppingCart /> Solicitar Cotización
             </button>
           </div>
         )}

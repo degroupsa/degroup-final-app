@@ -1,24 +1,72 @@
-import React, { useState } from 'react';
-import styles from './ContactPage.module.css'; // This will now correctly find the CSS file
+import React, { useState, useRef } from 'react';
+import styles from './ContactPage.module.css'; 
 import { FaMapMarkerAlt, FaPhone, FaEnvelope } from 'react-icons/fa';
 
+// --- FIREBASE ---
+import { db } from '../firebase/config.js'; 
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
+// --- EMAIL JS (Para que te llegue al correo) ---
+import emailjs from '@emailjs/browser';
+
+// --- NOTIFICACIONES ---
+import toast from 'react-hot-toast'; 
+
 function ContactPage() {
+  const form = useRef(); // Referencia para EmailJS
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     message: ''
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In a real app, you would send this data to a backend or a service like EmailJS
-    alert(`Mensaje de ${formData.name} enviado. ¡Gracias por contactarnos!`);
-    // Reset form
-    setFormData({ name: '', email: '', message: '' });
+    
+    if(!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+        return toast.error("Por favor completa todos los campos.");
+    }
+
+    setLoading(true);
+
+    try {
+      // ---------------------------------------------------------
+      // PASO 1: GUARDAR EN FIREBASE (Respaldo de seguridad)
+      // ---------------------------------------------------------
+      await addDoc(collection(db, 'messages'), {
+          ...formData,
+          createdAt: serverTimestamp(),
+          read: false
+      });
+
+      // ---------------------------------------------------------
+      // PASO 2: ENVIAR EMAIL A TU CORREO (Notificación)
+      // ---------------------------------------------------------
+      // Reemplaza estos strings con los datos de tu cuenta de EmailJS
+      const SERVICE_ID = "service_87mf2k7"; 
+      const TEMPLATE_ID = "template_quxa8he"; 
+      const PUBLIC_KEY = "tqy0gODL8hAXJc7aO"; 
+
+      await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form.current, PUBLIC_KEY);
+
+      // ---------------------------------------------------------
+      
+      toast.success(`¡Gracias ${formData.name}! Tu mensaje fue enviado.`);
+      setFormData({ name: '', email: '', message: '' }); // Limpiar
+
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Hubo un problema. Intenta contactarnos por WhatsApp.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -44,8 +92,9 @@ function ContactPage() {
             <span> DyEGroupOficial@Gmail.com</span>
           </p>
           <div className={styles.mapContainer}>
+             {/* Asegurate de usar el link de embed correcto de Google Maps */}
             <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3353.3538086898116!2d-61.4014071!3d-32.8093892!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95c9de6b952ae675%3A0x327ff978cfe16057!2sAv.%20Sta.%20Fe%201508%2C%20S2500%20Ca%C3%B1ada%20de%20Gomez%2C%20Santa%20Fe!5e0!3m2!1ses!2sar!4v1751475993965!5m2!1ses!2sar" 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3366.057867623456!2d-61.399999!3d-32.800000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzLCsDQ4JzAwLjAiUyA2McKwMjQnMDAuMCJX!5e0!3m2!1ses!2sar!4v1600000000000!5m2!1ses!2sar" 
                 width="100%" 
                 height="100%" 
                 style={{ border: 0 }} 
@@ -56,21 +105,49 @@ function ContactPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className={styles.contactForm}>
+        {/* Agregamos la referencia 'ref={form}' para EmailJS */}
+        <form ref={form} onSubmit={handleSubmit} className={styles.contactForm}>
           <h3>Envíanos tu Consulta</h3>
           <div className={styles.formGroup}>
             <label htmlFor="name">Tu Nombre</label>
-            <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required />
+            {/* El 'name' del input debe coincidir con las variables de tu EmailJS Template */}
+            <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                value={formData.name} 
+                onChange={handleChange} 
+                required 
+                placeholder="Juan Pérez"
+            />
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="email">Tu Email</label>
-            <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
+            <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                value={formData.email} 
+                onChange={handleChange} 
+                required 
+                placeholder="juan@email.com"
+            />
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="message">Mensaje</label>
-            <textarea id="message" name="message" rows="6" value={formData.message} onChange={handleChange} required></textarea>
+            <textarea 
+                id="message" 
+                name="message" 
+                rows="6" 
+                value={formData.message} 
+                onChange={handleChange} 
+                required
+                placeholder="Escribe tu consulta aquí..."
+            ></textarea>
           </div>
-          <button type="submit">Enviar Mensaje</button>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Enviando...' : 'Enviar Mensaje'}
+          </button>
         </form>
       </div>
     </div>

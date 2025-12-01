@@ -24,12 +24,18 @@
   width: 100%;
   height: 220px;
   background-color: #eee;
+  overflow: hidden; /* Para el zoom */
 }
 .imageContainer img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
 }
+.card:hover .imageContainer img {
+  transform: scale(1.05);
+}
+
 .imagePlaceholder {
   width: 100%;
   height: 100%;
@@ -39,10 +45,13 @@
   background-color: #f0f2f5;
   color: #ccc;
   font-weight: bold;
+  font-size: 3rem;
 }
 .cardContent {
   padding: 1.5rem;
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 .cardContent h3 {
   margin-top: 0;
@@ -60,71 +69,59 @@
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  height: 65px; /* Altura fija para 3 líneas */
+  flex-grow: 1; /* Empuja el precio/acciones hacia abajo */
 }
 .cardActions {
   display: flex;
-  flex-direction: row; /* Mantenemos horizontal en PC */
+  flex-direction: column; 
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch; /* Ocupa todo el ancho */
   gap: 1rem;
-  padding: 1rem 1.5rem;
-  border-top: 1px solid #e9ecef;
-  margin-top: auto;
+  padding: 0 1.5rem 1.5rem 1.5rem; /* Padding solo abajo */
+  margin-top: auto; /* Empuja al fondo */
 }
 
-/* ▼▼▼ ESTILOS CORREGIDOS ▼▼▼ */
+/* --- ¡NUEVOS ESTILOS DE PRECIO! --- */
 .priceContainer {
   display: flex;
-  flex-direction: column; /* Apila los precios verticalmente */
-  align-items: flex-start; /* Alinea a la izquierda */
-  gap: 0.2rem;
+  flex-direction: column; 
+  align-items: flex-start; 
+  gap: 0;
+  margin-top: 1rem; /* Espacio entre descripción y precio */
 }
 .price {
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #212529;
+  line-height: 1.2;
 }
-.suggestedPrice {
-  font-size: 0.85rem;
-  color: #28a745; /* Color verde para destacarlo */
-  font-weight: 500;
-  /* Quitamos el tachado y el margen izquierdo */
-}
-/* ▲▲▲ FIN DE LA CORRECCIÓN ▲▲▲ */
-
-.dealerLabel {
-  font-size: 0.7rem;
-  font-weight: bold;
-  color: #28a745;
-  background-color: #eaf6ec;
-  padding: 0.1rem 0.4rem;
-  border-radius: 4px;
-}
-.addButton, .quoteButton {
-  font-size: 0.9rem;
+.priceLabel {
+  font-size: 0.8rem;
   font-weight: 600;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 0.7rem 1.2rem;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  width: auto;
+  color: #007BFF; /* Azul para "Precio de Lista" */
+  text-transform: uppercase;
 }
-.quoteButton {
+
+/* --- ¡NUEVOS ESTILOS DE BOTONES (AMARILLO-ORO)! --- */
+.addButton, .quoteButton {
+  font-size: 1rem;
+  font-weight: 700;
+  background-color: #FFD700; /* AMARILLO ORO */
+  color: #121212; /* Texto Negro */
+  border: none;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
   width: 100%;
+  text-align: center;
+  text-decoration: none;
+  margin-top: 0.5rem;
 }
 .addButton:hover, .quoteButton:hover {
-  background-color: #0056b3;
-  transform: scale(1.02);
+  background-color: #e6c200; /* Oro más oscuro */
+  box-shadow: 0 4px 10px rgba(255,215,0,0.3);
 }
-@media (max-width: 768px) {
-  .cardActions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .quoteButton {
-    width: 100%;
-  }
-}
+
+/* (El media query ya no es necesario, el default es mobile-first) */

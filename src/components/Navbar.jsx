@@ -8,18 +8,14 @@ import {
   FaBars, FaTimes, FaUserCircle, FaComments,
   FaHome, FaBoxOpen, FaUsers, FaEnvelope, FaGlobe,
   FaSignInAlt, FaUserPlus, FaSignOutAlt, FaCog
-  // --- ¡ELIMINADO! FaBrain ya no está aquí ---
 } from 'react-icons/fa';
 
-const getNavLinkClass = ({ isActive }) => {
+const getNavLinkClass = ({ isActive }) => { 
   return isActive ? `${styles.link} ${styles.activeLink}` : styles.link;
 };
 
 function Navbar() {
-  console.log("--- Navbar rendering ---"); // <--- LOG 1: ¿Se renderiza?
   const { user, logout } = useAuth();
-  console.log("User object seen by Navbar:", user); // <--- LOG 2: ¿Qué 'user' ve?
-
   const { toggleChatPanel } = useChatPanel();
   const navigate = useNavigate();
   const location = useLocation();
@@ -78,10 +74,7 @@ function Navbar() {
   }, [menuOpen]);
 
   const showChatIcon = user && location.pathname === '/canal';
-
-  // --- Condición para el enlace de Admin ---
   const showAdminLink = user && (user.role === 'admin' || user.role === 'gestion');
-  // console.log("Show Admin Link?", showAdminLink, "User Role:", user?.role); // Log opcional más específico
 
 
   return (
@@ -115,21 +108,20 @@ function Navbar() {
             <NavLink to="/nosotros" className={getNavLinkClass}>Nosotros</NavLink>
             <NavLink to="/contacto" className={getNavLinkClass}>Contacto</NavLink>
             <NavLink to="/canal" className={getNavLinkClass}>DE Group Social</NavLink>
-            {/* Usamos la variable showAdminLink */}
-            {showAdminLink && (
-              <NavLink to="/admin" className={getNavLinkClass}>
-                <FaCog style={{ marginRight: '5px' }} />
-                Administración
-              </NavLink>
-            )}
-            
-            {/* --- ¡ELIMINADO! Link al Panel de IA (Escritorio) --- */}
           </div>
         </div>
 
         {/* Right Section */}
         <div className={styles.rightSection}>
           <div className={styles.navActions}>
+            {/* --- ¡AQUÍ ESTÁ LA CORRECCIÓN! --- */}
+            {/* Aplicamos la clase .adminButton en lugar de .getNavLinkClass */}
+            {showAdminLink && (
+              <NavLink to="/admin" className={styles.adminButton}>
+                <FaCog style={{ marginRight: '5px' }} />
+                Administración
+              </NavLink>
+            )}
             <div className={styles.userMenuContainer} ref={userMenuRef}>
               <button className={styles.userMenuButton} onClick={() => setUserMenuOpen(!userMenuOpen)}>
                 <FaUserCircle />
@@ -186,14 +178,11 @@ function Navbar() {
             <NavLink to="/canal" className={getNavLinkClass} onClick={closeMenu}>
               <FaGlobe /> <span>DE Group Social</span>
             </NavLink>
-            {/* Usamos la variable showAdminLink */}
             {showAdminLink && (
               <NavLink to="/admin" className={getNavLinkClass} onClick={closeMenu}>
                 <FaCog /> <span>Administración</span>
               </NavLink>
             )}
-
-            {/* --- ¡ELIMINADO! Link al Panel de IA (Móvil) --- */}
         </div>
       </div>
     </header>

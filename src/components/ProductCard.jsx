@@ -4,17 +4,19 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import toast from 'react-hot-toast';
+import { FaIndustry } from 'react-icons/fa'; // Importado para el placeholder
+
+// Helper para formatear moneda
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value || 0);
+};
 
 // --- FUNCIÓN CLAVE PARA LIMPIAR Y ACORTAR LA DESCRIPCIÓN ---
 const createShortDescription = (html, maxLength = 100) => {
   if (!html) return '';
-
-  // 1. Crea un elemento temporal para quitar las etiquetas HTML
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = html;
   const plainText = tempDiv.textContent || tempDiv.innerText || '';
-
-  // 2. Acorta el texto si es demasiado largo
   if (plainText.length <= maxLength) {
     return plainText;
   }
@@ -22,7 +24,8 @@ const createShortDescription = (html, maxLength = 100) => {
 };
 
 
-function ProductCard({ product }) {
+// --- ¡COMPONENTE ACTUALIZADO! ---
+function ProductCard({ product, price, priceLabel }) {
   const { addItem } = useCart();
   const { user } = useAuth();
 
@@ -38,15 +41,14 @@ function ProductCard({ product }) {
     }
   };
 
-  // Determinamos qué tipo de usuario tenemos
-  const isDealer = user?.role === 'concesionario';
-  
   const thumbnailUrl = product.imageUrls && product.imageUrls.length > 0
     ? product.imageUrls[0]
     : null;
 
-  // Generamos la descripción corta y limpia
   const shortDescription = createShortDescription(product.description);
+  
+  // --- ¡NUEVO! Determina si mostrar el precio ---
+  const showPrice = price > 0;
 
   return (
     <Link to={`/producto/${product.id}`} className={styles.cardLink}>
@@ -56,30 +58,36 @@ function ProductCard({ product }) {
             <img src={thumbnailUrl} alt={product.name} />
           ) : (
             <div className={styles.imagePlaceholder}>
-              <span>Sin imagen</span>
+              <FaIndustry />
             </div>
           )}
         </div>
         <div className={styles.cardContent}>
           <h3>{product.name}</h3>
-          {/* AQUÍ USAMOS LA DESCRIPCIÓN CORTA Y LIMPIA */}
+          
+          {/* --- ¡NUEVO! Renderizado condicional del precio --- */}
+          {showPrice && (
+            <div className={styles.priceContainer}>
+              <span className={styles.price}>{formatCurrency(price)}</span>
+              <span className={styles.priceLabel}>{priceLabel}</span>
+            </div>
+          )}
+
           <p>{shortDescription}</p>
         </div>
         
         <div className={styles.cardActions}>
-          {isDealer ? (
-            // --- VISTA PARA CONCESIONARIO ---
-            <>
-              <div className={styles.priceContainer}>
-                <span className={styles.price}>${new Intl.NumberFormat('es-AR').format(product.priceDealer)}</span>
-                {product.price && <span className={styles.suggestedPrice}>Sugerido: ${new Intl.NumberFormat('es-AR').format(product.price)}</span>}
-              </div>
-              <button onClick={handleActionClick} className={styles.addButton}>
-                  Agregar al Carrito
-              </button>
-            </>
+          {/* Ya no necesitamos la lógica de 'isDealer' aquí, 
+            el botón de "Solicitar Cotización" es universal si no hay precio.
+            Y si hay precio, el botón de "Agregar" también es universal.
+          */}
+          {showPrice ? (
+            // Si ve precio (Admin, Concesionario), ve "Agregar"
+            <button onClick={handleActionClick} className={styles.addButton}>
+                Agregar al Carrito
+            </button>
           ) : (
-            // --- VISTA PARA CLIENTE REGISTRADO O VISITANTE ---
+            // Si no ve precio (Público), ve "Cotizar"
             <button onClick={handleActionClick} className={styles.quoteButton}>
               Solicitar Cotización
             </button>

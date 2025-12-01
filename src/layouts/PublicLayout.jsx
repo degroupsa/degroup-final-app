@@ -3,15 +3,18 @@ import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar.jsx';
 import Footer from '../components/Footer.jsx';
 import NavigationArrows from '../components/ui/NavigationArrows';
-import { ChatPanelProvider } from '../context/ChatPanelContext.jsx'; // 1. Importamos el Provider
+import { ChatPanelProvider } from '../context/ChatPanelContext.jsx';
+import styles from './PublicLayout.module.css'; // ¡Importamos los estilos!
 
 function PublicLayout() {
   return (
     // 2. Envolvemos todo con el Provider
     <ChatPanelProvider>
-      <div className="main-container">
+      {/* 3. Este wrapper aplica el fondo claro */}
+      <div className={styles.publicSiteWrapper}> 
         <Navbar />
-        <main className="main-content">
+        {/* 4. Quitamos 'main-content' para que la HomePage ocupe el 100% */}
+        <main>
           <Outlet />
         </main>
         <NavigationArrows />
