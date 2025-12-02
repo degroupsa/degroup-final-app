@@ -849,13 +849,13 @@
   
   .finalCtaImage {
     /* 1. TAMAÑO: Hacemos que pueda ser más ancha que su columna */
-    width: 170%;       /* <--- NUEVO: Hacé que ocupe más del 100% de su columna (ajustá el %) */
+    width: 130%;       /* <--- NUEVO: Hacé que ocupe más del 100% de su columna (ajustá el %) */
     max-width: 1080px;  /* <--- MODIFICADO: Aumentá el límite máximo (ajustá los px) */
     height: auto;
   
     /* 2. POSICIÓN: La movemos hacia arriba con margen negativo */
     margin-top: -180px; /* <--- NUEVO: Esto es lo que la hace subir. Ajustá este número negativo según necesites */
-    margin-left: -160px; /*Este valor la mueve hacia los costados con valor positivo o negativo */
+    margin-left: -100px; /*Este valor la mueve hacia los costados con valor positivo o negativo */
 
     /* 3. APOYO VISUAL: Sombra y posición */
     object-fit: contain;

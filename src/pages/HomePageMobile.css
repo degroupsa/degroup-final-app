@@ -276,7 +276,7 @@
 }
 
     [class*="finalCtaImage"] {
-      width: 120% !important;
+      width: 100% !important;
       max-width: 500px !important;
       height: 100% !important;
       margin-top: 0 !important; 
@@ -396,7 +396,7 @@
       
       /* 1. PARA MOVERLO A LA DERECHA: */
       /* Aumenta este número (ej: 20px, 50px, auto) */
-      margin-left: 20px !important; 
+      margin: 0 auto !important;
 
       /* 2. PARA MOVERLO A LA IZQUIERDA (PEGA AL BORDE): */
       /* margin-left: 0 !important; */
