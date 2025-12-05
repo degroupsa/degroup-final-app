@@ -37,68 +37,61 @@ const titleModules = {
 
 const GetCategoryIcon = ({ iconName, className }) => {
   const IconMap = { FaTractor: <FaTractor />, FaIndustry: <FaIndustry />, FaSearch: <FaSearch />, GiHarvester: <FaTractor />, GiSeedling: <FaIndustry />, GiFarmTractor: <FaTractor /> };
-  const IconComponent = IconMap[iconName];
-  return IconComponent ? React.cloneElement(IconComponent, { className: className || styles.categoryIcon }) : <FaIndustry className={className || styles.categoryIcon} />;
+  const Icon = IconMap[iconName] || <FaIndustry />;
+  return React.cloneElement(Icon, { className: className || styles.categoryIcon });
 };
 
-// --- MODAL HERO ---
+// --- MODAL 1: HERO SLIDES ---
 const HeroSlidesEditorModal = ({ slides, onSave, onClose }) => {
   const [localSlides, setLocalSlides] = useState(Array.isArray(slides) ? slides : []);
   const [editingIndex, setEditingIndex] = useState(null); 
-  const [formTitle, setFormTitle] = useState('');
-  const [formIndicatorTitle, setFormIndicatorTitle] = useState('');
-  const [formText, setFormText] = useState('');
-  const [formButtonText, setFormButtonText] = useState('');
-  const [formType, setFormType] = useState('image'); 
-  const [mediaFile, setMediaFile] = useState(null);
-  const [mediaPreview, setMediaPreview] = useState('');
+  const [d, setD] = useState({ title:'', indicatorTitle:'', text:'', buttonText:'', type:'image', url:'' });
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleStartEdit = (index) => {
-    if (index >= 0) {
-      const slide = localSlides[index];
-      setFormTitle(slide.title || '');
-      setFormIndicatorTitle(slide.indicatorTitle || '');
-      setFormText(slide.text || '');
-      setFormButtonText(slide.buttonText || '');
-      setFormType(slide.type || 'image');
-      setMediaPreview(slide.url || '');
-      setEditingIndex(index);
-    } else {
-      setFormTitle(''); setFormIndicatorTitle(''); setFormText(''); setFormButtonText('MÁS INFO'); setFormType('image'); setMediaPreview(''); setEditingIndex('NEW');
-    }
-    setMediaFile(null);
+  const startEdit = (i) => {
+      if(i >= 0) { setD(localSlides[i]); setPreview(localSlides[i].url); setEditingIndex(i); }
+      else { setD({ title:'', indicatorTitle:'', text:'', buttonText:'SOLICITAR ASESORAMIENTO', type:'image', url:'' }); setPreview(''); setEditingIndex('NEW'); }
+      setFile(null);
   };
 
   const handleFileChange = (e) => {
     if (e.target.files[0]) {
-      setMediaFile(e.target.files[0]);
-      setMediaPreview(URL.createObjectURL(e.target.files[0]));
-      if (e.target.files[0].type.startsWith('video/')) setFormType('video'); else setFormType('image');
+      setFile(e.target.files[0]);
+      setPreview(URL.createObjectURL(e.target.files[0]));
+      if (e.target.files[0].type.startsWith('video/')) setD({...d, type:'video'}); else setD({...d, type:'image'});
     }
   };
 
-  const handleSaveSlide = async (e) => {
-    e.preventDefault(); setLoading(true);
-    try {
-      let finalUrl = mediaPreview;
-      if (mediaFile) {
-         const r = ref(storage, `hero/${formType==='video'?'videos':'images'}/${Date.now()}_${mediaFile.name}`);
-         await uploadBytes(r, mediaFile); finalUrl = await getDownloadURL(r);
-      }
-      const newSlide = { title: formTitle, indicatorTitle: formIndicatorTitle, text: formText, buttonText: formButtonText, type: formType, url: finalUrl };
-      let updated = [...localSlides];
-      if (editingIndex === 'NEW') updated.push(newSlide); else updated[editingIndex] = newSlide;
-      setLocalSlides(updated); setEditingIndex(null); 
-    } catch (error) { console.error(error); toast.error("Error"); }
-    setLoading(false);
+  const save = async (e) => {
+      e.preventDefault(); setLoading(true);
+      try {
+        let url = preview;
+        if(file) {
+            const r = ref(storage, `hero/${d.type==='video'?'v':'i'}/${Date.now()}_${file.name}`);
+            await uploadBytes(r, file); url = await getDownloadURL(r);
+        }
+        const newSlide = { ...d, url };
+        const newSlides = [...localSlides];
+        if(editingIndex === 'NEW') newSlides.push(newSlide); else newSlides[editingIndex] = newSlide;
+        setLocalSlides(newSlides); setEditingIndex(null); 
+      } catch (error) { console.error(error); toast.error("Error"); }
+      setLoading(false);
   };
 
-  const handleMove = (i, dir) => {
-    const arr = [...localSlides];
-    if (dir === 'up' && i > 0) [arr[i], arr[i-1]] = [arr[i-1], arr[i]];
-    else if (dir === 'down' && i < arr.length - 1) [arr[i], arr[i+1]] = [arr[i+1], arr[i]];
-    setLocalSlides(arr);
+  const move = (i, dir) => {
+      const arr = [...localSlides];
+      if(dir==='up' && i>0) [arr[i], arr[i-1]] = [arr[i-1], arr[i]];
+      if(dir==='down' && i<arr.length-1) [arr[i], arr[i+1]] = [arr[i+1], arr[i]];
+      setLocalSlides(arr);
+  };
+
+  const handleFinalSave = async () => {
+    setLoading(true);
+    await onSave('hero', { heroSlides: localSlides });
+    setLoading(false);
+    onClose();
   };
 
   return (
@@ -108,25 +101,25 @@ const HeroSlidesEditorModal = ({ slides, onSave, onClose }) => {
         <>
           <div className={styles.slideList}>{localSlides.map((s, i) => (
             <div key={i} className={styles.slideItem}>
-              <span><strong>#{i+1}</strong> {s.indicatorTitle || stripHtml(s.title).substring(0,30)}</span>
+              <span><strong>#{i+1}</strong> {s.type==='video'?'🎬':'📷'} {s.indicatorTitle || stripHtml(s.title).substring(0,20)}</span>
               <div className={styles.slideActions}>
-                <button onClick={()=>handleMove(i,'up')}><FaArrowUp/></button><button onClick={()=>handleMove(i,'down')}><FaArrowDown/></button>
-                <button onClick={()=>handleStartEdit(i)}><FaEdit/></button><button onClick={()=>{if(confirm('Borrar?')) setLocalSlides(localSlides.filter((_,x)=>x!==i))}}><FaTrash/></button>
+                <button type="button" onClick={()=>move(i,'up')}><FaArrowUp/></button><button type="button" onClick={()=>move(i,'down')}><FaArrowDown/></button>
+                <button type="button" onClick={()=>startEdit(i)}><FaEdit/></button><button type="button" onClick={()=>{if(confirm('Borrar?')) setLocalSlides(localSlides.filter((_,x)=>x!==i))}}><FaTrash/></button>
               </div>
             </div>
           ))}</div>
-          <button className={styles.createBtn} onClick={()=>handleStartEdit(-1)}>+ Slide</button>
-          <div className={styles.formActions}><button onClick={onClose}>Cerrar</button><button onClick={async()=>{await onSave('hero',{heroSlides:localSlides}); onClose();}}>Guardar Todo</button></div>
+          <button className={styles.createBtn} onClick={()=>startEdit(-1)}>+ Slide</button>
+          <div className={styles.formActions}><button type="button" onClick={onClose}>Cerrar</button><button type="button" onClick={handleFinalSave}>Guardar Todo</button></div>
         </>
       ) : (
-        <form onSubmit={handleSaveSlide} className={styles.formFields}>
-           <div className={styles.formGroup}><label>Tipo:</label><select value={formType} onChange={e=>setFormType(e.target.value)}><option value="image">Imagen</option><option value="video">Video</option></select></div>
-           <div className={styles.formGroup}><label>Archivo:</label><input type="file" onChange={handleFileChange}/></div>
-           <div className={styles.formGroup}><label>Título Principal:</label><ReactQuill value={formTitle} onChange={setFormTitle} modules={titleModules}/></div>
-           <div className={styles.formGroup}><label>Título Barra (Abajo):</label><input value={formIndicatorTitle} onChange={e=>setFormIndicatorTitle(e.target.value)} placeholder="Ej: DE GROUP 2026"/></div>
-           <div className={styles.formGroup}><label>Descripción:</label><ReactQuill value={formText} onChange={setFormText} modules={quillModules}/></div>
-           <div className={styles.formGroup}><label>Botón:</label><input value={formButtonText} onChange={e=>setFormButtonText(e.target.value)}/></div>
-           <div className={styles.formActions}><button onClick={()=>setEditingIndex(null)}>Volver</button><button type="submit" disabled={loading}>Guardar Slide</button></div>
+        <form onSubmit={save} className={styles.formFields}>
+           <div className={styles.formGroup}><label>Tipo:</label><select value={d.type} onChange={e=>setD({...d,type:e.target.value})}><option value="image">Imagen</option><option value="video">Video</option></select></div>
+           <div className={styles.formGroup}><label>Archivo:</label><input type="file" onChange={handleFileChange}/>{preview && <div style={{marginTop:'10px'}}>{d.type==='video'?<video src={preview} width="150" controls/>:<img src={preview} width="150"/>}</div>}</div>
+           <div className={styles.formGroup}><label>Título Principal:</label><ReactQuill value={d.title} onChange={v=>setD({...d,title:v})} modules={titleModules}/></div>
+           <div className={styles.formGroup}><label>Título Barra (Abajo):</label><input value={d.indicatorTitle} onChange={e=>setD({...d,indicatorTitle:e.target.value})} placeholder="Ej: DE GROUP 2026"/></div>
+           <div className={styles.formGroup}><label>Descripción:</label><ReactQuill value={d.text} onChange={v=>setD({...d,text:v})} modules={quillModules}/></div>
+           <div className={styles.formGroup}><label>Botón:</label><input value={d.buttonText} onChange={e=>setD({...d,buttonText:e.target.value})}/></div>
+           <div className={styles.formActions}><button type="button" onClick={()=>setEditingIndex(null)}>Volver</button><button type="submit" disabled={loading}>Guardar Slide</button></div>
         </form>
       )}
     </div></div>
@@ -159,13 +152,13 @@ const AdminSectionEditor = ({ sectionName, initialData, onSave, onClose }) => {
         {sectionName==='agritechnica' && <div className={styles.formGroup}><label>Overlay:</label><input value={overlayText} onChange={e=>setOverlayText(e.target.value)}/></div>}
         {sectionName==='finalCta' && <p style={{color:'#666'}}>Sube un PNG transparente.</p>}
         {sectionName!=='hero' && <div className={styles.formGroup}><label>Imagen:</label><input type="file" onChange={e=>{setFile(e.target.files[0]); setPrev(URL.createObjectURL(e.target.files[0]))}}/>{prev && <img src={prev} style={{width:100}}/>}</div>}
-        <div className={styles.formActions}><button onClick={onClose}>Cancelar</button><button type="submit" disabled={loading}>Guardar</button></div>
+        <div className={styles.formActions}><button type="button" onClick={onClose}>Cancelar</button><button type="submit" disabled={loading}>Guardar</button></div>
       </form>
     </div></div>
   );
 };
 
-// --- MODAL 3: TARJETAS NEWS ---
+// --- MODAL 3: NEWS CARD ---
 const NewsEditModal = ({ product, currentOrder, onSave, onClose }) => {
     const [d, setD] = useState({name:product.name, description:product.description, order:currentOrder}); const [file, setFile] = useState(null);
     return (
@@ -174,7 +167,7 @@ const NewsEditModal = ({ product, currentOrder, onSave, onClose }) => {
             <form onSubmit={async (e)=>{e.preventDefault(); await onSave(product.id, {name:d.name, description:d.description, order:parseInt(d.order)}, file); onClose();}}>
                 <div className={styles.formGroup}><label>Título:</label><ReactQuill value={d.name} onChange={v=>setD({...d,name:v})} modules={titleModules}/></div>
                 <div className={styles.formGroup}><label>Desc:</label><ReactQuill value={d.description} onChange={v=>setD({...d,description:v})} modules={quillModules}/></div>
-                <div className={styles.formGroup}><label>Posición:</label><input type="number" value={d.order} onChange={e=>setD({...d,order:e.target.value})}/></div>
+                <div className={styles.formGroup}><label>Posición:</label><input type="number" value={d.order} onChange={e=>setD({...d,order:parseInt(e.target.value)})}/></div>
                 <div className={styles.formGroup}><label>Imagen:</label><input type="file" onChange={e=>setFile(e.target.files[0])}/></div>
                 <div className={styles.formActions}><button onClick={onClose}>Cancelar</button><button type="submit">Guardar</button></div>
             </form>
@@ -187,10 +180,8 @@ const FeaturedProductsEditorModal = ({ sectionName, initialProductIDs, onSave, o
     const [ids, setIds] = useState(new Set(initialProductIDs||[])); const [search, setSearch] = useState('');
     const [isNew, setIsNew] = useState(false); const [nData, setNData] = useState({title:'', desc:''}); const [nFile, setNFile] = useState(null);
     
-    const handleSave = async () => { await onSave(sectionName, {productIDs: Array.from(ids)}); onClose(); };
     const handleCreate = async (e) => {
-        e.preventDefault(); 
-        const r = ref(storage, `marketing/${Date.now()}`); await uploadBytes(r, nFile); const url = await getDownloadURL(r);
+        e.preventDefault(); const r=ref(storage,`marketing/${Date.now()}`); await uploadBytes(r,nFile); const url=await getDownloadURL(r);
         const pg = await addDoc(collection(db,'marketing_pages'), {heroTitle:nData.title, heroSubtitle:truncateText(nData.desc,50), heroImageUrl:url, type:'custom'});
         const pr = await addDoc(collection(db,'products'), {name:nData.title, description:nData.desc, imageUrls:[url], isMarketing:true, marketingPageId:pg.id, order:999});
         setIds(prev=>new Set(prev).add(pr.id)); setIsNew(false); toast.success("Creado");
@@ -238,7 +229,7 @@ const CategoryEditorModal = ({ initialData, onSave, onClose, productCategories }
             <form onSubmit={handleSubmit}>
                 <div className={styles.formGroup}><label>Nombre:</label><input value={d.name} onChange={e=>setD({...d,name:e.target.value})} required/></div>
                 <div className={styles.formGroup}><label>Vincular:</label><select onChange={e=>setCat(e.target.value)}><option value="">Elegir</option>{productCategories.map(c=><option value={c}>{c}</option>)}<option value="__NEW__">Nueva</option></select></div>
-                {cat==='__NEW__' && <div className={styles.formGroup}><input placeholder="Nueva Categoría" value={newCat} onChange={e=>setNewCat(e.target.value)}/></div>}
+                {cat==='__NEW__' && <div className={styles.formGroup}><input placeholder="Nueva" value={newCat} onChange={e=>setNewCat(e.target.value)}/></div>}
                 <div className={styles.formGroup}><label>Icono:</label><input type="file" onChange={e=>setFile(e.target.files[0])}/></div>
                 <div className={styles.formGroup}><label>Orden:</label><input type="number" value={d.order} onChange={e=>setD({...d,order:e.target.value})}/></div>
                 <div className={styles.formActions}><button onClick={onClose}>Cancelar</button><button type="submit">Guardar</button></div>
@@ -251,36 +242,26 @@ const CategoryEditorModal = ({ initialData, onSave, onClose, productCategories }
 function HomePage() {
   const { user } = useAuth(); const isAdmin = user && (user.role === 'admin' || user.role === 'gestion');
   
-  // --- DATOS POR DEFECTO (CORREGIDO EL TEXTO DEL BOTÓN) ---
-  const defaultHeroData = { heroSlides: [{ title: 'DE Group', text: '...', buttonText: 'SOLICITAR ASESORAMIENTO', type: 'image', url: '' }] };
-  const defaultAgritechnicaData = { title: 'AGROACTIVA', text: '...', buttonText: 'VER', imageUrl: '' };
-  const defaultFinalCtaData = { title: 'Tu máquina DE Group', text: '...', buttonText: 'CONTACTO', imageUrl: '' };
-  const defaultNewsData = { title: 'Novedades', text: '...', productIDs: [] };
-  const defaultPromotionsData = { title: 'Promociones', text: '...', productIDs: [] };
-  
-  const [heroData, setHeroData] = useState(defaultHeroData);
-  const [agritechnicaData, setAgritechnicaData] = useState(defaultAgritechnicaData);
-  const [finalCtaData, setFinalCtaData] = useState(defaultFinalCtaData);
-  const [newsData, setNewsData] = useState(defaultNewsData);
-  const [promotionsData, setPromotionsData] = useState(defaultPromotionsData);
+  const [heroData, setHeroData] = useState({heroSlides:[{title:'DE Group',text:'',buttonText:'SOLICITAR ASESORAMIENTO',type:'image',url:''}]});
+  const [agritechnicaData, setAgritechnicaData] = useState({title:'AGRO',text:'',buttonText:'VER',imageUrl:''});
+  const [finalCtaData, setFinalCtaData] = useState({title:'Final CTA',text:'',buttonText:'CONTACTO',imageUrl:''});
+  const [newsData, setNewsData] = useState({title:'Novedades',text:'',productIDs:[]});
+  const [promotionsData, setPromotionsData] = useState({title:'Promociones',text:'',productIDs:[]});
   
   const [featuredProducts, setFeaturedProducts] = useState([]); const [promotionsList, setPromotionsList] = useState([]);
   const [categories, setCategories] = useState([]); const [allProducts, setAllProducts] = useState([]); const [prodCats, setProdCats] = useState([]);
   
-  // Estados UI
   const [currSlide, setCurrSlide] = useState(0); const [progress, setProgress] = useState(0);
   const [modals, setModals] = useState({hero:false, agri:false, final:false, news:false, promo:false, newsCards:false, promoCards:false, cat:false, card:false});
   const [currCat, setCurrCat] = useState(null); const [cardEdit, setCardEdit] = useState(null); const [editCtx, setEditCtx] = useState('');
   
-  const videoRef = useRef(null); const progressRef = useRef(null);
+  const videoRef = useRef(null); const progressInterval = useRef(null); 
   const newsRef = useRef(null); const promoRef = useRef(null);
 
-  // Carga
   useEffect(() => {
       const load = async () => {
           const fetch = async (col, id, set) => { const d = await getDoc(doc(db,col,id)); if(d.exists()) set(prev=>({...prev, ...d.data()})); };
           
-          // Hero Logic (Migración)
           const h = await getDoc(doc(db,'sections','hero'));
           if(h.exists()) { const d=h.data(); if(!d.heroSlides && d.imageUrl) setHeroData({heroSlides:[{title:d.title, text:d.text, buttonText:d.buttonText, url:d.videoUrl||d.imageUrl, type:d.videoUrl?'video':'image'}]}); else setHeroData(d); }
           
@@ -296,7 +277,7 @@ function HomePage() {
           const cats = new Set(); ps.docs.forEach(d=>d.data().category && cats.add(d.data().category)); setProdCats(Array.from(cats));
       };
       load();
-  }, []);
+  }, [isAdmin]);
 
   const loadProds = async (ids, set) => {
       if(!ids?.length) { set([]); return; }
@@ -317,39 +298,75 @@ function HomePage() {
       toast.success("Guardado");
   };
 
-  // Hero Logic (Video Loop Fix)
+  // --- LÓGICA HERO OPTIMIZADA (PRELOAD Y LOOP) ---
+  const activeSlide = heroData.heroSlides?.[currSlide];
   const nextSlide = () => { if(heroData.heroSlides) { setProgress(0); setCurrSlide(c=>(c+1)%heroData.heroSlides.length); } };
-  
-  // --- AQUÍ ESTÁ LA LÓGICA DEL BUCLE INFINITO PARA 1 SOLO VIDEO ---
-  const handleVideoEnd = () => { 
-      if(heroData.heroSlides.length===1 && videoRef.current) { 
+
+  const handleVideoEnded = () => {
+      if(heroData.heroSlides.length === 1 && videoRef.current) { 
           videoRef.current.currentTime=0; 
           videoRef.current.play(); 
           setProgress(0); 
-      } else {
-          nextSlide();
+      } else { nextSlide(); }
+  };
+  
+  const handleVideoTimeUpdate = (e) => { if(e.target.duration) setProgress((e.target.currentTime / e.target.duration) * 100); };
+
+  useEffect(() => {
+      if (activeSlide?.type === 'video' && videoRef.current) {
+          videoRef.current.play().catch(()=>{});
+      }
+  }, [currSlide, activeSlide]);
+
+  useEffect(() => {
+      if(!activeSlide) return;
+      if(progressInterval.current) clearInterval(progressInterval.current);
+      
+      if(activeSlide.type === 'image') {
+          let t=0; 
+          progressInterval.current = setInterval(()=>{ 
+              t+=50; 
+              setProgress(Math.min((t/5000)*100, 100)); 
+              if(t>=5000){ clearInterval(progressInterval.current); nextSlide(); } 
+          }, 50);
+      } else { 
+          setProgress(0);
+      }
+      return () => clearInterval(progressInterval.current);
+  }, [currSlide, heroData.heroSlides]);
+
+  const toggleModal = (m, v) => setModals(prev=>({...prev, [m]:v}));
+  const scroll = (ref, dir) => { if(ref.current) ref.current.scrollBy({left:dir==='left'?-300:300, behavior:'smooth'}); };
+
+  const handleCardOps = {
+      edit: (p, i, ctx) => { setCardToEdit({...p, order:i+1}); setEditCtx(ctx); setModals(prev=>({...prev, card:true})); },
+      delete: async (id, ctx) => { if(confirm("¿Quitar?")) { const sec = ctx==='news'?newsData:promotionsData; const newIds = sec.productIDs.filter(x=>x!==id); await saveData(ctx, {productIDs: newIds}); } },
+      save: async (id, data, file) => {
+          let img = null;
+          if(file) { const r = ref(storage, `marketing/${Date.now()}`); await uploadBytes(r, file); img = await getDownloadURL(r); }
+          await updateDoc(doc(db,'products',id), {name:data.name, description:data.description, order:data.order, ...(img&&{imageUrls:[img]})});
+          const sec = editCtx==='news'?newsData:promotionsData;
+          if(data.order !== cardToEdit.order) {
+              const ids = [...sec.productIDs].filter(x=>x!==id);
+              ids.splice(Math.max(0, Math.min(data.order-1, ids.length)), 0, id);
+              await saveData(editCtx, {productIDs: ids});
+          } else { 
+              if(editCtx==='news') loadProds(sec.productIDs, setFeaturedProducts); 
+              else loadProds(sec.productIDs, setPromotionsList); 
+          }
+          setModals(prev=>({...prev, card:false})); 
+          toast.success("Guardado");
       }
   };
 
-  // Forzar Play en Móvil
-  useEffect(() => {
-    if (heroData.heroSlides?.[currSlide]?.type === 'video' && videoRef.current) {
-        videoRef.current.play().catch(e => console.log("Autoplay prevent"));
-    }
-  }, [currSlide]);
-
-  useEffect(() => {
-      if(!heroData.heroSlides?.[currSlide]) return;
-      if(progressRef.current) clearInterval(progressRef.current);
-      if(heroData.heroSlides[currSlide].type === 'image') {
-          let t=0; progressRef.current = setInterval(()=>{ t+=50; setProgress(Math.min((t/5000)*100, 100)); if(t>=5000){clearInterval(progressRef.current); nextSlide();} }, 50);
-      } else { setProgress(0); }
-      return () => clearInterval(progressRef.current);
-  }, [currSlide, heroData.heroSlides]);
-
-  // Render Helpers
-  const toggleModal = (m, v) => setModals(prev=>({...prev, [m]:v}));
-  const scroll = (ref, dir) => { if(ref.current) ref.current.scrollBy({left:dir==='left'?-300:300, behavior:'smooth'}); };
+  const handleDeleteCardItem = async (productId, sectionContext) => {
+      if (window.confirm("¿Quitar esta tarjeta de la sección?")) {
+          const sectionData = sectionContext === 'news' ? newsData : promotionsData;
+          const currentIDs = [...sectionData.productIDs];
+          const newIDs = currentIDs.filter(id => id !== productId);
+          await saveSectionData(sectionContext, { productIDs: newIDs });
+      }
+  };
 
   return (
     <div className={styles.homePage}>
@@ -359,7 +376,17 @@ function HomePage() {
          {heroData.heroSlides?.map((s,i)=>(
              <div key={i} className={`${styles.heroSlide} ${i===currSlide?styles.active:''}`}>
                  {s.type==='video' ? 
-                    <video src={s.url} className={styles.heroMedia} muted autoPlay playsInline ref={i===currSlide?videoRef:null} onTimeUpdate={e=>e.target.duration && setProgress((e.target.currentTime/e.target.duration)*100)} onEnded={handleVideoEnd}/> 
+                    <video 
+                        src={s.url} 
+                        className={styles.heroMedia} 
+                        muted 
+                        playsInline
+                        /* AQUI APLICAMOS EL PRELOAD INTELIGENTE */
+                        preload={i === currSlide ? "auto" : "none"} 
+                        ref={i===currSlide ? videoRef : null} 
+                        onTimeUpdate={handleVideoTimeUpdate} 
+                        onEnded={handleVideoEnded}
+                    /> 
                  : <div className={styles.heroMedia} style={{backgroundImage:`url(${s.url})`, backgroundSize:'cover', backgroundPosition:'center'}}/>}
                  <div className={styles.heroOverlay}></div>
                  <div className={styles.heroContent}>
@@ -372,7 +399,7 @@ function HomePage() {
          <div className={styles.heroIndicators}><div className={styles.indicatorContainer}>{heroData.heroSlides?.map((s,i)=>(
              <div key={i} className={`${styles.indicatorItem} ${i===currSlide?styles.active:''}`} onClick={()=>{setCurrSlide(i); setProgress(0);}}>
                  <div className={styles.progressBar}><div className={styles.progressFill} style={{width:i===currSlide?`${progress}%`:'0%'}}/></div>
-                 <span className={styles.indicatorLabel}>{truncateText(stripHtml(s.title), 25)}</span>
+                 <span className={styles.indicatorLabel}>{truncateText(stripHtml(s.indicatorTitle||s.title), 25)}</span>
              </div>
          ))}</div></div>
       </section>
@@ -398,7 +425,7 @@ function HomePage() {
                   <div className={styles.agritechnicaText} dangerouslySetInnerHTML={{__html:agritechnicaData.text}}/>
                   <Link to="/contacto" className={styles.agritechnicaButton}>{agritechnicaData.buttonText}</Link>
               </div>
-              <div className={styles.agritechnicaImageContainer}><div className={styles.agritechnicaImageOverlayText}>{agritechnicaData.overlayText}</div><img src={agritechnicaData.imageUrl} className={styles.agritechnicaImage}/></div>
+              <div className={styles.agritechnicaImageContainer}><div className={styles.agritechnicaImageOverlayText}>{agritechnicaData.overlayText}</div><img src={agritechnicaData.imageUrl} className={styles.agritechnicaImage} alt="Agro"/></div>
           </div>
       </section>
 
@@ -411,7 +438,7 @@ function HomePage() {
                   <div className={styles.carouselArrows}><button className={styles.scrollArrow} onClick={()=>scroll(newsRef,'left')}><FaChevronLeft/></button><button className={styles.scrollArrow} onClick={()=>scroll(newsRef,'right')}><FaChevronRight/></button></div>
                   <div className={styles.newsGrid} ref={newsRef}>{featuredProducts.map((p,i)=>(
                       <div key={p.id} className={styles.newsCard}>
-                          {isAdmin && <div className={styles.adminCardButtons} style={{top:10,right:10,position:'absolute'}}><button className={styles.cardEditButton} onClick={()=>{setCardEdit({...p,order:i+1}); setEditCtx('news'); toggleModal('card',true)}}><FaEdit/></button></div>}
+                          {isAdmin && <div className={styles.adminCardButtons} style={{top:10,right:10,position:'absolute'}}><button className={styles.cardEditButton} onClick={()=>{setCardEdit({...p,order:i+1}); setEditCtx('news'); toggleModal('card',true)}}><FaEdit/></button><button className={styles.cardDeleteButton} onClick={()=>{handleCardOps.delete(p.id,'news')}}><FaTrash/></button></div>}
                           <div className={styles.newsImage}><img src={p.imageUrls?.[0]}/></div>
                           <div className={styles.newsContent}><h3 className={styles.newsTitle} dangerouslySetInnerHTML={{__html:p.name}}/><div className={styles.newsDescription} dangerouslySetInnerHTML={{__html:truncateText(p.description,100)}}/><Link to={p.isMarketing?`/novedades/${p.marketingPageId}`:`/producto/${p.id}`} className={styles.newsLink}>LEER MÁS <FaChevronRight/></Link></div>
                       </div>
@@ -429,7 +456,7 @@ function HomePage() {
                   <div className={styles.carouselArrows}><button className={styles.scrollArrow} onClick={()=>scroll(promoRef,'left')}><FaChevronLeft/></button><button className={styles.scrollArrow} onClick={()=>scroll(promoRef,'right')}><FaChevronRight/></button></div>
                   <div className={styles.newsGrid} ref={promoRef}>{promotionsList.map((p,i)=>(
                       <div key={p.id} className={styles.newsCard}>
-                          {isAdmin && <div className={styles.adminCardButtons} style={{top:10,right:10,position:'absolute'}}><button className={styles.cardEditButton} onClick={()=>{setCardEdit({...p,order:i+1}); setEditCtx('promotions'); toggleModal('card',true)}}><FaEdit/></button></div>}
+                          {isAdmin && <div className={styles.adminCardButtons} style={{top:10,right:10,position:'absolute'}}><button className={styles.cardEditButton} onClick={()=>{setCardEdit({...p,order:i+1}); setEditCtx('promotions'); toggleModal('card',true)}}><FaEdit/></button><button className={styles.cardDeleteButton} onClick={()=>{handleCardOps.delete(p.id,'promotions')}}><FaTrash/></button></div>}
                           <div className={styles.newsImage}><img src={p.imageUrls?.[0]}/></div>
                           <div className={styles.newsContent}><h3 className={styles.newsTitle} dangerouslySetInnerHTML={{__html:p.name}}/><div className={styles.newsDescription} dangerouslySetInnerHTML={{__html:truncateText(p.description,100)}}/><Link to={p.isMarketing?`/novedades/${p.marketingPageId}`:`/producto/${p.id}`} className={styles.newsLink}>LEER MÁS <FaChevronRight/></Link></div>
                       </div>

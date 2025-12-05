@@ -456,7 +456,7 @@
   font-size: 2.5rem;  
   font-weight: 700;  
   line-height: 1.3;  
-  margin: 0 0 1rem 0;  
+  margin: 0 0 0rem 0;  
   text-transform: uppercase;  
   color: #fff;
 }
@@ -465,7 +465,7 @@
   font-size: 1rem;  
   line-height: 1.7;  
   color: #E9ECEF;
-  margin-bottom: 2.5rem;  
+  margin-bottom: 0.5rem;  
 }  
   
 .agritechnicaButton { 
@@ -480,6 +480,7 @@
   display: inline-block;
   text-transform: uppercase;
   align-self: flex-start;
+  margin-bottom: 3rem;
 }
   
 .agritechnicaButton:hover {
