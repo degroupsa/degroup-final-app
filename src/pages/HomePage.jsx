@@ -175,11 +175,16 @@ const NewsEditModal = ({ product, currentOrder, onSave, onClose }) => {
     );
 };
 
-// --- MODAL 4: SELECCIÓN PRODUCTOS ---
+// --- MODAL 4: SELECCIÓN PRODUCTOS (CORREGIDO) ---
 const FeaturedProductsEditorModal = ({ sectionName, initialProductIDs, onSave, onClose, allProducts }) => {
     const [ids, setIds] = useState(new Set(initialProductIDs||[])); const [search, setSearch] = useState('');
     const [isNew, setIsNew] = useState(false); const [nData, setNData] = useState({title:'', desc:''}); const [nFile, setNFile] = useState(null);
     
+    const handleSaveSelection = async () => { 
+        await onSave(sectionName, {productIDs: Array.from(ids)}); 
+        onClose(); 
+    };
+
     const handleCreate = async (e) => {
         e.preventDefault(); const r=ref(storage,`marketing/${Date.now()}`); await uploadBytes(r,nFile); const url=await getDownloadURL(r);
         const pg = await addDoc(collection(db,'marketing_pages'), {heroTitle:nData.title, heroSubtitle:truncateText(nData.desc,50), heroImageUrl:url, type:'custom'});
@@ -197,7 +202,8 @@ const FeaturedProductsEditorModal = ({ sectionName, initialProductIDs, onSave, o
                  <div className={styles.productListContainer}>{allProducts.filter(p=>p.name.toLowerCase().includes(search.toLowerCase())).map(p=>(
                      <label key={p.id} className={styles.productListItem}><input type="checkbox" checked={ids.has(p.id)} onChange={()=>{const n=new Set(ids); if(n.has(p.id))n.delete(p.id); else n.add(p.id); setIds(n)}}/> {stripHtml(p.name)}</label>
                  ))}</div>
-                 <div className={styles.formActions}><button onClick={onClose}>Cerrar</button><button onClick={handleSave}>Guardar Selección</button></div>
+                 {/* CORREGIDO EL BOTÓN GUARDAR */}
+                 <div className={styles.formActions}><button onClick={onClose}>Cerrar</button><button onClick={handleSaveSelection}>Guardar Selección</button></div>
                 </>
             ) : (
                 <form onSubmit={handleCreate}>
@@ -255,7 +261,8 @@ function HomePage() {
   const [modals, setModals] = useState({hero:false, agri:false, final:false, news:false, promo:false, newsCards:false, promoCards:false, cat:false, card:false});
   const [currCat, setCurrCat] = useState(null); const [cardEdit, setCardEdit] = useState(null); const [editCtx, setEditCtx] = useState('');
   
-  const videoRef = useRef(null); const progressInterval = useRef(null); 
+  const videoRef = useRef(null); 
+  const progressInterval = useRef(null); 
   const newsRef = useRef(null); const promoRef = useRef(null);
 
   useEffect(() => {
@@ -272,9 +279,13 @@ function HomePage() {
           const p = await getDoc(doc(db,'sections','promotions')); if(p.exists()) { setPromotionsData(p.data()); loadProds(p.data().productIDs, setPromotionsList); }
           
           const cs = await getDocs(query(collection(db,'categories'), orderBy('order'))); setCategories(cs.docs.map(d=>({id:d.id,...d.data()})));
+          
+          // CORRECCIÓN SINTAXIS AQUÍ
           const ps = await getDocs(collection(db,'products')); 
-          setAllProducts(ps.docs.map(d=>({id:d.id, name:d.data().name, ...d.data()})));
-          const cats = new Set(); ps.docs.forEach(d=>d.data().category && cats.add(d.data().category)); setProdCats(Array.from(cats));
+          const pList = ps.docs.map(d => ({id:d.id, name:d.data().name, ...d.data()}));
+          setAllProducts(pList);
+
+          const cats = new Set(); pList.forEach(d=>d.data().category && cats.add(d.data().category)); setProdCats(Array.from(cats));
       };
       load();
   }, [isAdmin]);
@@ -298,7 +309,7 @@ function HomePage() {
       toast.success("Guardado");
   };
 
-  // --- LÓGICA HERO OPTIMIZADA (PRELOAD Y LOOP) ---
+  // --- LÓGICA HERO ---
   const activeSlide = heroData.heroSlides?.[currSlide];
   const nextSlide = () => { if(heroData.heroSlides) { setProgress(0); setCurrSlide(c=>(c+1)%heroData.heroSlides.length); } };
 
@@ -312,12 +323,14 @@ function HomePage() {
   
   const handleVideoTimeUpdate = (e) => { if(e.target.duration) setProgress((e.target.currentTime / e.target.duration) * 100); };
 
+  // Forzar Play en Móvil
   useEffect(() => {
       if (activeSlide?.type === 'video' && videoRef.current) {
           videoRef.current.play().catch(()=>{});
       }
   }, [currSlide, activeSlide]);
 
+  // Temporizador Imágenes
   useEffect(() => {
       if(!activeSlide) return;
       if(progressInterval.current) clearInterval(progressInterval.current);
@@ -380,9 +393,7 @@ function HomePage() {
                         src={s.url} 
                         className={styles.heroMedia} 
                         muted 
-                        playsInline
-                        /* AQUI APLICAMOS EL PRELOAD INTELIGENTE */
-                        preload={i === currSlide ? "auto" : "none"} 
+                        playsInline 
                         ref={i===currSlide ? videoRef : null} 
                         onTimeUpdate={handleVideoTimeUpdate} 
                         onEnded={handleVideoEnded}
