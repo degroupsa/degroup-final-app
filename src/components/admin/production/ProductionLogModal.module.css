@@ -1,0 +1,297 @@
+/* src/components/admin/production/ProductionLogModal.module.css */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+  backdrop-filter: blur(4px);
+}
+
+.modalContent {
+  background: white;
+  padding: 0; /* No padding here, handled by sections */
+  border-radius: 12px;
+  width: 90%;
+  max-width: 700px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+  flex-shrink: 0; /* Header should not shrink */
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #212529;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.closeButton {
+  background: none; border: none; font-size: 1.8rem; cursor: pointer;
+  color: #6c757d; padding: 0; line-height: 1;
+}
+
+.orderDetails {
+  padding: 1rem 1.5rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  flex-shrink: 0; /* Should not shrink */
+}
+.orderDetails p { margin: 0.25rem 0; font-size: 0.9rem; }
+.trackingCode { font-family: monospace; background-color: #e9ecef; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 600; }
+
+/* Container principal para el contenido scrolleable (form + historial) */
+.logContainer {
+  padding: 1.5rem;
+  overflow-y: auto; /* Permite scroll si el contenido es mucho */
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  flex-grow: 1; /* Ocupa el espacio restante */
+}
+
+/* Formulario de añadir nota en Bitácora */
+.noteForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.noteForm textarea {
+  width: 100%; border: 1px solid #ced4da; border-radius: 5px;
+  padding: 0.75rem; font-size: 1rem; font-family: inherit;
+  resize: vertical; min-height: 80px;
+}
+.noteForm textarea:focus { outline: none; border-color: #007bff; box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); }
+
+/* Botón específico de Guardar Observación (podría usar actionButton ahora) */
+.noteForm button {
+  /* Mantenemos estilo específico si quieres diferenciarlo, o podemos borrarlo */
+  /* y usar solo las clases actionButton/submitButton en el JSX */
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  background-color: #28a745; color: white; border: none; padding: 0.7rem 1.5rem;
+  font-weight: 600; border-radius: 5px; cursor: pointer; align-self: flex-end;
+}
+.noteForm button:disabled { background-color: #6c757d; cursor: not-allowed; }
+
+
+/* Historial de la Bitácora */
+.logHistory { flex-shrink: 0; } /* Evita que el historial se achique innecesariamente */
+.logHistory h4 { margin-top: 0; margin-bottom: 1rem; border-bottom: 1px solid #e9ecef; padding-bottom: 0.5rem; }
+.noLogs { text-align: center; color: #6c757d; font-style: italic; padding: 1rem 0; }
+.logList { list-style-type: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #ced4da #f8f9fa; }
+.logList::-webkit-scrollbar { width: 8px; }
+.logList::-webkit-scrollbar-track { background: #f8f9fa; border-radius: 4px; }
+.logList::-webkit-scrollbar-thumb { background-color: #ced4da; border-radius: 4px; border: 2px solid #f8f9fa; }
+.logItem { display: flex; gap: 1rem; padding: 1rem 0.5rem; border-bottom: 1px solid #e9ecef; }
+.logItem:last-child { border-bottom: none; }
+.logIcon { flex-shrink: 0; width: 35px; height: 35px; border-radius: 50%; background-color: #f1f3f5; color: #495057; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+.logDetails p { margin: 0; }
+.logNote { font-size: 0.95rem; color: #212529; line-height: 1.5; margin-bottom: 0.25rem !important; white-space: pre-wrap; }
+.logMeta { font-size: 0.8rem; color: #6c757d; }
+
+/* Buscador de Clientes (usado en EditProductionOrderModal y ContactForm) */
+.searchClientGroup { display: flex; flex-direction: column; gap: 0.5rem; }
+.searchClientGroup label { font-weight: 500; color: #495057; }
+.searchContainer { position: relative; width: 100%; }
+.searchIcon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #6c757d; }
+.searchInput { width: 100%; box-sizing: border-box; padding: 0.75rem 0.75rem 0.75rem 2.2rem; border: 1px solid #ced4da; border-radius: 5px; font-size: 1rem; }
+.searchInput:focus { outline: none; border-color: #007bff; box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); }
+.searchResults { list-style-type: none; padding: 0; margin: 0; border: 1px solid #ced4da; border-top: none; border-radius: 0 0 5px 5px; max-height: 150px; overflow-y: auto; background: white; width: 100%; box-sizing: border-box; z-index: 1060; }
+.searchResults li { padding: 0.75rem 1rem; cursor: pointer; display: flex; flex-direction: column; }
+.searchResults li:hover { background-color: #f1f3f5; }
+.searchResults li strong { font-size: 0.95rem; color: #212529; }
+.searchResults li span { font-size: 0.8rem; color: #6c757d; }
+
+
+/* --- ▼▼▼ ESTILOS AÑADIDOS PARA BOTONES DE ACCIÓN ▼▼▼ --- */
+.modalActions {
+  display: flex;
+  justify-content: flex-end; /* Alinea botón(es) a la derecha */
+  gap: 1rem;
+  margin-top: 1.5rem; /* Espacio arriba de los botones */
+  padding: 1.5rem 1.5rem 0 1.5rem; /* Padding arriba y a los lados, SIN padding abajo */
+  border-top: 1px solid #e9ecef; /* Línea separadora */
+  flex-shrink: 0; /* Evita que esta sección se achique */
+}
+
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem; /* Ajuste ligero tamaño fuente */
+  line-height: 1.5; /* Asegura altura consistente */
+}
+.actionButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.actionButton:disabled {
+    background-color: #adb5bd;
+    color: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.submitButton {
+  background-color: #198754; /* Verde estándar */
+  color: white;
+}
+.submitButton:hover:not(:disabled) {
+    background-color: #157347; /* Verde más oscuro */
+}
+
+.cancelButton { /* Estilo opcional si añades botón Cancelar */
+    background-color: #6c757d;
+    color: white;
+}
+.cancelButton:hover:not(:disabled) {
+    background-color: #5a6268;
+}
+/* --- ▲▲▲ FIN ESTILOS AÑADIDOS ▲▲▲ --- */
+/* ... (Estilos anteriores van aquí) ... */
+
+
+/* --- ▼▼▼ ESTILOS AÑADIDOS PARA FORMULARIO ESTRUCTURADO ▼▼▼ --- */
+
+/* Renombramos .noteForm a .entryForm para claridad */
+.entryForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Espacio entre selector, campos y botón */
+  border-bottom: 1px solid #dee2e6; /* Separador antes del historial */
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Selector de tipo de entrada (botones radio estilizados) */
+.entryTypeSelector {
+  display: flex;
+  gap: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  padding: 0.3rem;
+  background-color: #f8f9fa;
+}
+.entryTypeSelector label {
+  flex: 1; /* Ocupa espacio equitativo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: transparent;
+  color: #495057;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+.entryTypeSelector input[type="radio"] {
+  display: none; /* Ocultamos el radio button real */
+}
+.entryTypeSelector label:hover {
+  background-color: #e9ecef;
+}
+.entryTypeSelector label.active {
+  background-color: #0d6efd; /* Azul cuando está activo */
+  color: white;
+}
+.entryTypeSelector svg {
+    margin-bottom: -2px; /* Alineación icono */
+}
+
+/* Grid para los campos de Número de Serie */
+.serialFormGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Dos columnas */
+  gap: 0.75rem 1rem;
+}
+
+/* Grupo de formulario genérico para los inputs */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+.formGroup label {
+  margin-bottom: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #495057;
+}
+.formGroup input[type="text"] {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+.formGroup input[type="text"]:focus {
+  outline: none;
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, .25);
+}
+
+/* Textarea específico para notas */
+.noteTextarea {
+  width: 100%;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 60px; /* Altura más compacta */
+}
+.noteTextarea:focus {
+  outline: none;
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, .25);
+}
+
+/* Asegura que modalActions no tenga padding superior si sigue al form */
+.entryForm > .modalActions {
+    padding-top: 0;
+    margin-top: 0; /* Quitamos margen superior extra */
+    border-top: none; /* Quitamos borde superior extra */
+}
+
+
+/* Estilo para mostrar entrada estructurada en el historial */
+.logNoteStructured {
+  font-size: 0.95rem;
+  color: #212529;
+  line-height: 1.5;
+  margin-bottom: 0.25rem !important;
+}
+.logNoteStructured strong {
+    color: #0d6efd; /* Destacamos la etiqueta */
+    margin-right: 0.3rem;
+}
+
+/* --- ▲▲▲ FIN ESTILOS AÑADIDOS ▲▲▲ --- */

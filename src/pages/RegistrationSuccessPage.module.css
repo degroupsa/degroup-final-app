@@ -1,0 +1,90 @@
+/* src/pages/RegistrationSuccessPage.module.css */
+
+.successPage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 2rem;
+    background-color: #f8f9fa; /* Un fondo suave y limpio */
+  }
+  
+  .successContainer {
+    background-color: #ffffff;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    border-top: 5px solid #28a745; /* Un acento de color de éxito (verde) */
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .iconContainer {
+    font-size: 4rem;
+    color: #28a745; /* Verde para el ícono */
+    margin-bottom: 1.5rem;
+    animation: popIn 0.5s 0.2s ease-out backwards;
+  }
+  
+  @keyframes popIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  .title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 1rem;
+  }
+  
+  .instructions {
+    color: #495057;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+  
+  .instructions strong {
+      color: #212529;
+      font-weight: 600;
+  }
+  
+  .spamNote {
+    background-color: #fff3cd;
+    color: #664d03;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    border: 1px solid #ffc107;
+    display: inline-block;
+  }
+  
+  .loginButton {
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+    margin-top: 2rem;
+  }
+  
+  .loginButton:hover {
+    background-color: #0b5ed7;
+    transform: translateY(-2px);
+  }
+  

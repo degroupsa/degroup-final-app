@@ -1,0 +1,199 @@
+/* src/pages/admin/AdminContactsPage.module.css */
+
+.pageContainer {
+  padding: 1.5rem 2rem;
+  max-width: 100%; /* Ocupa todo el ancho disponible */
+  margin: 0 auto;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pageHeader h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.searchContainer { position: relative; display: flex; align-items: center; }
+.searchIcon { position: absolute; left: 12px; color: #6c757d; font-size: 0.9rem; pointer-events: none; }
+.searchInput { padding: 0.6rem 0.75rem 0.6rem 2.2rem; border: 1px solid #ced4da; border-radius: 5px; font-size: 0.95rem; width: 300px; transition: all 0.2s; }
+.searchInput:focus { outline: none; border-color: #80bdff; box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25); }
+
+.addButton { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.4rem; background-color: #0d6efd; color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; transition: background-color 0.2s, transform 0.1s; font-size: 0.95rem; }
+.addButton:hover { background-color: #0b5ed7; transform: translateY(-1px); }
+.addButton:active { transform: translateY(0); }
+
+/* --- ▼▼▼ NUEVOS ESTILOS PARA LA TABLA ▼▼▼ --- */
+.tableContainer {
+  width: 100%;
+  overflow-x: auto; /* Permite scroll horizontal en pantallas pequeñas */
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid #dee2e6; /* Borde sutil */
+}
+
+.contactsTable {
+  width: 100%;
+  border-collapse: collapse; /* Bordes limpios */
+  min-width: 800px; /* Ancho mínimo para evitar que se comprima demasiado */
+}
+
+.contactsTable th,
+.contactsTable td {
+  padding: 0.9rem 1rem; /* Buen padding */
+  text-align: left;
+  vertical-align: middle; /* Alineación vertical */
+  border-bottom: 1px solid #e9ecef; /* Separador de filas */
+  white-space: nowrap; /* Evita que el texto se parta por defecto */
+}
+
+.contactsTable th {
+  background-color: #f8f9fa; /* Fondo cabecera */
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: #495057;
+}
+
+/* Permitir wrap en celdas que puedan tener texto largo (ej. email, ubicación) */
+.contactsTable td:nth-child(3), /* Email */
+.contactsTable td:nth-child(4) { /* Ubicación */
+  white-space: normal;
+}
+
+/* Estilo para celda de acciones */
+.actionsCell {
+  text-align: right; /* Alinea botones a la derecha */
+  white-space: nowrap;
+}
+
+.actionButton {
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.4rem;
+  margin-left: 0.5rem; /* Espacio entre botones */
+  font-size: 1rem;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.actionButton:hover {
+  color: #0d6efd; /* Azul al pasar el mouse */
+}
+.deleteButton { color: #dc3545; } /* Rojo */
+.deleteButton:hover { color: #bb2d3b; } /* Rojo oscuro */
+
+/* Mensaje de "No hay contactos" dentro de la tabla */
+.noContactsMessage td {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Badges de estado (se mantienen iguales) */
+.statusBadge { padding: 0.25rem 0.7rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; color: #fff; }
+.statusNuevo { background-color: #6c757d; }
+.statusContactado { background-color: #0d6efd; }
+.statusInteresado { background-color: #198754; }
+.statusNoInteresado { background-color: #dc3545; }
+.statusNecesitaSeguimiento { background-color: #ffc107; color: #000;}
+/* --- ▲▲▲ FIN NUEVOS ESTILOS ▲▲▲ --- */
+
+/* Responsive general */
+@media (max-width: 768px) {
+  .pageHeader { justify-content: center; }
+  .searchInput { width: 100%; max-width: 400px; }
+}
+
+/* ... (Todos los estilos anteriores van aquí) ... */
+
+
+/* --- ▼▼▼ ESTILOS AÑADIDOS PARA FILTROS Y QR ▼▼▼ --- */
+
+/* Contenedor para los selects de filtro */
+.filtersContainer {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.filterSelect {
+  padding: 0.55rem 0.75rem; /* Ligeramente más pequeño que el search input */
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  background-color: #fff;
+  color: #495057;
+  cursor: pointer;
+  min-width: 150px; /* Ancho mínimo */
+}
+.filterSelect:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, .25);
+}
+
+/* Celda de Teléfono y botón QR */
+.phoneCell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Empuja el botón a la derecha */
+  gap: 0.5rem;
+}
+
+.qrButton {
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.2rem; /* Padding pequeño */
+  font-size: 1.1rem; /* Tamaño icono QR */
+  line-height: 1;
+  transition: color 0.2s;
+  opacity: 0.7; /* Ligeramente transparente */
+}
+.qrButton:hover {
+  color: #0d6efd; /* Azul al pasar el mouse */
+  opacity: 1;
+}
+
+/* Ajuste responsive para filtros y búsqueda */
+@media (max-width: 992px) { /* Ajusta este breakpoint si es necesario */
+  .headerActions {
+     flex-direction: column; /* Apila elementos */
+     align-items: stretch; /* Ocupan todo el ancho */
+  }
+  .filtersContainer {
+      width: 100%;
+      justify-content: space-between; /* Distribuye selects */
+  }
+  .filterSelect {
+      flex-grow: 1; /* Ocupan espacio disponible */
+  }
+  .searchContainer {
+      width: 100%;
+  }
+  .searchInput {
+      width: 100%; /* Input ocupa todo el ancho */
+  }
+  .addButton {
+      width: 100%; /* Botón ocupa todo el ancho */
+      justify-content: center; /* Centra texto e icono */
+  }
+}
+/* --- ▲▲▲ FIN ESTILOS AÑADIDOS ▲▲▲ --- */

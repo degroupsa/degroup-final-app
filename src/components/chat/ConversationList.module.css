@@ -1,0 +1,79 @@
+.conversationList {
+  border-right: 1px solid #e0e0e0;
+  height: 100%;
+  overflow-y: auto;
+  background-color: #f7f7f7;
+}
+
+.loading, .noConvos {
+  padding: 20px;
+  text-align: center;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.convoItem {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  gap: 15px;
+  cursor: pointer;
+  text-decoration: none;
+  border-bottom: 1px solid #e9e9e9;
+  transition: background-color 0.2s;
+  position: relative;
+}
+
+.convoItem:hover {
+  background-color: #f0f0f0;
+}
+
+.convoItem.active {
+  background-color: #eef5ff;
+  border-right: 3px solid #007bff;
+}
+
+.convoDetails {
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.displayName {
+  font-weight: 600;
+  color: #333;
+}
+
+.lastMessage {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ▼▼▼ ESTILOS CORREGIDOS PARA EL BOTÓN DE ELIMINAR ▼▼▼ */
+.deleteButton {
+  background-color: transparent; /* 1. Quitamos el fondo */
+  color: #888; /* Color inicial del ícono */
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  opacity: 0; /* Lo hacemos invisible por defecto */
+  transition: opacity 0.2s, color 0.2s, background-color 0.2s;
+}
+
+.convoItem:hover .deleteButton {
+  opacity: 1; /* Aparece al pasar el ratón sobre el item */
+}
+
+.deleteButton:hover {
+  color: #dc3545; /* 2. El ícono se pone rojo */
+  background-color: rgba(220, 53, 69, 0.1); /* Fondo rojo muy sutil para mejor feedback */
+}
+/* ▲▲▲ FIN DE ESTILOS CORREGIDOS ▲▲▲ */

@@ -1,0 +1,220 @@
+.pageContainer {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.checkoutWrapper {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+  padding: 2rem;
+}
+
+.pageTitle {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 2.5rem;
+  font-size: 2.2rem;
+  color: #2c3e50;
+}
+
+.checkoutLayout {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 2.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.inputGroup {
+  margin-bottom: 1.25rem;
+}
+
+.inputGroup label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #495057;
+}
+
+.inputGroup input {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.inputGroup input:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+}
+
+.summarySection {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.summaryDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.summaryItem {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.itemName {
+  color: #495057;
+}
+
+.itemPrice {
+  font-weight: 500;
+}
+
+.summaryTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+  padding-top: 1rem;
+  border-top: 2px solid #dee2e6;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #121212;
+  background-color: #ffd000;
+  border: 2px solid #ffd000;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #e6bb00;
+  border-color: #e6bb00;
+  transform: translateY(-2px);
+}
+
+.submitButton:disabled {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* --- Media Query para móvil --- */
+@media (max-width: 992px) {
+  .checkoutLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- AÑADIR ESTO AL FINAL DE CheckoutPage.module.css --- */
+
+/* Estilos para la grilla de inputs */
+.inputGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+/* Estilos para los selectores (Provincia/Ciudad) */
+.inputGroup select,
+.inputGroup textarea {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  box-sizing: border-box;
+  background-color: #fff;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.inputGroup select:focus,
+.inputGroup textarea:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+}
+
+.inputGroup select:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+.inputGroup textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.sectionSubtitle {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Estilos para el selector de tipo de domicilio */
+.addressTypeSelector {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.addressTypeOption {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 12px;
+  border: 2px solid #ced4da;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.addressTypeOption:hover {
+  background-color: #f8f9fa;
+}
+
+.addressTypeOption.active {
+  border-color: #007bff;
+  background-color: #e7f1ff;
+  color: #0056b3;
+}
+
+/* Hacemos la grilla de inputs de 1 columna en móvil */
+@media (max-width: 576px) {
+  .inputGrid {
+    grid-template-columns: 1fr;
+    gap: 0; /* Quitamos el gap y dejamos el margen de inputGroup */
+  }
+}

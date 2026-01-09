@@ -1,0 +1,206 @@
+.postCard {
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #dbdbdb; 
+  margin-bottom: 2rem;
+}
+
+.postHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+}
+
+.authorLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.authorInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.authorInfo div {
+  display: flex;
+  flex-direction: column;
+}
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.authorName {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1d2129;
+}
+
+.postDate {
+  font-size: 0.75rem;
+  color: #65676b;
+}
+
+.postContent {
+  padding: 0.25rem 1rem;
+}
+
+.caption {
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+  text-align: left;
+}
+
+.imageContainer {
+  width: 100%;
+  max-height: 700px;
+  background-color: #f1f3f5;
+  border-top: 1px solid #dbdbdb;
+}
+
+.postImage {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.postFooter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  padding: 0.6rem 0.5rem 0.5rem 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.postActions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.actionButton {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: #65676b;
+  font-size: 1rem; /* Ajustado para consistencia */
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.actionButton:hover { color: #262626; }
+.actionButton.liked { color: #ed4956; }
+
+.count {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 6px;
+  color: #65676b;
+}
+
+.likesCounter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #65676b;
+  font-weight: 500;
+  min-width: 0; /* Corrección para evitar desbordamiento */
+}
+
+.likeIcon {
+  color: #ed4956;
+}
+
+.optionsContainer {
+  position: relative;
+}
+.optionsButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #8e8e8e;
+  padding: 8px;
+  border-radius: 50%;
+}
+.optionsButton:hover {
+    background-color: #f0f2f5;
+}
+.optionsMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 10;
+  width: 150px;
+}
+.optionsMenu button {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+.optionsMenu button:hover {
+  background-color: #f0f2f5;
+}
+.optionsMenu .deleteOption {
+  color: #ed4956;
+  font-weight: bold; 
+}
+
+/* --- ✅ NUEVOS ESTILOS PARA EL MENÚ DE COMPARTIR --- */
+.shareContainer {
+  position: relative;
+}
+
+.shareMenu {
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 10;
+  width: 220px;
+  overflow: hidden;
+  border: 1px solid #dbdbdb;
+}
+
+.shareMenu button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.shareMenu button:hover {
+  background-color: #f0f2f5;
+}
+
+.shareMenu button svg {
+  color: #65676b;
+  font-size: 1.1rem;
+}

@@ -1,0 +1,50 @@
+/* CategoryFilter.module.css (CORREGIDO) */
+
+/* --- ✅ CAMBIO 1: Contenedor de una sola línea con scroll horizontal --- */
+.filterContainer {
+  display: flex;
+  justify-content: flex-start; /* Alineamos los botones al inicio */
+  gap: 0.75rem;              /* Un poco menos de espacio entre botones */
+  margin-bottom: 3rem;
+  
+  flex-wrap: nowrap;         /* Evita que los botones salten a la siguiente línea */
+  overflow-x: auto;          /* Permite el scroll horizontal si no entran todos */
+  padding-bottom: 1rem;      /* Espacio para que no se pegue a la barra de scroll */
+  -webkit-overflow-scrolling: touch; /* Scroll más suave en iOS */
+}
+
+/* --- Opcional: Oculta la barra de scroll para un look más limpio --- */
+.filterContainer::-webkit-scrollbar {
+  display: none;
+}
+
+/* --- ✅ CAMBIO 2: Botones más compactos y sutiles --- */
+.filterButton {
+  background-color: transparent;
+  border: 1.5px solid #d1d5db; /* Borde un poco más sutil */
+  color: #4b5563;
+  padding: 0.5rem 1rem;      /* Padding reducido para un botón más chico */
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;           /* Fuente un poco más pequeña */
+  white-space: nowrap;         /* Evita que el texto del botón se parta */
+  transition: all 0.2s ease-in-out;
+}
+  
+.filterButton:hover {
+  border-color: #374151;
+  color: #111827;
+}
+  
+.filterButton.filterButtonActive {
+  background-color: #343a40;
+  color: #ffd000;
+  border-color: #ffd000;
+}
+
+.filterButton.filterButtonActive:hover {
+  background-color: #343a40;
+  color: #ffd000;
+  border-color: #ffd000;
+}

@@ -1,0 +1,132 @@
+.adjustmentFormOverlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000; backdrop-filter: blur(5px);
+}
+.adjustmentFormContainer {
+  background-color: white; padding: 2rem; border-radius: 8px;
+  width: 90%; max-width: 700px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  display: flex; flex-direction: column;
+}
+.adjustmentFormContainer h2 { margin-top: 0; }
+.searchGroup { position: relative; }
+
+.suggestionsList {
+  border: 1px solid #dee2e6;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-radius: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  min-height: 40px;
+}
+.suggestionsList li { 
+  padding: 0.75rem 1rem; 
+  cursor: pointer; 
+  display: flex; 
+  justify-content: space-between;
+  color: #212529;
+  border-bottom: 1px solid #f1f1f1;
+}
+.suggestionsList li:last-child {
+  border-bottom: none;
+}
+.suggestionsList li:hover { 
+  background-color: #f8f9fa; 
+}
+.noResults { 
+  color: #888; 
+  cursor: default; 
+  padding: 1rem;
+  text-align: center;
+}
+.noResults:hover { 
+  background-color: transparent !important; 
+}
+
+.selectedItemInfo {
+  background-color: #e7f5ff; border-left: 4px solid #007bff;
+  padding: 0.75rem; margin: 1rem 0; font-weight: 500;
+}
+.formGroup { display: flex; flex-direction: column; margin-bottom: 1rem; }
+.formGroup label { margin-bottom: 0.5rem; font-weight: 500; }
+.formGroup input { padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+.formActions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem; }
+.actionBtn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.7rem 1.5rem; font-size: 1rem; font-weight: 600;
+  border: none; border-radius: 5px; cursor: pointer;
+}
+.cancelBtn { background-color: #6c757d; color: white; }
+.submitBtn { background-color: #28a745; color: white; }
+.submitBtn:disabled { background-color: #e9ecef; cursor: not-allowed; }
+
+.filtersContainer {
+display: flex;
+gap: 1rem;
+margin: 1rem 0;
+align-items: center;
+}
+.filterSelect {
+padding: 0.5rem;
+border-radius: 4px;
+border: 1px solid #ccc;
+flex-grow: 1;
+background-color: #fff;
+font-size: 0.9rem;
+}
+.stockFilters {
+display: flex;
+border: 1px solid #ccc;
+border-radius: 4px;
+overflow: hidden;
+}
+.stockFilters button {
+padding: 0.5rem 1rem;
+border: none;
+background-color: #f8f9fa;
+cursor: pointer;
+border-left: 1px solid #ccc;
+font-size: 0.9rem;
+color: #333;
+}
+.stockFilters button:first-child {
+border-left: none;
+}
+.stockFilters button.active {
+background-color: #007bff;
+color: white;
+}
+
+/* ... Pega esto al final de tu archivo InventoryAdjustmentForm.module.css ... */
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.currencyInput {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.currencyInput span {
+  padding: 0.75rem 0 0.75rem 0.75rem;
+  color: #495057;
+  font-size: 1rem;
+}
+
+.currencyInput input {
+  border: none;
+  outline: none;
+  box-shadow: none;
+  padding-left: 0.5rem;
+}

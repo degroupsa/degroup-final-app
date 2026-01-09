@@ -1,0 +1,302 @@
+.profilePage {
+   max-width: 1200px;
+   margin: 2rem auto;
+   padding: 0 1rem;
+   transition: max-width 0.4s ease-in-out;
+}
+
+.profilePageWide {
+  max-width: 1600px;
+}
+  
+.profileHeader {
+   background-size: cover; 
+   background-position: center;
+   background-color: #495057;
+   color: white;
+   padding: 2rem;
+   min-height: 250px;
+   padding-bottom: 70px;
+   border-radius: 8px;
+   position: relative;
+   display: flex;
+   justify-content: flex-end;
+   align-items: flex-start;
+}
+  
+.uploadInput { display: none; }
+  
+.coverEditButton {
+   background-color: rgba(0, 0, 0, 0.5);
+   color: white;
+   padding: 8px 12px;
+   border-radius: 5px;
+   cursor: pointer;
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   font-size: 0.9rem;
+   border: 1px solid rgba(255, 255, 255, 0.5);
+   transition: background-color 0.2s;
+   z-index: 2;
+}
+  
+.coverEditButton:hover { background-color: rgba(0, 0, 0, 0.7); }
+  
+.avatarContainer {
+   position: absolute;
+   bottom: -20px;
+   left: 2.5rem;
+   display: flex;
+   align-items: flex-end;
+   gap: 0;
+   z-index: 2;
+}
+  
+.avatarWrapper {
+   position: relative;
+   width: 170px;
+   height: 170px;
+   flex-shrink: 0;
+   z-index: 2;
+}
+  
+.avatar, .avatarImage {
+   width: 170px;
+   height: 170px;
+   border-radius: 50%;
+   object-fit: cover;
+   border: 5px solid rgb(253, 253, 252);
+   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+   background-color: #0d6efd;
+   color: white;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   font-size: 5rem;
+   font-weight: bold;
+}
+  
+.avatarEditButton {
+   position: absolute;
+   bottom: -10px;
+   right: -10px;
+   background-color: #fff;
+   color: #333;
+   border-radius: 50%;
+   width: 36px;
+   height: 36px;
+   font-size: 1rem;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   border: 1px solid #eee;
+   cursor: pointer;
+   box-shadow: 0 1px 3px rgba(0,0,0,0.2)
+}
+  
+.userInfo {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 40px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7) 40%, rgba(0, 0, 0, 0.1) 140%, transparent 100%);
+  border-radius: 0 112px 112px 0;
+  z-index: 1;
+  margin-left: -40px;
+  padding: 10px 2rem 10px 70px;
+  max-width: 70%; 
+}
+  
+.userInfo h1 {
+   margin: 0;
+   font-size: 2.2rem;
+   color: white;
+   text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+  
+.roleTag {
+   margin: 0.7rem 0 0 0;
+   font-size: 0.8rem;
+   font-weight: bold;
+   padding: 5px 12px;
+   border-radius: 20px;
+   text-transform: uppercase;
+   letter-spacing: 0.5px;
+   align-self: flex-start;
+   border: none;
+   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5)
+}
+  
+.roleTagSilver { background-color: #bdc3c7; color: #2c3e50; }
+.roleTagGold { background: linear-gradient(45deg, #FFD700, #E6C200); color: #4a3f00; }
+.roleTagBlue { background-color: #0094f7; color: white; }
+  
+.followStats {
+   display: flex;
+   gap: 20px;
+   margin-top: 10px;
+   color: #fff;
+   text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+  
+.followStats span { font-size: 0.95rem; }
+.followStats strong { font-size: 1rem; }
+  
+.profileActions {
+   display: flex;
+   justify-content: flex-end;
+   padding: 1rem;
+   background-color: #fff;
+   border-bottom: 1px solid #ddd;
+   gap: 12px;
+}
+  
+.actionButton {
+   display: inline-flex;
+   align-items: center;
+   gap: 8px;
+   background-color: #0052cc;
+   color: white;
+   border: none;
+   padding: 10px 20px;
+   border-radius: 5px;
+   font-size: 0.95rem;
+   font-weight: 600;
+   cursor: pointer;
+   transition: background-color 0.2s;
+}
+  
+.actionButton:hover { background-color: #0065ff; }
+  
+.secondaryButton {
+   background-color: #f4f5f7;
+   color: #172b4d;
+   border: 1px solid #ddd;
+}
+  
+.secondaryButton:hover { background-color: #e9ecef; }
+  
+.bioContainer {
+   width: 100%;
+   background-color: #fff;
+   border-radius: 8px;
+   padding: 20px;
+   margin-bottom: 20px;
+   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+  
+.bio { font-size: 1rem; color: #42526e; line-height: 1.6; white-space: pre-wrap; margin: 0; }
+.websiteLink { display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; color: #0052cc; text-decoration: none; font-weight: 600; transition: color 0.2s; }
+.websiteLink:hover { color: #0065ff; text-decoration: underline; }
+  
+.profileBody {
+   display: grid;
+   grid-template-columns: 280px 1fr;
+   gap: 2rem;
+   margin-top: 4rem;
+   align-items: flex-start;
+}
+
+.leftColumn {
+  position: sticky;
+  top: 90px;
+}
+
+.contentArea {
+  width: 100%;
+  min-width: 0;
+}
+
+.nameAndRoleContainer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 42px; right: 0;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  padding: 8px 0;
+  z-index: 11;
+  width: max-content;
+  border: 1px solid #dbdbdb;
+  color: #262626;
+  text-shadow: none;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dropdownItem:hover { background-color: #f0f2f5; }
+
+.menuButton {
+  background-color: transparent;
+  color: #8e8e8e;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.menuButton:hover { background-color: #fafafa; }
+
+.summaryCard {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  border: 1px solid #e9ecef;
+}
+.summaryCard h4 {
+  margin-top: 0;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+.summaryItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+.summaryItem svg {
+  font-size: 1.5rem;
+  color: #007bff;
+  flex-shrink: 0;
+}
+.summaryItem div {
+  display: flex;
+  flex-direction: column;
+}
+.summaryItem span {
+  display: block;
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+.summaryItem strong {
+  color: #212529;
+  font-size: 1.2rem;
+}
+.summaryHelpText {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 1.5rem;
+  text-align: center;
+  line-height: 1.4;
+}

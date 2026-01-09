@@ -1,0 +1,452 @@
+/* ============================================================
+   ESTILOS EXCLUSIVOS PARA MÓVILES (Menos de 992px)
+   Este archivo sobrescribe los estilos de PC para arreglar el diseño en celulares.
+   ============================================================ */
+
+   @media (max-width: 992px) {
+
+    /* --- 1. HERO: (TU CÓDIGO INTACTO) --- */
+    [class*="heroSection"] {
+      height: auto !important; /* Altura automática según contenido */
+      min-height: 500px !important;
+      justify-content: center !important;
+      align-items: center !important;
+      padding-top: 80px !important; /* Espacio para el menú */
+    }
+  
+    [class*="heroContent"] {
+      padding: 2rem 1.5rem 5rem 1.5rem !important; /* Padding seguro */
+      text-align: center;
+      align-items: flex;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+  
+    /* Título Hero: Achicamos para que entren palabras largas */
+    [class*="heroPrimaryText"], 
+    [class*="heroTitle"] h1 {
+      font-size: 1rem !important; /* Mucho más chico */
+      line-height: 1.2 !important;
+      word-wrap: break-word !important; /* Romper palabra si es necesario */
+      overflow-wrap: break-word !important;
+      hyphens: auto !important;
+      width: 90% !important;
+      /* translate( Eje X , Eje Y ) */
+      /* Ejemplo: 30px a la derecha, 10px hacia abajo */
+      transform: translate(3px, 65px) !important;
+      text-align: center !important;
+    }
+  
+    /* Subtítulo Hero */
+    [class*="heroSecondaryText"] {
+      font-size: 0.8rem !important;
+      margin-bottom: 1.5rem !important;
+      text-align: center !important;
+      width: 90% !important;
+      transform: translate(3px, 60px) !important;
+    }
+  
+    /* Botón Hero */
+    [class*="heroButton"] {
+      margin: 0.5rem !important;
+      width: 60% !important;
+      max-width: 210px !important; /* Ancho controlado */
+      font-size: 0.7rem !important;
+      padding: 0.8rem 1rem !important;
+      white-space: normal !important; /* Permitir 2 líneas si es largo */
+      text-align: center !important;
+      justify-content: center !important;
+      margin-left: 35px !important;
+      transform: translate(3px, 40px) !important;
+    }
+  
+    /* Indicadores */
+    [class*="heroIndicators"] {
+      bottom: 1rem !important;
+      padding: 0 1rem !important;
+    }
+    [class*="indicatorLabel"] {
+      display: none !important; /* Ocultar texto de indicadores en móvil para limpiar */
+    }
+  
+  
+/* --- 2. NOVEDADES Y PROMOCIONES (FONDO ANCHO COMPLETO) --- */
+    
+[class*="carouselArrows"] {
+  display: none !important; /* Ocultamos flechas en móvil */
+}
+
+[class*="newsSection"],
+[class*="promoSection"] {
+    /* 1. ROMPER LÍMITES LATERALES */
+    width: 100vw !important;
+      max-width: 100vw !important;
+      margin-left: calc(-50vw + 50%) !important;
+      margin-right: calc(-50vw + 50%) !important;
+
+      padding: 3rem 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important; /* Centra el contenido hijo horizontalmente */
+      text-align: center !important;  /* Centra el texto en sí */
+    
+    /* 2. Color de fondo */
+    background-color: #d1cccc !important; /* Gris claro */
+
+}
+
+[class*="newsContentWrapper"] {
+  flex-direction: column !important;
+      gap: 0 !important;
+      width: 100% !important;
+      max-width: 100vw !important;
+      padding: 0 !important;
+}
+
+/* Títulos específicos (Novedades/Promociones) */
+[class*="sectionTitle"] {
+  text-align: center !important;
+  font-size: 1.8rem !important;
+  margin-bottom: -0.5rem !important;
+  
+  /* --- CAMBIAR COLOR AQUÍ --- */
+  color: #121212 !important; /* Negro oscuro (actual) */
+  /* color: #FFD700 !important; (Amarillo) */
+  /* color: #333333 !important; (Gris oscuro) */
+  /* color: #000000 !important; (Negro puro) */
+}
+
+/* Subtítulos */
+[class*="sectionSubtitle"] {
+  text-align: center !important;
+  font-size: 1rem !important;
+  
+  /* --- CAMBIAR COLOR AQUÍ --- */
+  color: #000000 !important; /* Gris medio */
+
+  /* Espacio entre Subtítulo y Tarjetas */
+  margin-top: 0.2rem !important;   /* Espacio arriba */
+  margin-bottom: -0.5rem !important;  /* Espacio abajo hacia las tarjetas (bajalo de 2rem a 1rem) */
+}
+
+[class*="newsHeader"],
+    [class*="promoHeader"] {
+      text-align: center !important;
+      width: 100% !important;
+      padding: 0 1.5rem !important;
+      margin-bottom: 2rem !important;
+      box-sizing: border-box !important;
+      
+      /* Flex para asegurar centrado si el hijo se resiste */
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+    }
+    
+/* EL CONTENEDOR DE LAS TARJETAS */
+[class*="carouselContainer"] {
+    width: 100% !important;
+    overflow: visible !important; 
+}
+
+[class*="newsGrid"] {
+  display: flex !important;
+  flex-direction: row !important; 
+  
+  /* CLAVE: Habilitar scroll horizontal */
+  overflow-x: auto !important;     
+  overflow-y: hidden !important;
+  
+  scroll-snap-type: x mandatory !important; 
+  -webkit-overflow-scrolling: touch;
+  
+  /* Padding lateral para que la primera tarjeta no quede pegada */
+  padding: 1rem 1.5rem 2rem 1.5rem !important; 
+  gap: 1rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* LA TARJETA INDIVIDUAL */
+[class*="newsCard"] {
+  /* Tamaño fijo relativo a la pantalla */
+  min-width: 85vw !important; 
+  max-width: 85vw !important;
+  
+  scroll-snap-align: center !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important; 
+  
+  display: flex !important;
+  flex-direction: column !important;
+  height: auto !important;
+}
+
+/* Asegurar imagen visible */
+[class*="newsImage"] {
+    height: 200px !important;
+    width: 100% !important;
+}
+  
+  
+    /* --- 3. AGROACTIVA Y FINAL CTA: IMAGEN ARRIBA, TEXTO ABAJO --- */
+    
+    [class*="finalCtaContainer"] {
+      grid-template-columns: 1fr !important; /* 1 Columna */
+      gap: 2rem !important; 
+      text-align: center !important;
+    }
+
+
+    [class*="agritechnicaGridContainer"] {
+      grid-template-columns: 1fr !important; /* 1 Columna */
+      gap: 2rem !important; 
+      text-align: center !important;
+    }
+  
+    /* --- IMAGEN PRIMERO --- */
+    [class*="finalCtaImageWrapper"] {
+      grid-column: 1 / -1 !important;
+      position: relative !important; 
+      height: 300px !important;
+      width: 100% !important;
+      
+      /* 4. ¡CLAVE! Hacemos que flote MÁS ALTO que el texto */
+      /* Ajusta este valor negativo para que la imagen invada el área blanca */
+      transform: translateY(-90px) !important; /* Prueba con -150px, -180px, -200px */
+      
+      order: 1 !important; /* La imagen va PRIMERO */
+    }
+
+    [class*="agritechnicaImageContainer"] {
+      grid-column: 1 / -1 !important;
+      position: relative !important; 
+      height: 300px !important;
+      width: 100% !important;
+      
+      /* 4. ¡CLAVE! Hacemos que flote MÁS ALTO que el texto */
+      /* Ajusta este valor negativo para que la imagen invada el área blanca */
+      transform: translateY(-70px) !important; /* Prueba con -150px, -180px, -200px */
+      
+      order: 1 !important; /* La imagen va PRIMERO */
+    }
+
+    [class*="finalCtaTitle"] {
+      text-align: center !important;
+  font-size: 1.8rem !important;
+  margin-bottom: -0.5rem !important;
+  
+  /* --- CAMBIAR COLOR AQUÍ --- */
+  color: #121212 !important; /* Negro oscuro (actual) */
+  /* color: #FFD700 !important; (Amarillo) */
+  /* color: #333333 !important; (Gris oscuro) */
+  /* color: #000000 !important; (Negro puro) */
+    }
+
+/* --- SUBTÍTULO / TEXTO FINAL CTA --- */
+[class*="finalCtaText"] {
+  /* 1. CENTRADO DE TEXTO */
+  text-align: center !important;
+  
+  /* 2. CENTRADO DEL BLOQUE (Por si acaso no ocupa el 100%) */
+  margin-left: auto !important;
+  margin-right: auto !important;
+  
+  /* Ajustes visuales */
+  font-size: 0.95rem !important;
+  margin-bottom: 2rem !important;
+  max-width: 90% !important; /* Para que no toque los bordes de la pantalla */
+}
+
+
+    [class*="finalCtaSection"] {
+
+    /* 1. ROMPER LÍMITES LATERALES */
+    width: 100vw !important;
+      max-width: 100vw !important;
+      margin-left: calc(-50vw + 50%) !important;
+      margin-right: calc(-50vw + 50%) !important;
+
+      padding: 1rem 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+    
+    /* 2. Color de fondo */
+
+}
+
+    [class*="finalCtaImage"] {
+      width: 100% !important;
+      max-width: 500px !important;
+      height: 100% !important;
+      margin-top: 0 !important; 
+      filter: none !important;
+      border-radius: 4px; 
+      object-fit: cover;
+      left: 7.2%;
+    }
+  
+    [class*="agritechnicaImage"] {
+      width: 90% !important;
+      max-width: 500px !important;
+      height: 100% !important;
+      margin-top: 0 !important; 
+      filter: none !important;
+      border-radius: 4px; 
+      object-fit: cover;
+      left: 5%;
+    }
+  
+    /* --- TEXTO SEGUNDO --- */
+
+    [class*="finalCtaContent"] {
+      grid-column: 1 / -1 !important;
+      padding: 1rem !important;
+      /*text-align: center;*/
+      min-height: auto !important;
+      border-radius: 8px !important;
+      
+      /* 3. ¡CLAVE! Mantenemos el transform (con un valor menor) */
+      transform: translateY(-80px) !important;
+      
+      gap: 1.5rem !important;
+      order: 2 !important; /* El texto va DESPUÉS */
+    }
+
+
+    [class*="agritechnicaContentWrapper"] {
+      grid-column: 1 / -1 !important;
+      padding: 1rem !important;
+      /*text-align: center;*/
+      min-height: auto !important;
+      border-radius: 8px !important;
+      
+      /* 3. ¡CLAVE! Mantenemos el transform (con un valor menor) */
+      transform: translateY(-80px) !important;
+      
+      gap: 1.5rem !important;
+      order: 2 !important; /* El texto va DESPUÉS */
+    }
+
+    [class*="agritechnicaTitle"] {
+      font-size: 1.8rem !important;
+      line-height: 1.2 !important;
+      margin-top: -10% !important;
+    }
+  
+    [class*="finalCtaTitle"] {
+      font-size: 1.8rem !important;
+      line-height: 1.2 !important;
+      margin-top: -25% !important;
+      color: #fffafa !important;
+    }
+
+    [class*="agritechnicaText"] {
+      font-size: 1rem !important;
+      
+      /* CAMBIAR ESTO (Espacio entre Texto y Botón) */
+      margin-bottom: 0.5rem !important; /* Antes: 2.5rem */
+      margin-top: -15% !important;
+    }
+
+    [class*="finalCtaButton"] {
+      background-color: #fff !important; 
+      color: #121212 !important; 
+      padding: 0.8rem 1.5rem !important;
+      font-size: 0.85rem !important;
+      font-weight: 700 !important;
+      text-decoration: none !important;
+      border-radius: 8px !important;
+      transition: all 0.3s ease !important;
+      width: auto !important;
+      display: inline-block !important;
+      text-transform: uppercase !important;
+      
+      /* --- AQUÍ ESTÁ EL CONTROL DE POSICIÓN --- */
+      
+      /* 1. PARA MOVERLO A LA DERECHA: */
+      /* Aumenta este número (ej: 20px, 50px, auto) */
+      margin-left: 20px !important; 
+
+      /* 2. PARA MOVERLO A LA IZQUIERDA (PEGA AL BORDE): */
+      /* margin-left: 0 !important; */
+      
+      /* 3. PARA CENTRARLO COMPLETAMENTE: */
+      /* margin: 0 auto !important; */
+      /* display: block !important; */ /* Necesario si usas margin auto */
+
+      align-self: flex-start !important; 
+      text-align: center !important; 
+    }
+    
+    [class*="agritechnicaButton"] {
+      background-color: #fff !important; 
+      color: #121212 !important; 
+      padding: 0.8rem 1.5rem !important;
+      font-size: 0.85rem !important;
+      font-weight: 700 !important;
+      text-decoration: none !important;
+      border-radius: 8px !important;
+      transition: all 0.3s ease !important;
+      width: auto !important;
+      display: inline-block !important;
+      text-transform: uppercase !important;
+      
+      /* --- AQUÍ ESTÁ EL CONTROL DE POSICIÓN --- */
+      
+      /* 1. PARA MOVERLO A LA DERECHA: */
+      /* Aumenta este número (ej: 20px, 50px, auto) */
+      margin: 0 auto !important;
+
+      /* 2. PARA MOVERLO A LA IZQUIERDA (PEGA AL BORDE): */
+      /* margin-left: 0 !important; */
+      
+      /* 3. PARA CENTRARLO COMPLETAMENTE: */
+      /* margin: 0 auto !important; */
+      /* display: block !important; */ /* Necesario si usas margin auto */
+
+      align-self: flex-start !important; 
+      text-align: center !important; 
+    }
+
+    /* --- 4. CORRECCIÓN FONDO VERDE GIGANTE --- */
+    /* Esta regla fuerza a que la etiqueta verde sea chica */
+    [class*="agritechnicaImageOverlayText"] {
+        
+        /* Forzar que ocupe solo lo necesario */
+        width: fit-content !important; 
+        display: inline-block !important;
+        max-width: 80% !important;
+        max-height: 4% !important;
+
+        /* Achicar texto y relleno */
+        padding: 4px 8px !important;
+        font-size: 0.6rem !important; 
+        line-height: 1 !important;
+        
+        /* Posición */
+        position: absolute !important;
+        top: 10px !important;
+        left: 160px !important;
+        text-align: center !important;
+        
+        /* Asegurar fondo */
+        background-color: rgba(0, 80, 30, 0.9) !important;
+        border-radius: 4px !important;
+        z-index: 50 !important;
+    }
+  
+    /* --- 5. CATEGORÍAS --- */
+    [class*="categoriesGrid"] {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+    [class*="categoryCard"] {
+        height: 140px !important;
+        padding: 0.5rem !important;
+    }
+    [class*="categoryIconImg"] {
+        width: 50px !important;
+        height: 50px !important;
+    }
+  }

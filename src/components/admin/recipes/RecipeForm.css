@@ -1,0 +1,151 @@
+.recipe-form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px); /* Efecto de desenfoque */
+}
+
+.recipe-form-container {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.recipe-form-container h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.recipe-form-container .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.component-row {
+  display: grid;
+  grid-template-columns: 1fr 100px 40px;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.component-search-group {
+    position: relative;
+}
+
+.suggestions-list {
+    position: absolute; top: 100%; left: 0; right: 0; background-color: white;
+    border: 1px solid #ccc; list-style: none; padding: 0; margin: 0;
+    max-height: 150px; overflow-y: auto; z-index: 1001;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+.suggestions-list li { padding: 0.5rem; cursor: pointer; }
+.suggestions-list li:hover { background-color: #f0f0f0; }
+
+.form-group { display: flex; flex-direction: column; }
+.form-group label { margin-bottom: 0.5rem; font-weight: 500; }
+.form-group input { padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }
+
+.add-component-btn, .remove-component-btn {
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.add-component-btn:hover, .remove-component-btn:hover {
+    transform: scale(1.05);
+}
+
+.add-component-btn {
+    background-color: #e7f5ff;
+    color: #007bff;
+    gap: 0.5rem;
+}
+
+.remove-component-btn {
+    background-color: #f8d7da;
+    color: #dc3545;
+    height: 38px; /* Alinear con el input */
+}
+
+/* --- ESTILOS MEJORADOS PARA LOS BOTONES DE ACCIÓN --- */
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    border-top: 1px solid #eee;
+    padding-top: 1.5rem;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem; /* Espacio entre ícono y texto */
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.action-btn.cancel-btn {
+    background-color: #6c757d;
+    color: white;
+}
+
+.action-btn.cancel-btn:hover {
+    background-color: #5a6268;
+}
+
+.action-btn.submit-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.action-btn.submit-btn:hover {
+    background-color: #218838;
+}
+
+.action-btn:disabled {
+    background-color: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Agrega esto al final de tu archivo RecipeForm.css */
+.input-error {
+    border: 1px solid #dc3545 !important; /* Borde rojo para el error */
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25); /* Sombra roja suave */
+  }

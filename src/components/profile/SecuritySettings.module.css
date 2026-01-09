@@ -1,0 +1,67 @@
+.securityCard {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 2rem;
+  }
+  
+  .securityCard h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .securityCard p {
+    margin-bottom: 2rem;
+    color: #636e72;
+    font-size: 0.95rem;
+  }
+  
+  .formGroup {
+    margin-bottom: 1.5rem;
+  }
+  
+  .formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+  
+  .formGroup input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  .errorMessage {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  .submitButton {
+    width: 100%;
+    padding: 12px;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .submitButton:hover {
+    background-color: #0b5ed7;
+  }
+  
+  .submitButton:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+  }

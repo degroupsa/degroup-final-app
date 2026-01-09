@@ -1,0 +1,48 @@
+.cartWidget {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+}
+
+.cartIcon {
+  font-size: 1.8rem;
+  color: white;
+  transition: color 0.2s ease;
+}
+
+.cartWidget:hover .cartIcon {
+  color: #61dafb;
+}
+
+.itemCount {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: #ff4d4d;
+  color: white;
+  border-radius: 50%;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border: 2px solid #000000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* --- INICIO DE AJUSTE PARA MÓVIL --- */
+@media (max-width: 992px) {
+  .cartIcon {
+    font-size: 1.1rem; /* Mismo tamaño que los otros íconos */
+  }
+
+  .itemCount {
+    top: 0px;
+    right: 0px;
+    font-size: 0.7rem;
+    padding: 0.1rem 0.4rem;
+  }
+}
+/* --- FIN DE AJUSTE --- */

@@ -1,0 +1,91 @@
+.sidebar {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 1.5rem 0;
+  align-self: flex-start;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar button {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #636e72;
+  border-left: 4px solid transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.sidebar button:hover {
+  background-color: #f8f9fa;
+  color: #2d3436;
+}
+
+.sidebar button.active {
+  color: #0d6efd;
+  font-weight: bold;
+  border-left-color: #0d6efd;
+  background-color: #e7f1ff;
+}
+
+/* Pega este bloque completo al final de tu archivo */
+
+/* --- MEDIA QUERY PARA MÓVIL --- */
+@media (max-width: 991px) {
+  .sidebar {
+    padding: 0;
+    box-shadow: none;
+    border-bottom: 1px solid #ddd;
+    border-radius: 0;
+    background-color: #fff;
+    position: static;
+    order: 1; /* Hacemos que las pestañas aparezcan primero que la bio */
+    width: 100%;
+    margin-bottom: 0; /* Quitamos el margen inferior para unirlo a la bio */
+  }
+
+  .sidebar ul {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .sidebar li {
+    flex: 1;
+  }
+
+  .sidebar button {
+    justify-content: center;
+    padding: 1rem 0.5rem;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    font-size: 0.9rem;
+    border-radius: 0;
+  }
+
+  .sidebar button.active {
+    border-left-color: transparent;
+    border-bottom-color: #0d6efd;
+    background-color: transparent;
+  }
+  
+  .sidebar button:hover {
+    background-color: #f8f9fa;
+  }
+
+  /* Ocultamos los íconos en móvil */
+  .sidebarIcon {
+    display: none;
+  }
+}

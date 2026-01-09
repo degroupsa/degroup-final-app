@@ -1,0 +1,82 @@
+.qrModalOverlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); display: flex;
+  justify-content: center; align-items: center; z-index: 1060;
+  backdrop-filter: blur(3px); cursor: pointer;
+}
+
+.qrModalContent {
+  background: white; padding: 1.5rem 2rem 2rem; border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15); display: flex;
+  flex-direction: column; align-items: center; position: relative;
+  cursor: default; max-width: 90%; /* Asegura que no sea más ancho que la pantalla */
+}
+
+.closeButton {
+  position: absolute; top: 0.5rem; right: 0.5rem; background: none;
+  border: none; font-size: 1.5rem; color: #adb5bd; cursor: pointer;
+  padding: 0.25rem; line-height: 1;
+}
+.closeButton:hover { color: #495057; }
+
+.qrModalContent h4 { margin-top: 0; margin-bottom: 0.5rem; color: #495057; }
+
+/* --- CAMBIO: Renombrado y estilo ajustado --- */
+.valueText { /* Antes era .phoneNumber */
+  font-size: 1rem; /* Tamaño normal */
+  font-weight: 500;
+  color: #212529;
+  margin-bottom: 1.5rem;
+  word-break: break-all; /* Si el texto es muy largo, que se corte */
+  max-width: 100%; /* Evita que desborde el modal */
+  text-align: center; /* Centrado */
+}
+/* --- FIN CAMBIO --- */
+
+
+.qrCodeContainer {
+  background-color: #fff; /* Fondo blanco para el QR */
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  /* Asegura que el SVG no se desborde */
+  max-width: 100%;
+  display: flex; /* Centra el SVG si es más pequeño */
+  justify-content: center;
+}
+/* Estilo para el SVG si es necesario */
+.qrCodeContainer svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ... (Estilos anteriores) ... */
+
+/* --- ▼▼▼ ESTILOS AÑADIDOS PARA BOTÓN DESCARGAR ▼▼▼ --- */
+
+.downloadButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem; /* Espacio sobre el botón */
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #0d6efd; /* Azul */
+  background-color: #e7f1ff; /* Azul muy claro */
+  border: 1px solid #b6d4fe; /* Borde azul claro */
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.downloadButton:hover {
+  background-color: #cfe2ff;
+  border-color: #a9c7fe;
+  color: #0a58ca; /* Azul más oscuro */
+}
+
+.downloadButton svg {
+  margin-bottom: -1px; /* Alineación icono */
+}
+/* --- ▲▲▲ FIN ESTILOS AÑADIDOS ▲▲▲ --- */

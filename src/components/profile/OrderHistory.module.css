@@ -1,0 +1,96 @@
+.orderHistoryContainer {
+    width: 100%;
+}
+.summaryCard {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  border: 1px solid #e9ecef;
+}
+.summaryCard h4 {
+  margin-top: 0;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+.summaryItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.summaryItem svg {
+  font-size: 1.5rem;
+  color: #007bff;
+  flex-shrink: 0;
+}
+.summaryItem div {
+  display: flex;
+  flex-direction: column;
+}
+.summaryItem span {
+  display: block;
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+.summaryItem strong {
+  color: #212529;
+  font-size: 1.2rem;
+}
+.noOrdersFound {
+    text-align: center;
+    padding: 3rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+.ordersList {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+.productionCard {
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+.productionCardHeader {
+    padding: 1rem 1.5rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.productionCardHeader h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+.productionCardHeader .trackingCode {
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+.productionCardBody {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+.infoSection {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+.infoSection p {
+    margin: 0;
+}
+.timelineSection {
+    width: 100%;
+}
+.timelineSection h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}

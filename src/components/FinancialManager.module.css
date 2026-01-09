@@ -1,0 +1,827 @@
+/* src/components/FinancialManager.module.css */
+
+.sectionDivider {
+  border: none;
+  height: 1px;
+  background-color: #dfe6e9;
+  margin: 3rem 0;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  color: #2c3e50;
+}
+
+/* --- ESTILOS PARA HITOS --- */
+.milestonesGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: -1rem;
+  margin-bottom: 3rem;
+}
+.milestoneCard {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+.milestoneCard h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #7f8c8d;
+  font-size: 1rem;
+}
+.milestoneValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #27ae60;
+  margin: 0;
+}
+.milestoneDate {
+  display: block;
+  font-weight: 500;
+  color: #34495e;
+  margin-top: 0.5rem;
+}
+.milestoneConcept {
+  display: block;
+  font-size: 0.9rem;
+  color: #95a5a6;
+  margin-top: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- ESTILOS MEJORADOS PARA GRÁFICOS --- */
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.chartCard {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  overflow: hidden; 
+}
+.chartCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+
+.chartCard h3 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #34495e;
+}
+
+.noDataText {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 200px;
+  color: #95a5a6;
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+/* --- ESTILOS PARA EL REGISTRO MANUAL Y AJUSTE DE SALDO --- */
+.manualRecordContainer {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  align-items: flex-start;
+}
+.manualRecordCard {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+}
+.manualRecordGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  align-items: end;
+  margin-bottom: 1.5rem;
+}
+
+/* --- ESTILOS PARA EL FORMULARIO DE AJUSTE DE SALDO --- */
+.initialBalanceCard {
+  background-color: #fff9e6;
+  border: 1px solid #ffeeba;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+}
+.initialBalanceCard h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.initialBalanceCard p {
+  font-size: 0.9rem;
+  color: #856404;
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+}
+.infoIcon {
+  color: #856404;
+  cursor: help;
+}
+.balanceButton {
+  background-color: #ffc107;
+  color: #212529;
+}
+.balanceButton:hover {
+  background-color: #e0a800;
+}
+
+
+/* --- Estilos para el Gestor de Cheques y Cuentas por Pagar --- */
+.chequeManagerGrid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.chequeFormCard, .chequeSummaryCard, .backupCard {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+}
+
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.formGroup label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #34495e;
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: #3498db;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.submitButton:hover {
+  background-color: #2980b9;
+}
+
+.monthlySummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.summaryBox {
+  background-color: #fff;       
+  border: 1px solid #e9ecef; 
+  border-radius: 8px;       
+  padding: 0.8rem 1rem;     
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); 
+  overflow: hidden;         
+}
+
+.summaryBox h4 {
+  margin: 0 0 0.3rem 0;
+  font-size: 0.8rem;
+  color: #6c757d;    
+  font-weight: 500;
+  white-space: nowrap; 
+}
+
+.summaryBox p {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #212529;
+  white-space: nowrap; 
+}
+
+.totalPendingBox {
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+}
+.totalPendingBox p {
+    color: #0d6efd;
+}
+
+.statusSelect {
+  padding: 0.4rem 0.6rem;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  font-weight: 600;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 0.65em auto;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%<path fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+}
+.status-pendiente { background-color: #ffeeba; color: #856404; }
+.status-para_cobrar { background-color: #cce5ff; color: #004085; }
+.status-cobrado { background-color: #d4edda; color: #155724; }
+.status-pagado {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.incomeText { color: #27ae60; font-weight: 500; }
+.expenseText { color: #c0392b; font-weight: 500; }
+
+/* --- Estilos para el Exportador de Datos --- */
+.exporterGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+.exportButton { display: flex; align-items: center; justify-content: center; gap: 0.8rem; padding: 0.8rem 1rem; font-size: 1rem; font-weight: 600; border: 2px solid #95a5a6; color: #95a5a6; background-color: transparent; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+.exportButton:hover { background-color: #95a5a6; color: white; }
+.exportButton:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* --- ESTILOS PARA EL HISTORIAL Y MODAL DE EDICIÓN --- */
+.historyCard {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+}
+.historyTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+.historyTable th, .historyTable td {
+  padding: 0.9rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ecf0f1;
+}
+.historyTable th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: #7f8c8d;
+}
+.editButton {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid #3498db;
+  color: #3498db;
+  background-color: transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.editButton:hover {
+  background-color: #3498db;
+  color: white;
+}
+
+.editModalOverlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1050; backdrop-filter: blur(4px);
+}
+.editModalContent {
+  background: white; padding: 2.5rem; border-radius: 12px;
+  width: 90%; max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.editModalContent h2 {
+  margin-top: 0;
+  text-align: center;
+  color: #2c3e50;
+}
+.editModalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.editModalActions button {
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+}
+.editModalActions button:first-child { /* Cancelar */
+  background-color: #ecf0f1;
+  color: #7f8c8d;
+  border: 1px solid #bdc3c7;
+}
+.editModalActions button:last-child { /* Guardar */
+  background-color: #27ae60;
+  color: white;
+}
+
+/* --- ESTILOS PARA LA PAGINACIÓN --- */
+.paginationControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ecf0f1;
+}
+.pageInfo {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #7f8c8d;
+}
+.paginationButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #bdc3c7;
+  background-color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.paginationButton:hover:not(:disabled) {
+  background-color: #f8f9fa;
+}
+.paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* --- Responsive --- */
+@media (max-width: 992px) {
+  .chequeManagerGrid, .chartsGrid, .milestonesGrid { grid-template-columns: 1fr; }
+  .manualRecordContainer { grid-template-columns: 1fr; }
+}
+
+/* --- ▼▼▼ SECCIÓN RESPONSIVE PARA CELULARES CORREGIDA ▼▼▼ --- */
+@media (max-width: 768px) {
+  .monthlySummaryGrid {
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  }
+  .manualRecordGrid { 
+    grid-template-columns: 1fr; /* Asegura 1 columna en el form chico */
+  }
+
+  /* --- NUEVO: Reducción de padding para móviles --- */
+  .milestoneCard,
+  .chartCard,
+  .manualRecordCard,
+  .chequeFormCard,
+  .chequeSummaryCard,
+  .backupCard,
+  .historyCard,
+  .editModalContent {
+    padding: 1rem; /* Reduce el padding general de las tarjetas */
+  }
+
+  .sectionTitle {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .manualRecordContainer {
+    gap: 1.5rem; /* Reduce el espacio entre tarjetas */
+  }
+
+  .historyTable th, .historyTable td {
+    padding: 0.7rem 0.5rem;
+  }
+  
+  /* Ajuste del input de archivo en móvil */
+  .fileInputWrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .fileInfo {
+    font-size: 0.8rem;
+    padding: 0.6rem 0.8rem;
+  }
+  .fileInputButton {
+    text-align: center;
+  }
+}
+/* --- ▲▲▲ FIN DE SECCIÓN RESPONSIVE CORREGIDA ▲▲▲ --- */
+
+
+/* --- ESTILOS PARA ALERTAS VISUALES --- */
+/* --- ¡MODIFICADO! Ahora se aplica a .payableCard --- */
+.overdue {
+  background-color: #f8d7da !important;
+  border-left-color: #dc3545 !important;
+  border-left-width: 4px;
+}
+.dueSoon {
+  background-color: #fff3cd !important;
+  border-left-color: #ffc107 !important;
+  border-left-width: 4px;
+}
+.collectible {
+  background-color: #cce5ff !important;
+  border-left-color: #0d6efd !important;
+  border-left-width: 4px;
+}
+.overdue select, .dueSoon select, .collectible select {
+   color: initial;
+   border-color: rgba(0,0,0,0.1);
+}
+
+/* --- ESTILOS PARA BOTÓN ELIMINAR (Deduplicado) --- */
+.deleteButton {
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  font-size: 1rem;
+  line-height: 1;
+  transition: color 0.2s;
+  vertical-align: middle;
+}
+.deleteButton:hover {
+  color: #dc3545;
+}
+
+/* --- ESTILOS PARA PAGOS PARCIALES Y EDICIÓN (Deduplicado) --- */
+
+/* Estilo para las columnas de montos en la tabla de pagos */
+.colMonto {
+  text-align: right !important; /* Alinea números a la derecha */
+  font-family: monospace; /* Fuente monoespaciada para números */
+  font-size: 0.95rem;
+  padding-right: 1rem !important; /* Más espacio a la derecha */
+}
+
+/* --- ¡ESTILO MEJORADO! --- */
+.restanteTextStrong {
+  font-weight: 700 !important; /* Más grueso */
+  color: #dc3545 !important; /* Rojo más fuerte */
+  font-size: 1.2rem !important; /* Un poco más grande */
+}
+
+/* Esta es la clase vieja, la mantengo por si acaso pero la nueva es la de arriba */
+.restanteText {
+  font-weight: 600;
+  color: #c0392b;
+}
+
+/* Estilo para la celda de acciones (para 2 botones) */
+.actionsCell {
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Botón de pago (verde) */
+.paymentButton {
+  background: none;
+  border: none;
+  color: #6c757d; /* Gris por defecto */
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  font-size: 1rem;
+  line-height: 1;
+  transition: color 0.2s;
+  vertical-align: middle;
+  margin-right: 0.5rem; /* Espacio entre botones */
+}
+.paymentButton:hover {
+  color: #198754; /* Verde al pasar el mouse */
+}
+
+/* Botón de edición pequeño (azul) */
+.editButtonSmall {
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.9rem; /* Un poco más pequeño que el de borrar */
+  line-height: 1;
+  transition: color 0.2s;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+.editButtonSmall:hover {
+  color: #0d6efd; /* Azul */
+}
+
+/* --- ▼▼▼ NUEVO: Estilos para Subida de Comprobantes ▼▼▼ --- */
+
+/* Contenedor del input de archivo personalizado */
+.fileInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* Botón falso que activa el input[type=file] */
+.fileInputButton {
+  display: inline-block;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #3498db;
+  border: 1px solid #3498db;
+  background-color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.fileInputButton:hover {
+  background-color: #f0faff;
+  color: #2980b9;
+}
+
+/* Muestra el nombre del archivo seleccionado */
+.fileInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.9rem;
+  color: #495057;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-grow: 1; 
+}
+
+/* Botón para quitar el archivo seleccionado */
+.clearFileButton {
+  background: none;
+  border: none;
+  color: #6c757d;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  line-height: 1;
+}
+.clearFileButton:hover {
+  color: #dc3545;
+}
+.clearFileButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Barra de progreso */
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  margin-top: 0.75rem;
+  overflow: hidden;
+}
+
+.progressBarInner {
+  height: 100%;
+  background-color: #3498db;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Botón/Icono para ver comprobante en la tabla */
+.receiptButton {
+  display: inline-block;
+  padding: 0.4rem 0.5rem;
+  font-size: 1.1rem;
+  color: #6c757d; 
+  background: none;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.receiptButton:hover {
+  color: #34495e; 
+  background-color: #f8f9fa; 
+}
+
+/* --- ▲▲▲ FIN de nuevos estilos ▲▲▲ --- */
+
+
+/* --- ▼▼▼ NUEVO: Estilos para el Flujo de IA ▼▼▼ --- */
+
+/* Botón de "Adjuntar" deshabilitado cuando ya hay un archivo */
+.fileInputButtonDisabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  border-color: #ced4da;
+  cursor: not-allowed;
+}
+
+/* Botón de "Confirmar y Guardar" (verde) */
+.submitButtonConfirm {
+  background-color: #198754; /* Verde */
+}
+.submitButtonConfirm:hover {
+  background-color: #157347;
+}
+
+/* Sección de resultados de IA */
+.iaResultsSection {
+  border-top: 2px dashed #ced4da;
+  border-bottom: 2px dashed #ced4da;
+  padding: 1.5rem 1rem;
+  margin: 1.5rem 0;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+.iaResultsSection h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #0d6efd;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Lista de ítems leídos */
+.iaItemsList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  max-height: 150px;
+  overflow-y: auto;
+}
+.iaItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 0.9rem;
+}
+.iaItem:last-child {
+  border-bottom: none;
+}
+.iaItemDetail {
+  color: #212529;
+  padding-right: 1rem;
+}
+.iaItemPrice {
+  color: #495057;
+  font-weight: 500;
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+/* --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- ¡NUEVOS ESTILOS PARA LAS TARJETAS RESPONSIVE! ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+*/
+
+/* Contenedor para la Lista de Tarjetas (Responsive) */
+.payableListContainer {
+  max-height: 300px; /* Mantiene el scroll vertical */
+  overflow-y: auto;
+  padding: 5px; /* Pequeño padding para que las sombras no se corten */
+  margin: 0 -5px; /* Compensa el padding */
+}
+
+/* Lista de Tarjetas */
+.payableList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Tarjeta Individual */
+.payableCard {
+  background-color: #fff;
+  border: 1px solid #dfe6e9;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s;
+  /* El color de borde 'overdue' etc. se aplica aquí */
+}
+.payableCard:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Fila Superior (Info + Acciones) */
+.payableCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem;
+  flex-wrap: wrap; /* Para responsive */
+  gap: 1rem;
+}
+
+.payableCardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.payableCardDate {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #7f8c8d;
+  text-transform: uppercase;
+}
+
+.payableCardProveedor {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.payableCardConcepto {
+  font-size: 0.9rem;
+  color: #95a5a6;
+  font-style: italic;
+}
+
+.payableCardActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap; /* Evita que los botones se partan */
+}
+
+/* Fila Inferior (Montos) */
+.payableCardAmounts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas para montos */
+  background-color: #f8f9fa; /* Fondo ligero */
+  border-top: 1px solid #dfe6e9;
+  border-radius: 0 0 8px 8px; /* Redondeo solo abajo */
+}
+
+.payableCardAmountBox {
+  padding: 1rem;
+  text-align: center;
+  border-right: 1px solid #dfe6e9;
+}
+.payableCardAmountBox:last-child {
+  border-right: none;
+}
+.payableCardAmountBox label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #7f8c8d;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+}
+.payableCardAmountBox span {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #34495e;
+  font-family: monospace;
+}
+
+/* Color para monto de cheque (reutilizado) */
+.chequeAmountText {
+  color: #3498db !important; /* Azul */
+  font-size: 1.5rem !important;
+}

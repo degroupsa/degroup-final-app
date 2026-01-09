@@ -1,0 +1,29 @@
+.messagesPage {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    height: calc(100vh - 60px); /* Altura total menos el navbar */
+    max-width: 1400px;
+    margin: 0 auto;
+    border: 1px solid #e0e0e0;
+    background-color: #fff;
+  }
+  
+  .sidebar {
+    height: 100%;
+  }
+  
+  .chatArea {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .noChatSelected {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #aaa;
+    text-align: center;
+  }

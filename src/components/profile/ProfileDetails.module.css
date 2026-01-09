@@ -1,0 +1,66 @@
+.detailsCard {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 2rem;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #2d3436;
+  }
+  
+  .editButton {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+  }
+  
+  .editButton:hover {
+    background-color: #5a6268;
+  }
+  
+  .infoGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .infoItem {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .infoItem .icon {
+    font-size: 1.2rem;
+    color: #0d6efd;
+  }
+  
+  .infoItem span {
+    font-size: 0.9rem;
+    color: #636e72;
+    display: block;
+  }
+  
+  .infoItem p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2d3436;
+  }

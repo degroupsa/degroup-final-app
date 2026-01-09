@@ -1,0 +1,94 @@
+[
+  {
+    "nombre": "Buenos Aires",
+    "ciudades": ["La Plata", "Mar del Plata", "Bahía Blanca", "Pilar", "San Isidro", "Quilmes", "Tandil", "Luján", "Junín", "Necochea", "Olavarría", "Pergamino", "Azul", "Chivilcoy", "Mercedes", "San Nicolás de los Arroyos", "Tres Arroyos", "Zárate"]
+  },
+  {
+    "nombre": "Catamarca",
+    "ciudades": ["San Fernando del Valle de Catamarca", "Andalgalá", "Belén", "Santa María", "Tinogasta", "Recreo", "Fiambalá"]
+  },
+  {
+    "nombre": "Chaco",
+    "ciudades": ["Resistencia", "Presidencia Roque Sáenz Peña", "Barranqueras", "Villa Ángela", "General José de San Martín", "Juan José Castelli"]
+  },
+  {
+    "nombre": "Chubut",
+    "ciudades": ["Rawson", "Comodoro Rivadavia", "Puerto Madryn", "Trelew", "Esquel", "Sarmiento", "Gaiman"]
+  },
+  {
+    "nombre": "Córdoba",
+    "ciudades": ["Córdoba", "Río Cuarto", "Villa Carlos Paz", "Villa María", "San Francisco", "Alta Gracia", "Jesús María", "La Falda", "Cosquín"]
+  },
+  {
+    "nombre": "Corrientes",
+    "ciudades": ["Corrientes", "Goya", "Paso de los Libres", "Curuzú Cuatiá", "Mercedes", "Santo Tomé", "Ituzaingó"]
+  },
+  {
+    "nombre": "Entre Ríos",
+    "ciudades": ["Paraná", "Concordia", "Gualeguaychú", "Concepción del Uruguay", "Villaguay", "Victoria", "Colón"]
+  },
+  {
+    "nombre": "Formosa",
+    "ciudades": ["Formosa", "Clorinda", "Pirané", "El Colorado", "Ingeniero Juárez"]
+  },
+  {
+    "nombre": "Jujuy",
+    "ciudades": ["San Salvador de Jujuy", "La Quiaca", "Libertador General San Martín", "Palpalá", "Humahuaca", "Tilcara"]
+  },
+  {
+    "nombre": "La Pampa",
+    "ciudades": ["Santa Rosa", "General Pico", "Toay", "General Acha", "Victorica", "Eduardo Castex"]
+  },
+  {
+    "nombre": "La Rioja",
+    "ciudades": ["La Rioja", "Chilecito", "Aimogasta", "Chamical", "Chepes"]
+  },
+  {
+    "nombre": "Mendoza",
+    "ciudades": ["Mendoza", "San Rafael", "Godoy Cruz", "Las Heras", "Guaymallén", "Luján de Cuyo", "Maipú", "Malargüe"]
+  },
+  {
+    "nombre": "Misiones",
+    "ciudades": ["Posadas", "Eldorado", "Oberá", "Puerto Iguazú", "Apóstoles", "Leandro N. Alem"]
+  },
+  {
+    "nombre": "Neuquén",
+    "ciudades": ["Neuquén", "San Martín de los Andes", "Villa La Angostura", "Zapala", "Cutral Có", "Plottier", "Junín de los Andes"]
+  },
+  {
+    "nombre": "Río Negro",
+    "ciudades": ["Viedma", "San Carlos de Bariloche", "General Roca", "Cipolletti", "El Bolsón", "Villa Regina"]
+  },
+  {
+    "nombre": "Salta",
+    "ciudades": ["Salta", "San Ramón de la Nueva Orán", "Tartagal", "Cafayate", "Joaquín V. González", "Metán"]
+  },
+  {
+    "nombre": "San Juan",
+    "ciudades": ["San Juan", "Rivadavia", "Chimbas", "Pocito", "Caucete", "Jáchal"]
+  },
+  {
+    "nombre": "San Luis",
+    "ciudades": ["San Luis", "Villa Mercedes", "Merlo", "La Punta", "Justo Daract"]
+  },
+  {
+    "nombre": "Santa Cruz",
+    "ciudades": ["Río Gallegos", "Caleta Olivia", "El Calafate", "Pico Truncado", "Puerto Deseado", "Las Heras"]
+  },
+  {
+    "nombre": "Santa Fe",
+    "ciudades": ["Santa Fe", "Rosario", "Cañada de Gómez", "Rafaela", "Reconquista", "Venado Tuerto", "Villa Constitución", "San Lorenzo", "Esperanza"]
+  },
+  {
+    "nombre": "Santiago del Estero",
+    "ciudades": ["Santiago del Estero", "La Banda", "Termas de Río Hondo", "Añatuya", "Frías"]
+  },
+  {
+    "nombre": "Tierra del Fuego",
+    "ciudades": ["Ushuaia", "Río Grande", "Tolhuin"]
+  },
+  {
+    "nombre": "Tucumán",
+    "ciudades": ["San Miguel de Tucumán", "Yerba Buena", "Tafí Viejo", "Concepción", "Banda del Río Salí", "Aguilares"]
+  }
+]

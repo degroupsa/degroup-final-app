@@ -1,0 +1,32 @@
+name: Desplegar en Firebase Hosting
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Revisar el código
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Compilar el proyecto
+        run: npm run build
+
+      - name: Desplegar en Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEGROUP_FINAL_APP }}'
+          channelId: live
+          projectId: web-de-group  # <-- ESTE ES EL CAMBIO CLAVE

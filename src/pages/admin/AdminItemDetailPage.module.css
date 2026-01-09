@@ -1,0 +1,192 @@
+/* src/pages/admin/AdminItemDetailPage.module.css */
+
+.pageContainer {
+  padding: 1.5rem 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.centered {
+  text-align: center;
+  padding-top: 4rem;
+  font-size: 1.2rem;
+  color: #6c757d;
+}
+.error {
+  color: #dc3545;
+  font-weight: 500;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #0d6efd;
+  text-decoration: none;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+.backLink:hover {
+  text-decoration: underline;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+@media (max-width: 900px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detailsCard,
+.adjustmentCard {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+  padding: 1.5rem 2rem 2rem;
+}
+
+.detailsCard h3,
+.adjustmentCard h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.3rem;
+  color: #343a40;
+}
+
+.itemHeader {
+  margin-bottom: 1.5rem;
+}
+.itemCode {
+  font-family: 'monospace';
+  font-weight: 600;
+  color: #0d6efd;
+  background-color: #e7f1ff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+.itemHeader h2 {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  font-size: 1.8rem;
+  color: #212529;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.detailGrid div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background-color: #f8f9fa;
+  padding: 0.8rem 1rem;
+  border-radius: 5px;
+}
+.detailGrid div strong { font-size: 0.8rem; color: #6c757d; display: flex; align-items: center; gap: 0.4rem; }
+.detailGrid div span { font-size: 1.1rem; font-weight: 500; color: #212529; }
+.detailGrid svg { font-size: 0.8rem; }
+
+.detailsCard h4 {
+  font-size: 1rem;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+.specList {
+  list-style: none; padding: 0; margin: 0;
+  font-size: 0.9rem;
+}
+.specList li {
+  display: flex; justify-content: space-between;
+  padding: 0.4rem 0; border-bottom: 1px dashed #e9ecef;
+}
+.specList li:last-child { border-bottom: none; }
+.specList strong { color: #6c757d; }
+.specList span { font-weight: 500; color: #212529; }
+
+/* --- Estilos Formulario de Ajuste --- */
+.stockDisplay {
+  text-align: center;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+.stockDisplay span {
+  display: block;
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+.stockDisplay strong {
+  font-size: 2.5rem;
+  color: #212529;
+  font-weight: 700;
+}
+
+.adjustmentType {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.adjustmentType button {
+  padding: 0.75rem 1rem;
+  border: 2px solid #ced4da;
+  background-color: #fff;
+  color: #495057;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.adjustmentType button.activeAdd {
+  background-color: #d1e7dd;
+  border-color: #198754;
+  color: #155724;
+}
+.adjustmentType button.activeRemove {
+  background-color: #f8d7da;
+  border-color: #dc3545;
+  color: #721c24;
+}
+
+.formGroup { margin-bottom: 1rem; }
+.formGroup label { display: block; font-weight: 500; margin-bottom: 0.5rem; color: #495057; font-size: 0.9rem; }
+.formGroup input {
+  width: 100%; padding: 0.75rem 1rem; border: 1px solid #ced4da;
+  border-radius: 5px; font-size: 1rem; box-sizing: border-box;
+}
+.formGroup input:focus { outline: none; border-color: #86b7fe; box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .25); }
+
+.saveButton {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  width: 100%; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: 600;
+  color: #fff; background-color: #198754; border: none; border-radius: 5px;
+  cursor: pointer; transition: all 0.2s; margin-top: 1rem;
+}
+.saveButton:hover { background-color: #157347; }
+.saveButton:disabled { background-color: #adb5bd; cursor: not-allowed; }

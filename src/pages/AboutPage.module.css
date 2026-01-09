@@ -1,0 +1,98 @@
+/* src/pages/AboutPage.module.css */
+
+.aboutContainer {
+  background-color: #121212; 
+  color: #e0e0e0;
+  line-height: 1.8;
+}
+
+.header {
+  text-align: center;
+  /* --- CAMBIO 1: Padding reducido para la vista móvil por defecto --- */
+  padding: 2rem 2rem; 
+  color: white;
+  
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.header h1 {
+  font-size: 3.2rem;
+  color: #ffd000;
+  margin-bottom: 1.1rem; 
+  font-weight: 700;
+}
+
+.header p {
+  font-size: 1.8rem;
+  color: white;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.contentWrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 5rem 2rem;
+}
+
+.sectionTitle {
+  font-size: 2.5rem;
+  color: #ffd000;
+  border-left: 4px solid #ffd000;
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+}
+
+.contentSection p {
+  font-size: 1.1rem;
+  color: #ffffff;
+}
+
+.missionVisionSection {
+  background-color: #1a1a1a;
+  padding: 5rem 2rem;
+}
+
+.missionVisionContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem; 
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.missionVisionBox {
+  padding: 2.5rem;
+  background-color: #1f1f1f;
+  border-radius: 8px;
+  border: 1px solid #343a40;
+}
+
+.missionVisionBox p {
+  color: #ced4da;
+}
+
+/* --- MEDIA QUERY CON LOS CAMBIOS --- */
+@media (max-width: 768px) {
+  
+  /* Restauramos el padding grande solo para desktop (opcional si te gusta el nuevo) */
+  /* Si quieres mantener el padding de 8rem en desktop, descomenta la siguiente sección */
+  /*
+  .header {
+    padding: 8rem 2rem;
+  }
+  */
+
+  /* --- CAMBIO 2: Se reduce el tamaño de las fuentes en móvil --- */
+  .header h1 { font-size: 2.2rem; } /* <-- Más pequeño */
+  .header p { font-size: 1.1rem; }  /* <-- Más pequeño */
+  
+  .sectionTitle { font-size: 2rem; }
+  
+  .missionVisionContainer {
+    grid-template-columns: 1fr;
+  }
+}

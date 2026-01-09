@@ -1,0 +1,62 @@
+/* src/components/Testimonials.module.css */
+
+.testimonialsSection {
+  background-color: #f0f2f5; /* <-- CAMBIADO: Aplicamos el fondo gris claro */
+  padding: 4rem 2rem;
+}
+
+.testimonialsSection h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-top: 0;
+  margin-bottom: 3rem;
+  color: #2c3e50;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.testimonialCard {
+  /* Le damos fondo blanco a las tarjetas para que contrasten */
+  background-color: #ffffff;
+  border-left: 5px solid #61dafb;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Sombra mejorada */
+  position: relative;
+}
+
+.quoteIcon {
+  font-size: 2.5rem;
+  color: #61dafb;
+  opacity: 0.2;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+}
+
+.testimonialText {
+  font-style: italic;
+  color: #333;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.author {
+  font-weight: bold;
+  color: #2c3e50;
+  text-align: right;
+}
+
+.author span {
+  display: block;
+  font-weight: normal;
+  font-size: 0.9rem;
+  color: #777;
+}

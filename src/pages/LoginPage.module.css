@@ -1,0 +1,154 @@
+.loginPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  background-color: #f8f9fa;
+  padding: 1rem;
+}
+
+.loginContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  max-width: 900px;
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 35px 65px rgba(0, 0, 0, 0.9);
+}
+
+.brandingSection {
+  background: linear-gradient(to right, #000000, #857e7e);
+  color: white;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.brandingSection h2 {
+  font-size: 2.5rem;
+  margin-bottom: 0rem;
+  color: rgb(255, 255, 255);
+}
+
+.formSection {
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form {
+  width: 100%;
+}
+
+.form h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #343a40;
+}
+
+/* ▼▼▼ ZONA CORREGIDA CON FLEXBOX ▼▼▼ */
+
+.inputGroup {
+  display: flex; /* 1. Convertimos el contenedor en un flexbox */
+  align-items: center; /* 2. Alineamos verticalmente el ícono y el input */
+  margin-bottom: 1.5rem;
+  border: 1px solid #ced4da; /* 3. Pasamos el borde al contenedor */
+  border-radius: 6px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: white; /* Añadimos fondo blanco por si acaso */
+}
+
+/* Nuevo estilo para cuando el input dentro del grupo tiene foco */
+.inputGroup:focus-within {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.inputIcon {
+  /* Ya no necesita position: absolute */
+  padding: 0 15px; /* Le damos espacio al ícono */
+  color: #adb5bd;
+}
+
+.inputGroup input {
+  flex-grow: 1; /* Le dice al input que ocupe el espacio disponible */
+  width: 0; /* <-- CAMBIO CLAVE: Permite que el input se encoja correctamente */
+  padding: 0.8rem 1rem 0.8rem 0; /* Quitamos el padding izquierdo */
+  font-size: 1rem;
+  border: none; /* El borde está en el contenedor */
+  outline: none; /* El foco está en el contenedor */
+  background-color: transparent;
+}
+
+/* ▲▲▲ FIN DE LA ZONA CORREGIDA ▲▲▲ */
+
+.submitButton {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.submitButton:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.errorMessage {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.redirectText {
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: 1.5rem;
+  color: #6c757d;
+}
+
+.redirectText a {
+  color: #007bff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.logo {
+  max-width: 380px;
+  margin-bottom: 0rem;
+}
+
+@media (max-width: 768px) {
+  .loginPage {
+    padding: 1rem;
+  }
+
+  .formSection {
+    padding: 2rem;
+  }
+
+  .brandingSection {
+    display: none;
+  }
+}

@@ -1,0 +1,73 @@
+/* src/components/PillarsSection.module.css */
+
+.pillarsSection {
+  /* He cambiado el color a uno más oscuro para que coincida con el resto de la página "Nosotros" */
+  background-color: #1a1a1a; 
+  padding: 4rem 1rem; /* Reducimos el padding horizontal para móvil */
+}
+
+/* --- ✅ CAMBIO 1: Cuadrícula de 2 columnas para móvil --- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Dos columnas */
+  gap: 1rem; /* Espacio reducido entre tarjetas */
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pillarCard {
+  text-align: center;
+  padding: 2rem 1rem; /* Ajustamos el padding */
+  background-color: #1f1f1f;
+  border-radius: 8px;
+  border: 1px solid #343a40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* --- ✅ CAMBIO 2: Íconos y texto más compactos para móvil --- */
+.iconWrapper {
+  font-size: 2.5rem; /* Ícono más pequeño */
+  color: #ffd000;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+.pillarCard h3 {
+  font-size: 1.1rem; /* Título más pequeño */
+  margin-bottom: 0.75rem;
+  color: #ffd000;
+}
+
+.pillarCard p {
+  font-size: 0.85rem; /* Descripción más pequeña */
+  line-height: 1.6;
+  color: #ffffff;
+}
+
+/* --- ✅ CAMBIO 3: Media Query para restaurar el diseño en Desktop --- */
+@media (min-width: 768px) {
+  .pillarsSection {
+    padding: 5rem 2rem; /* Restauramos el padding */
+  }
+
+  .grid {
+    /* En pantallas grandes, mostramos los 3 pilares en una fila */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem; /* Restauramos el espacio */
+  }
+
+  /* Restauramos los tamaños originales para Desktop */
+  .iconWrapper {
+    font-size: 3.5rem;
+  }
+
+  .pillarCard h3 {
+    font-size: 1.5rem;
+  }
+
+  .pillarCard p {
+    font-size: 1rem;
+  }
+}

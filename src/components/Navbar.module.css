@@ -1,0 +1,348 @@
+/* --- ESTILOS GENERALES DEL HEADER --- */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1001;
+  
+  padding: 0 2rem;
+  background-color: #121212; /* Fondo NEGRO */
+  border-bottom: 3px solid #FFD700; /* Borde AMARILLO-ORO */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  max-width: 1200px;
+  height: 70px;
+  margin: 0 auto;
+}
+
+/* --- SECCIONES PRINCIPALES DE NAVEGACIÓN --- */
+.leftSection, 
+.centerSection, 
+.rightSection {
+  display: flex;
+  align-items: center;
+}
+
+.leftSection {
+  flex: 1;
+  justify-content: flex-start;
+}
+
+/* --- ¡CAMBIO! Alineamos el logo a la izquierda --- */
+.centerSection {
+  flex: 1;
+  justify-content: flex-start; /* Logo a la izquierda */
+  gap: 2rem;
+}
+
+/* --- ¡CAMBIO! Ajustamos el Right Section --- */
+.rightSection {
+  flex: 0 1 auto; /* No crece, no se achica, se basa en su contenido */
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+/* --- LOGO Y ENLACES --- */
+.logoContainer {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.logo {
+  width: auto;
+  height: 65px;
+  /* Si tu logo no es dorado, podemos aplicar un filtro */
+  /* filter: brightness(0) saturate(100%) invert(84%) sepia(99%) saturate(1450%) hue-rotate(349deg) brightness(102%) contrast(101%); */
+}
+
+.desktopNavLinks {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.link {
+  position: relative;
+  padding: 0.5rem 0;
+  
+  color: #ADB5BD; /* GRIS claro */
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  
+  transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  border-bottom: 2px solid transparent;
+}
+
+.link::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; /* --- ¡CAMBIO! Ajustado para el borde de 3px del header --- */
+  left: 50%;
+  
+  width: 0;
+  height: 2px;
+  
+  background-color: #FFD700; /* AMARILLO-ORO */
+  transition: all 0.3s ease-in-out;
+}
+
+.link:hover {
+  color: #ffffff;
+}
+
+.link:hover::after {
+  width: 100%;
+  left: 0;
+}
+
+.activeLink {
+  color: #FFD700; /* AMARILLO-ORO */
+  font-weight: 600;
+}
+
+.activeLink::after {
+  width: 100%;
+  left: 0;
+}
+
+/* --- ¡ELIMINADO! Esta regla ya no es necesaria --- */
+/* .desktopNavLinks a[href="/admin"] { ... } */
+
+
+/* --- ACCIONES DE USUARIO Y MENÚ DESPLEGABLE --- */
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.userMenuContainer {
+  position: relative;
+}
+
+.userMenuButton {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  
+  font-size: 1.8rem;
+  color: #fff;
+  
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.userDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 110;
+  
+  display: flex;
+  flex-direction: column;
+  
+  min-width: 180px;
+  padding: 0.5rem 0;
+  
+  background-color: #212529; /* GRIS oscuro */
+  border: 1px solid #495057; /* GRIS medio */
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+
+.dropdownLink {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  gap: 0.75rem;
+  
+  font-size: 1rem;
+  color: #f8f9fa;
+  text-align: left;
+  text-decoration: none;
+
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdownLink:hover {
+  background-color: #343a40;
+}
+
+.dropdownButton {
+  color: #dc3545;
+}
+
+/* --- ¡AQUÍ ESTÁ EL ESTILO QUE FALTABA! --- */
+/* Botón de Admin (Amarillo-Oro) en la .rightSection */
+.adminButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #FFD700;
+  color: #121212;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+.adminButton:hover {
+  background-color: #fff;
+  color: #121212;
+}
+
+/* --- ESTILOS INICIALES PARA MÓVIL (OCULTOS) --- */
+.hamburger,
+.mobileMenu {
+  display: none;
+}
+
+/* --- MEDIA QUERY PARA VISTA MÓVIL (TABLETS Y CELULARES) --- */
+@media (max-width: 992px) {
+  .header {
+    padding: 0 1rem;
+  }
+
+  /* --- ¡CAMBIO! Centramos el logo en móvil --- */
+  .centerSection {
+    flex: 1;
+    justify-content: center;
+  }
+  .rightSection {
+    flex: 1;
+    gap: 0.5rem;
+  }
+  .navActions {
+    gap: 0.25rem;
+  }
+
+  .desktopNavLinks {
+    display: none;
+  }
+
+  .hamburger {
+    display: block;
+    font-size: 1.1rem;
+    color: #ffffff;
+    cursor: pointer;
+  }
+
+  .userMenuButton {
+    font-size: 1.1rem;
+  }
+  
+  .mobileMenu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    
+    width: 240px;
+    height: auto; /* Ajusta la altura al contenido */
+    padding: 2rem;
+    gap: 1.5rem;
+    box-sizing: border-box;
+
+    background-color: rgba(20, 20, 20, 0.9); /* Fondo NEGRO translúcido */
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    
+    border-bottom-right-radius: 1rem;
+    border-top-right-radius: 1rem;
+
+    transform: translateX(-100%);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .mobileMenu.menuOpen {
+    transform: translateX(0);
+  }
+
+  .mobileMenuHeader {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin-bottom: -1.8rem;
+  }
+
+  .closeButton {
+    font-size: 1.1rem;
+    color: #fff;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .mobileMenuLinks {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 1.2rem;
+  }
+
+  .mobileMenuLinks .link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+    font-size: 1.1rem;
+  }
+
+  /* --- ¡CAMBIO! Ocultamos el botón de admin de escritorio en móvil --- */
+  .adminButton {
+    display: none;
+  }
+}
+
+/* --- ESTILO PARA EL ÍCONO DE CHAT EN MÓVIL --- */
+.mobileChatIcon {
+  display: block; 
+  color: #ffffff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+}
+
+@media (min-width: 992px) {
+  .mobileChatIcon {
+    display: none;
+  }
+}
+
+/* --- ¡CAMBIO! Quitamos la regla de 993px que centraba el logo --- */
+@media (min-width: 993px) {
+  .leftSection {
+    display: none;
+  }
+  .centerSection {
+    flex: 1; 
+    justify-content: flex-start;
+  }
+  .rightSection {
+    flex: 0;
+  }
+  .mobileChatIcon {
+    display: none;
+  }
+}

@@ -1,0 +1,32 @@
+/* src/App.css (CORREGIDO Y LIMPIO) */
+
+/* Estilos para el layout principal de la aplicación */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ocupa, como mínimo, toda la altura de la pantalla */
+}
+
+.main-content {
+  flex-grow: 1; /* Hace que el contenido principal crezca para ocupar el espacio disponible */
+}
+
+
+/* --- Estilos para los separadores con degradado (si los usas en otras partes) --- */
+.gradient-divider {
+  height: 40px;
+  width: 100%;
+  background: linear-gradient(to bottom, rgb(73, 73, 73), transparent);
+  margin-bottom: -1px; 
+}
+
+.top-gradient-divider {
+  height: 30px;
+  width: 100%;
+  background: linear-gradient(to top, rgb(73, 73, 73), transparent);
+}
+
+/* Fix para el autocompletado de Google Places en móviles */
+.pac-container {
+  z-index: 9999 !important;
+}

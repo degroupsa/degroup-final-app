@@ -1,0 +1,114 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* --- ✅ CAMBIO: Z-index aumentado para estar por encima de todo --- */
+  z-index: 3001;
+}
+  
+.modalContent {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.modalContent h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.uploadArea {
+  width: 100%;
+  height: 300px;
+  border: 2px dashed #ced4da;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.uploadBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: #6c757d;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.imagePreviewWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.imagePreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  font-size: 3rem;
+  color: white;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.postButton, .cancelButton {
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.postButton {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.postButton:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  background-color: #f1f3f5;
+  color: #495057;
+}

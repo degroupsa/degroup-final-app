@@ -1,0 +1,374 @@
+/* src/pages/admin/AdminInventoryPage.module.css */
+
+/* --- Estilos del Dashboard Existente --- */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.grid-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+.card-title {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #343a40;
+}
+.full-width-card {
+  margin-top: 2rem;
+} 
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.header-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.section-title {
+  margin-top: 3rem;
+  font-size: 1.5rem;
+  color: #000000;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.section-divider {
+  border: none;
+  height: 1px;
+  background-color: #dee2e6;
+  margin: 4rem 0;
+}
+
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  color: white;
+  min-width: 180px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.action-button.add { background-color: #007bff; }
+.action-button.add:hover { background-color: #0056b3; }
+.action-button.egress { background-color: #dc3545; }
+.action-button.egress:hover { background-color: #c82333; }
+.action-button.adjustment { background-color: #ffc107; color: #212529; }
+.action-button.adjustment:hover { background-color: #e0a800; }
+.action-button.cancel { background-color: #6c757d; }
+.action-button.cancel:hover { background-color: #5a6268; }
+.action-button.reset { background-color: #6c757d; }
+.action-button.reset:hover { background-color: #5a6268; }
+
+/* --- Estilos para el Modal --- */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.modalContent {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.modalHeader { display: flex; flex-direction: column; align-items: center; margin-bottom: 1rem; }
+.modalIcon { font-size: 3rem; color: #dc3545; margin-bottom: 1rem; }
+.modalTitle { font-size: 1.5rem; font-weight: 600; color: #333; }
+.modalBody { font-size: 1.1rem; color: #555; margin-bottom: 2rem; line-height: 1.6; }
+.modalActions { display: flex; justify-content: center; gap: 1rem; }
+.modalActions .action-button.cancel { background-color: #fff; color: #6c757d; border: 2px solid #e2e8f0; box-shadow: none; }
+.modalActions .action-button.cancel:hover { background-color: #f8f9fa; border-color: #d6dbe1; color: #495057; }
+.modalActions .action-button.egress { background-color: #dc3545; border: 2px solid #dc3545; }
+.modalActions .action-button.egress:hover { background-color: #c82333; border-color: #c82333; }
+
+
+/* --- ESTILOS PARA EL FORMULARIO --- */
+.formCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid #e9ecef;
+}
+
+.formTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #2d3748;
+}
+
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.formGroup label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #4a5568;
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.conditionalSection {
+  background-color: #f8f9fa;
+  border: 1px dashed #dee2e6;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.dimensionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: #28a745;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 1rem;
+}
+
+.submitButton:hover {
+  background-color: #218838;
+}
+
+.submitButton:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+}
+
+/* --- Estilos para la Tabla de Inventario --- */
+.listCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.listTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #2d3748;
+}
+
+.inventoryTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* Importante para que los anchos funcionen */
+}
+
+.inventoryTable th, .inventoryTable td {
+  padding: 0.8rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Anchos de las columnas */
+.colCode { width: 12%; }
+.colName { width: 28%; white-space: normal; } /* Permitimos que el nombre ocupe varias líneas */
+.colCategory { width: 10%; }
+.colStock { width: 10%; }
+.colSpecs { width: 20%; white-space: normal; } /* Permitimos que las especificaciones ocupen varias líneas */
+.colStockMin { width: 10%; }
+.colCost { width: 10%; }
+
+
+.inventoryTable th {
+  font-weight: 600;
+  color: #718096;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+.itemCode {
+  font-family: 'monospace';
+  font-weight: 600;
+  color: #2b6cb0;
+  background-color: #ebf8ff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.lowStockRow {
+  background-color: #fff5f5 !important;
+  color: #c53030;
+}
+
+.specList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.specList li {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  padding: 0.1rem 0;
+}
+
+.specList strong {
+  color: #4a5568;
+  margin-right: 0.5rem;
+}
+
+.specList span {
+  font-weight: 500;
+  color: #2d3748;
+}
+
+/* --- Estilos para el campo de moneda --- */
+.currencyInput {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: #fff;
+}
+
+.currencyInput:focus-within {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.currencyInput span {
+  padding: 0.75rem 0 0.75rem 1rem;
+  color: #495057;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.currencyInput input {
+  width: 100%;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding-left: 0.5rem;
+  background-color: transparent;
+}
+
+.currencyInput input::-webkit-outer-spin-button,
+.currencyInput input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+/* --- Estilos para la sección de costo --- */
+.costSection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+  border: 1px solid #e9ecef;
+}
+/* ... (Todos los estilos anteriores) ... */
+
+/* --- ▼▼▼ ESTILOS AÑADIDOS PARA QR EN TABLA DE INVENTARIO ▼▼▼ --- */
+
+/* Ancho columna QR (ajustar si es necesario) */
+.colQr {
+  width: 5%;
+  text-align: center; /* Centramos el contenido */
+}
+.qrCell {
+  text-align: center;
+  padding-top: 0.6rem; /* Ajuste para centrar mejor el botón */
+  padding-bottom: 0.6rem;
+}
+
+/* Estilo del botón QR dentro de la tabla */
+.qrButtonInventory {
+  background: none;
+  border: none;
+  color: #6c757d; /* Gris sutil */
+  cursor: pointer;
+  padding: 0.2rem;
+  margin: 0;
+  font-size: 1.1rem; /* Tamaño del icono */
+  line-height: 1;
+  transition: color 0.2s, transform 0.1s;
+  display: inline-flex; /* Para centrar bien */
+  align-items: center;
+  justify-content: center;
+}
+.qrButtonInventory:hover {
+  color: #0d6efd; /* Azul al pasar el mouse */
+  transform: scale(1.1); /* Efecto ligero al pasar el mouse */
+}
+/* --- ▲▲▲ FIN ESTILOS AÑADIDOS ▲▲▲ --- */

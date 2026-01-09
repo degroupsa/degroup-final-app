@@ -1,0 +1,219 @@
+.adminLayout {
+  display: flex;
+  transition: margin-left 0.3s ease;
+}
+
+.sidebar {
+  width: 240px;
+  background-color: black;
+  color: white;
+  padding: 1rem;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.sidebarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ffd000;
+  padding-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+.sidebar h2 {
+  color: #ffd000;
+  text-align: center;
+  margin: 0;
+  font-size: 1.2rem;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.toggleButton {
+  background: #495057;
+  border: none;
+  color: #ffd000;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+  font-size: 14px;
+}
+
+.backToSiteButtonTop {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #ffffff;
+  text-decoration: none;
+  padding: 0.6rem 1rem;
+  border-radius: 5px;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #6c757d;
+  background-color: #343a40;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.backToSiteButtonTop:hover {
+  color: #ffd000;
+  background-color: #495057;
+  border-color: #ffd000;
+}
+
+.nav {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  padding-right: 5px;
+  padding-bottom: 1.5rem;
+}
+
+.navList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #ffffff;
+  text-decoration: none;
+  padding: 0.8rem 1rem;
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+
+.navLink svg, .backToSiteButtonTop svg {
+  font-size: 1rem;
+  width: 1.1em;
+  height: 1.1em;
+  text-align: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.navLink:hover {
+  color: #ffd000;
+}
+
+.navLinkActive {
+  background-color: #007bff;
+  color: #ffd000;
+}
+
+.navLink span, .backToSiteButtonTop span {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  transition: margin-left 0.3s ease;
+  margin-left: 240px;
+  overflow-x: hidden;
+}
+
+/* --- ESTILOS COLAPSADOS --- */
+.sidebarCollapsed .sidebar {
+  width: 35px;
+  padding: 1rem 0.9rem;
+}
+
+/* --- ▼▼▼ CORRECCIÓN REVERTIDA ▼▼▼ --- */
+/* Volvemos a los 65px originales, que eran correctos.
+   El ancho total del menú colapsado es 35px (ancho) + ~15px (pad) + ~15px (pad) = ~65px.
+*/
+.sidebarCollapsed .content {
+  margin-left: 65px; 
+}
+/* --- ▲▲▲ FIN DE LA CORRECCIÓN ▲▲▲ --- */
+
+
+.sidebarCollapsed .sidebar h2,
+.sidebarCollapsed .navLink span,
+.sidebarCollapsed .backToSiteButtonTop span {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+.sidebarCollapsed .toggleButton {
+  transform: rotate(180deg);
+}
+.sidebarCollapsed .navLink,
+.sidebarCollapsed .backToSiteButtonTop {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+.sidebarCollapsed .nav {
+  overflow-y: hidden;
+  padding-right: 0;
+}
+
+/* --- Estilos Scrollbar --- */
+.nav::-webkit-scrollbar {
+  width: 6px;
+}
+.nav::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+.nav::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 3px;
+}
+.nav::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+
+/* --- Arreglo Responsive para Móviles --- */
+@media (max-width: 768px) {
+  .content {
+    padding: 1.5rem 1rem; /* Menos padding en móviles */
+  }
+
+  /* Nos aseguramos que el margen colapsado sea el correcto */
+  .sidebarCollapsed .content {
+    margin-left: 65px; 
+  }
+}
+/* ... (todo tu código CSS existente) ... */
+
+/* --- ¡NUEVO! Estilos para el Título del Menú --- */
+.navTitle {
+  padding: 10px 15px 5px 15px;
+  margin-top: 15px;
+  color: #888; /* Un color gris sutil */
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Cuando el menú está colapsado, oculta los títulos */
+.sidebarCollapsed .navTitle span {
+  display: none;
+}

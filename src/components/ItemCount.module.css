@@ -1,0 +1,60 @@
+/* Contenedor principal que apila el contador y el botón */
+.itemCountContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Espacio entre el contador y el botón de añadir */
+    width: 100%;
+    margin-top: 1.5rem;
+  }
+  
+  .counter {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centramos el contador */
+    gap: 1.5rem;
+  }
+  
+  .counter button {
+    background-color: #f0f2f5;
+    border: 1px solid #ddd;
+    width: 38px;   /* Botones un poco más compactos */
+    height: 38px;
+    font-size: 1.5rem;
+    line-height: 1; /* Mejora la alineación vertical del texto */
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+  }
+  
+  .counter button:hover {
+    background-color: #e2e6ea;
+  }
+  
+  .counter span {
+    font-size: 1.5rem; /* Número de cantidad más grande */
+    font-weight: 600;
+    min-width: 40px;
+    text-align: center;
+  }
+  
+  /* --- NUEVOS ESTILOS PARA EL BOTÓN PRINCIPAL --- */
+  .addButton {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+  }
+  
+  .addButton:hover {
+    background-color: #0056b3;
+  }
+  
+  .addButton:active {
+    transform: scale(0.98);
+  }

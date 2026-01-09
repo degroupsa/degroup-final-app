@@ -1,0 +1,41 @@
+.tableContainer {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.ordersTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.ordersTable th, .ordersTable td {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.ordersTable th {
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.ordersTable tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.detailsButton {
+    text-decoration: none;
+    background-color: #e7f5ff;
+    color: #007bff;
+    padding: 0.3rem 0.7rem;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.detailsButton:hover {
+    background-color: #007bff;
+    color: white;
+}

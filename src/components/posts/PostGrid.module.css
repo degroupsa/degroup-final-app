@@ -1,0 +1,46 @@
+.postGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .postItem {
+    position: relative;
+    /* Usamos la propiedad aspect-ratio para mantenerlo cuadrado sin trucos */
+    aspect-ratio: 1 / 1;
+    background-color: #f1f3f5;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  
+  .postItem img {
+    width: 100%;
+    height: 100%;
+    /* object-fit: cover asegura que la imagen cubra el espacio sin deformarse */
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  .postItem:hover img {
+    transform: scale(1.05);
+  }
+  
+  .textPost {
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #495057;
+  }
+  
+  .noPostsMessage {
+    text-align: center;
+    color: #6c757d;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+  }

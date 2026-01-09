@@ -1,0 +1,258 @@
+.pageBackground {
+  background-color: #f0f2f5;
+  min-height: calc(100vh - 70px);
+  padding: 1.5rem 1rem;
+}
+
+.hubContainer {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.hubHeader {
+  margin-bottom: 2rem;
+  text-align: center; 
+}
+
+.headerLogo {
+  height: 120px;
+  width: auto;
+  margin-bottom: -1.5rem;
+}
+
+.tabNav {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  border-bottom: 1px solid #ddd;
+  margin-top: 1.5rem;
+}
+
+.tabNav button {
+  padding: 1rem 0.5rem;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #65676b;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.tabNav button:hover {
+  color: #1d2129;
+}
+
+.tabNav button.activeTab {
+  color: #1877f2;
+}
+
+.tabNav button::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #1877f2;
+  transform: scaleX(0);
+  transition: transform 0.2s ease-in-out;
+}
+
+.tabNav button.activeTab::after {
+  transform: scaleX(1);
+}
+
+.hubLayout {
+  display: block;
+}
+
+.mainContent {
+  width: 100%;
+  min-width: 0;
+}
+
+.rightSidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 280px;
+  height: 100%;
+  background-color: #fff;
+  z-index: 2000;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.15);
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.rightSidebar.sidebarOpen {
+  transform: translateX(0);
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1999;
+}
+
+@media (min-width: 992px) {
+  .pageBackground {
+    padding: 2rem;
+  }
+  
+  .hubLayout.twoColumns {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+
+  .rightSidebar {
+    position: sticky;
+    top: 80px;
+    transform: none;
+    box-shadow: none;
+    transition: none;
+  }
+
+  .backdrop {
+    display: none;
+  }
+}
+
+.rightSidebar .sidebarCard {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.rightSidebar h3 {
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 0 0.5rem 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 0.5rem;
+}
+
+.postListContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.placeholder {
+  text-align: center;
+  padding: 3rem;
+  color: #65676b;
+}
+
+/* --- ESTILOS AJUSTADOS PARA EL PROMPT DE LOGIN/REGISTRO --- */
+.loginPrompt {
+  background-color: #1f1f1f;
+  border-radius: 12px;
+  padding: 2rem; /* <-- AJUSTADO */
+  text-align: center;
+  margin-bottom: 1.5rem;
+  border: 1px solid #343a40;
+}
+
+.loginPrompt h3 {
+  margin-top: 0;
+  font-size: 1.4rem; /* <-- AJUSTADO */
+  color: #ffd000;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.loginPrompt p {
+  color: #adb5bd;
+  max-width: 450px;
+  margin: 0.75rem auto 1.5rem; /* <-- AJUSTADO */
+  line-height: 1.6;
+  font-size: 0.95rem; /* <-- AJUSTADO */
+}
+
+.promptButtons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem; /* <-- AJUSTADO */
+}
+
+.loginButton, .registerButton {
+  padding: 12px 24px; /* <-- AJUSTADO */
+  font-size: 0.9rem;  /* <-- AJUSTADO */
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+  width: 100%;
+  max-width: 320px;
+  box-sizing: border-box;
+}
+
+.loginButton {
+  background-color: #ffd000;
+  color: #121212;
+  border: 2px solid #ffd000;
+}
+.loginButton:hover {
+  background-color: #e6bb00;
+  border-color: #e6bb00;
+  transform: translateY(-2px);
+}
+
+.registerButton {
+  background-color: transparent;
+  color: #f8f9fa;
+  border: 2px solid #495057;
+}
+.registerButton:hover {
+  background-color: #343a40;
+  border-color: #f8f9fa;
+}
+
+/* --- ESTILOS PARA LA PESTAÑA DE BÚSQUEDA --- */
+.searchContainer {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.searchInputWrapper {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.searchInputIcon {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  color: #aaa;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 12px 12px 45px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  background-color: #f0f2f5;
+  box-sizing: border-box;
+} 
+
+.searchResults {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}

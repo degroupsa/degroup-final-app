@@ -1,0 +1,41 @@
+/* src/components/ui/NavigationArrows.module.css (NUEVO DISEÑO) */
+
+/* --- ✅ CAMBIO 1: Nueva posición y layout vertical --- */
+.navArrowsContainer {
+  position: fixed;
+  top: 50%; /* Lo centra verticalmente en la pantalla */
+  right: 15px; /* Un poco de espacio desde el borde derecho */
+  
+  transform: translateY(-50%); /* Ajuste fino para un centrado perfecto */
+  
+  display: flex;
+  flex-direction: column; /* Apila las flechas una sobre otra */
+  gap: 15px; /* Espacio entre las dos flechas */
+  z-index: 1000;
+}
+  
+/* --- ✅ CAMBIO 2: Botones más pequeños y sutiles --- */
+.arrowButton {
+  background-color: rgba(0, 0, 0, 0.35); /* Fondo un poco más transparente */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  
+  width: 25px;   /* Botón más pequeño */
+  height: 25px;  /* Botón más pequeño */
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  
+  font-size: 1rem; /* Ícono más pequeño */
+  
+  transition: background-color 0.2s, transform 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+  
+.arrowButton:hover {
+  background-color: rgba(0, 0, 0, 0.7); /* Se oscurece al pasar el mouse */
+  transform: scale(1.1);
+}

@@ -1,0 +1,28 @@
+.widgetContainer {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    color: #856404;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.widgetContainer h3 {
+    margin-top: 0;
+    color: #856404;
+}
+
+.quoteList {
+    list-style-type: none;
+    padding: 0;
+}
+
+.quoteItem {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+.quoteItem:last-child {
+    border-bottom: none;
+}

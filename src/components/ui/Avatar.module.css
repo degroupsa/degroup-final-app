@@ -1,0 +1,7 @@
+.avatar {
+    width: 40px; /* O el tamaño que necesites */
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #e0e0e0; /* Color de fondo mientras carga */
+  }

@@ -1,0 +1,63 @@
+.quoteContainer {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  
+  .quoteContainer h1, .quoteContainer h2 {
+    text-align: center;
+  }
+  
+  .itemsList {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+  }
+  
+  .item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+  }
+  
+  .item span {
+    font-weight: bold;
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .form input {
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .form button {
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .successMessage {
+    text-align: center;
+    padding: 3rem;
+    background-color: #eaf6ec;
+    border-left: 5px solid #28a745;
+    border-radius: 8px;
+  }

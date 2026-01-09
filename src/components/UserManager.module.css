@@ -1,0 +1,60 @@
+/* Este archivo puede usar los mismos estilos que ProductManager.module.css */
+/* Para simplicidad, los copiamos aquí. */
+.managerContainer {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-top: 2rem;
+  }
+  
+  .userTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+  }
+  
+  .userTable th,
+  .userTable td {
+    border-bottom: 1px solid #ddd;
+    padding: 0.8rem;
+    text-align: left;
+  }
+  
+  .userTable th {
+    background-color: #f9f9f9;
+  }
+  
+  .roleSelect {
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+  }
+
+  .tableTitle {
+    text-align: center;
+    margin-top: 0.1rem; /* Le damos un poco de espacio arriba */
+    color: #000000;
+  }
+
+  /* ... (al final de tu archivo) ... */
+
+.actionButton {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.actionButton.delete {
+  background-color: #a12c34; /* Un rojo más oscuro */
+  color: white;
+}
+
+.actionButton.delete:hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+}
