@@ -66,16 +66,16 @@ const EditProductionOrderModal = ({ order, onClose, onOrderUpdated }) => {
 
     const orderRef = doc(db, 'productionOrders', order.id);
     const newClientName = `${selectedClient.name || ''} ${selectedClient.lastName || ''}`.trim();
+    
+    // BLINDAJE DE EMAIL: Todo a minúsculas y sin espacios
+    const emailToSave = selectedClient.email ? selectedClient.email.trim().toLowerCase() : '';
 
     try {
-      // --- CORRECCIÓN CLAVE AQUÍ ---
-      // Guardamos linkedUserEmail para que el perfil del cliente pueda encontrar el pedido
       await updateDoc(orderRef, {
         linkedClientId: selectedClient.id,
         linkedClientName: newClientName,
-        linkedUserEmail: selectedClient.email || '' // Guardamos el email del cliente
+        linkedUserEmail: emailToSave // Guardamos el email blindado
       });
-      // --------------------------------
       
       toast.dismiss();
       toast.success('¡Cliente actualizado con éxito!');
@@ -106,7 +106,6 @@ const EditProductionOrderModal = ({ order, onClose, onOrderUpdated }) => {
         <div className={styles.logContainer}>
           <form onSubmit={handleSubmit} className={styles.noteForm}>
             
-            {/* --- Formulario de Búsqueda de Cliente --- */}
             <div className={styles.searchClientGroup}>
               <label htmlFor="clientSearch">Buscar y Asignar Nuevo Cliente</label>
               <div className={styles.searchContainer}>
@@ -132,7 +131,6 @@ const EditProductionOrderModal = ({ order, onClose, onOrderUpdated }) => {
                 </ul>
               )}
             </div>
-            {/* --- Fin Formulario de Búsqueda --- */}
 
             <button type="submit" disabled={isSubmitting || !selectedClient}>
               <FaSave /> {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
