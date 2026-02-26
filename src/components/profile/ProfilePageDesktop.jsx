@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import styles from '../../pages/ProfilePage.module.css';
 import { db, storage } from '../../firebase/config.js';
-import { doc, getDoc, setDoc, collection, query, where, getDocs, orderBy, updateDoc, writeBatch, getCountFromServer, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, query, where, getDocs, orderBy, updateDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import toast from 'react-hot-toast';
 import { FaCamera, FaGlobe, FaUserPlus, FaUserCheck, FaPaperPlane, FaEllipsisV, FaUserEdit, FaImage } from 'react-icons/fa';
@@ -98,8 +98,12 @@ function ProfilePageDesktop() {
           const postsSnapshot = await getDocs(qPosts);
           setUserPosts(postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
           
-          if (fetchedUser.email && (currentUser?.uid === fetchedUser.uid)) {
-            const qOrders = query(collection(db, 'productionOrders'), where('linkedUserEmail', '==', fetchedUser.email));
+          // --- CORRECCIÓN AQUÍ: Usamos el email de la sesión activa como fuente principal ---
+          const userEmailToSearch = currentUser?.email || fetchedUser.email;
+          
+          if (userEmailToSearch && (currentUser?.uid === fetchedUser.uid)) {
+            // Buscamos los pedidos que coincidan con el email exacto
+            const qOrders = query(collection(db, 'productionOrders'), where('linkedUserEmail', '==', userEmailToSearch));
             const ordersSnapshot = await getDocs(qOrders);
             const ordersData = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             ordersData.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
@@ -115,7 +119,7 @@ function ProfilePageDesktop() {
       }
     };
     fetchData();
-  }, [paramsUserId, currentUser?.uid, authLoading]);
+  }, [paramsUserId, currentUser, authLoading]);
 
   useEffect(() => {
     if (authLoading || !currentUser || !profileUser || isOwner) return;
