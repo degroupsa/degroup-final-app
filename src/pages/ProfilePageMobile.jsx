@@ -95,8 +95,9 @@ function ProfilePageMobile() {
           const postsSnapshot = await getDocs(postsQuery);
           setUserPosts(postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
           
-          // --- CORRECCIÓN AQUÍ: Usamos el email de la sesión activa como fuente principal ---
-          const userEmailToSearch = currentUser?.email || fetchedUser.email;
+          // BLINDAJE DE BÚSQUEDA: Minúsculas y sin espacios
+          const rawEmail = currentUser?.email || fetchedUser.email || '';
+          const userEmailToSearch = rawEmail.trim().toLowerCase();
 
           if (userEmailToSearch && (currentUser?.uid === fetchedUser.uid)) {
             const ordersQuery = query(collection(db, 'productionOrders'), where('linkedUserEmail', '==', userEmailToSearch));

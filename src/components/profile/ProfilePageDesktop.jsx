@@ -98,11 +98,11 @@ function ProfilePageDesktop() {
           const postsSnapshot = await getDocs(qPosts);
           setUserPosts(postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
           
-          // --- CORRECCIÓN AQUÍ: Usamos el email de la sesión activa como fuente principal ---
-          const userEmailToSearch = currentUser?.email || fetchedUser.email;
+          // BLINDAJE DE BÚSQUEDA: Minúsculas y sin espacios
+          const rawEmail = currentUser?.email || fetchedUser.email || '';
+          const userEmailToSearch = rawEmail.trim().toLowerCase();
           
           if (userEmailToSearch && (currentUser?.uid === fetchedUser.uid)) {
-            // Buscamos los pedidos que coincidan con el email exacto
             const qOrders = query(collection(db, 'productionOrders'), where('linkedUserEmail', '==', userEmailToSearch));
             const ordersSnapshot = await getDocs(qOrders);
             const ordersData = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
