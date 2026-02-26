@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../../../firebase/config';
 import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import toast from 'react-hot-toast';
-// --- CAMBIO: Reutilizamos los estilos del modal de Bitácora ---
 import styles from './ProductionLogModal.module.css'; 
 import { FaTimes, FaSave, FaUserEdit, FaSearch } from 'react-icons/fa';
 
@@ -69,10 +68,15 @@ const EditProductionOrderModal = ({ order, onClose, onOrderUpdated }) => {
     const newClientName = `${selectedClient.name || ''} ${selectedClient.lastName || ''}`.trim();
 
     try {
+      // --- CORRECCIÓN CLAVE AQUÍ ---
+      // Guardamos linkedUserEmail para que el perfil del cliente pueda encontrar el pedido
       await updateDoc(orderRef, {
         linkedClientId: selectedClient.id,
-        linkedClientName: newClientName
+        linkedClientName: newClientName,
+        linkedUserEmail: selectedClient.email || '' // Guardamos el email del cliente
       });
+      // --------------------------------
+      
       toast.dismiss();
       toast.success('¡Cliente actualizado con éxito!');
       onOrderUpdated(); // Llama a fetchAllData y cierra el modal
