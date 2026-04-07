@@ -48,6 +48,7 @@ import AdminRealtimePage from './pages/admin/AdminRealtimePage.jsx'; // Corregid
 import AdminClientsPage from './pages/admin/AdminClientsPage.jsx'; // Corregido
 import AdminContactsPage from './pages/admin/AdminContactsPage.jsx'; // Corregido
 import AdminItemDetailPage from './pages/admin/AdminItemDetailPage.jsx'; // Corregido
+import InventoryCardsPage from './pages/admin/InventoryCardsPage';
 
 // --- ¡ESTA ES LA LÍNEA CORREGIDA! ---
 import AIPanel from './pages/AIPanel.jsx';
@@ -112,6 +113,7 @@ function App() {
           <Route path="mensajes" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} /> 
           <Route path="mensajes/:chatId" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
           <Route path="contactos" element={<AdminContactsPage />} />
+          <Route path="/admin/inventario/tarjetas" element={<InventoryCardsPage />} />
 
           {/* --- ¡AÑADIDO! Ruta del Panel de IA --- */}
           <Route path="ai-panel" element={<AIPanel />} />

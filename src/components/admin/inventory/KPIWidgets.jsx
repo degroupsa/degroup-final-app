@@ -1,44 +1,74 @@
-import React from 'react';
-import './InventoryWidgets.css'; // Crearemos este archivo para los estilos
+import React, { useMemo } from 'react';
+import styles from './KPIWidgets.module.css';
+import { FaBoxes, FaExclamationTriangle, FaDollarSign, FaExchangeAlt } from 'react-icons/fa';
 
 const KPIWidgets = ({ items, movements }) => {
-  if (!items || items.length === 0) {
-    return <div className="kpi-grid"><div className="kpi-card">Cargando datos...</div></div>;
-  }
+  const kpiData = useMemo(() => {
+    if (!items) return { totalItems: 0, lowStock: 0, totalValue: 0, recentMovements: 0 };
 
-  // --- Cálculos de KPIs ---
+    // 1. Total de ítems
+    const totalItems = items.length;
 
-  // 1. Valor total del inventario
-  const totalValue = items.reduce((sum, item) => sum + (item.stock * item.costoPorUnidad), 0);
+    // 2. Ítems con stock crítico
+    const lowStock = items.filter(item => item.stock <= (item.stockMinimo || 0)).length;
 
-  // 2. Items bajo stock mínimo
-  const lowStockItems = items.filter(item => item.stock < item.stockMinimo).length;
-  
-  // 3. Productos más utilizados (necesita la colección de movimientos)
-  const usageCount = movements.reduce((acc, mov) => {
-    if (mov.tipo === 'salida') {
-        acc[mov.nombrePieza] = (acc[mov.nombrePieza] || 0) + mov.cantidad;
-    }
-    return acc;
-  }, {});
+    // 3. Valor Total del Inventario (Suma de stock * costoPorUnidad)
+    const totalValue = items.reduce((acc, item) => {
+      const cost = parseFloat(item.costoPorUnidad) || 0;
+      return acc + (item.stock * cost);
+    }, 0);
 
-  const mostUsedItem = Object.keys(usageCount).reduce((a, b) => usageCount[a] > usageCount[b] ? a : b, 'N/A');
+    // 4. Movimientos en los últimos 7 días
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const recentMovements = (movements || []).filter(m => {
+      if (!m.fecha) return false;
+      const movDate = m.fecha.toDate ? m.fecha.toDate() : new Date(m.fecha);
+      return movDate >= sevenDaysAgo;
+    }).length;
+
+    return { totalItems, lowStock, totalValue, recentMovements };
+  }, [items, movements]);
+
+  // Formateador de moneda
+  const formatCurrency = (val) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(val);
 
   return (
-    <div className="kpi-grid">
-      <div className="kpi-card">
-        <span className="kpi-title">Valor Total del Inventario</span>
-        <span className="kpi-value">${totalValue.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+    <div className={styles.kpiGrid}>
+      {/* Tarjeta 1: Total de Ítems */}
+      <div className={`${styles.kpiCard} ${styles.blueGradient}`}>
+        <div className={styles.iconWrapper}><FaBoxes /></div>
+        <div className={styles.kpiContent}>
+          <h3>Total de Ítems</h3>
+          <p>{kpiData.totalItems}</p>
+        </div>
       </div>
-      <div className="kpi-card">
-        <span className="kpi-title">Items con Stock Bajo</span>
-        <span className="kpi-value">{lowStockItems}</span>
-        <span className="kpi-description">Debajo del mínimo</span>
+
+      {/* Tarjeta 2: Valor del Inventario */}
+      <div className={`${styles.kpiCard} ${styles.greenGradient}`}>
+        <div className={styles.iconWrapper}><FaDollarSign /></div>
+        <div className={styles.kpiContent}>
+          <h3>Capital Inmovilizado</h3>
+          <p>{formatCurrency(kpiData.totalValue)}</p>
+        </div>
       </div>
-      <div className="kpi-card">
-        <span className="kpi-title">Pieza Más Utilizada</span>
-        <span className="kpi-value-small">{mostUsedItem}</span>
-        <span className="kpi-description">(Según movimientos)</span>
+
+      {/* Tarjeta 3: Alertas de Stock */}
+      <div className={`${styles.kpiCard} ${styles.redGradient}`}>
+        <div className={styles.iconWrapper}><FaExclamationTriangle /></div>
+        <div className={styles.kpiContent}>
+          <h3>Stock Crítico</h3>
+          <p>{kpiData.lowStock} <span className={styles.subtext}>ítems</span></p>
+        </div>
+      </div>
+
+      {/* Tarjeta 4: Movimientos Recientes */}
+      <div className={`${styles.kpiCard} ${styles.purpleGradient}`}>
+        <div className={styles.iconWrapper}><FaExchangeAlt /></div>
+        <div className={styles.kpiContent}>
+          <h3>Movimientos (7 Días)</h3>
+          <p>{kpiData.recentMovements}</p>
+        </div>
       </div>
     </div>
   );

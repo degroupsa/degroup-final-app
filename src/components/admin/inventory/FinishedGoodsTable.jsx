@@ -4,7 +4,6 @@ import { doc, runTransaction, collection, Timestamp } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import './InventoryTables.css';
 
-// 1. AÑADIMOS 'products' a las props que recibe el componente
 const FinishedGoodsTable = ({ recipes, products, onActionComplete }) => {
     
   const handleDeliver = async (recipe) => {
@@ -25,8 +24,6 @@ const FinishedGoodsTable = ({ recipes, products, onActionComplete }) => {
 
     try {
         const recipeRef = doc(db, 'productRecipes', recipe.id);
-        
-        // 2. Usamos la lista de 'products' que ahora recibe el componente
         const productInfo = products.find(p => p.name === recipe.productName);
 
         if (!productInfo) {
@@ -66,37 +63,42 @@ const FinishedGoodsTable = ({ recipes, products, onActionComplete }) => {
   return (
     <div className="table-container">
       <h3 className="table-title">Stock de Equipos Terminados</h3>
-      <table className="inventory-table">
-        <thead>
-          <tr>
-            <th>Nombre del Equipo</th>
-            <th>SKU</th>
-            <th>Stock Disponible</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedRecipes.map(recipe => {
-            const stockFinished = recipe.stockFinished || 0;
-            return (
-                <tr key={recipe.id}>
-                <td>{recipe.productName}</td>
-                <td>{recipe.productSKU || 'N/A'}</td>
-                <td><strong>{stockFinished}</strong></td>
-                <td>
-                    <button 
-                      className="action-btn deliver" 
-                      onClick={() => handleDeliver(recipe)}
-                      disabled={!stockFinished || stockFinished === 0}
-                    >
-                      Entregar
-                    </button>
-                </td>
-                </tr>
-            )
-          })}
-        </tbody>
-      </table>
+      
+      {/* --- APLICAMOS EL SCROLL AQUÍ --- */}
+      <div className="table-scroll-wrapper">
+        <table className="inventory-table">
+          {/* --- APLICAMOS LA CABECERA FIJA AQUÍ --- */}
+          <thead className="sticky-header">
+            <tr>
+              <th>Nombre del Equipo</th>
+              <th>SKU</th>
+              <th>Stock Disponible</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedRecipes.map(recipe => {
+              const stockFinished = recipe.stockFinished || 0;
+              return (
+                  <tr key={recipe.id}>
+                  <td>{recipe.productName}</td>
+                  <td>{recipe.productSKU || 'N/A'}</td>
+                  <td><strong>{stockFinished}</strong></td>
+                  <td>
+                      <button 
+                        className="action-btn deliver" 
+                        onClick={() => handleDeliver(recipe)}
+                        disabled={!stockFinished || stockFinished === 0}
+                      >
+                        Entregar
+                      </button>
+                  </td>
+                  </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

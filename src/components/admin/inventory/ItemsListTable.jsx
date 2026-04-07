@@ -14,9 +14,12 @@ const ItemsListTable = ({ items, onShowQr }) => {
   return (
     <div className={styles.listCard}>
       <h3 className={styles.listTitle}>Listado Completo de Materia Prima</h3>
-      <div style={{ overflowX: 'auto' }}>
+      
+      {/* --- APLICAMOS EL SCROLL AQUÍ --- */}
+      <div className={styles.tableScrollWrapper}>
         <table className={styles.inventoryTable}>
-          <thead>
+          {/* --- APLICAMOS LA CABECERA FIJA AQUÍ --- */}
+          <thead className={styles.stickyHeader}>
             <tr>
               <th className={styles.colQr}>QR</th>
               <th className={styles.colCode}>Código</th>
@@ -32,17 +35,15 @@ const ItemsListTable = ({ items, onShowQr }) => {
             {sortedItems.map(item => (
               <tr key={item.id} className={item.stock <= item.stockMinimo ? styles.lowStockRow : ''}>
                 <td className={`${styles.colQr} ${styles.qrCell}`}>
-                  {/* --- CAMBIO: Llamamos a onShowQr con itemCode y name --- */}
                   {item.itemCode && onShowQr && (
                     <button
                       className={styles.qrButtonInventory}
-                      onClick={() => onShowQr(item.itemCode, item.name)} // Pasamos código y nombre
+                      onClick={() => onShowQr(item.itemCode, item.name)} 
                       title={`Mostrar QR para ${item.itemCode}`}
                     >
                       <FaQrcode />
                     </button>
                   )}
-                  {/* --- FIN CAMBIO --- */}
                 </td>
                 <td className={styles.colCode}><span className={styles.itemCode}>{item.itemCode || 'N/A'}</span></td>
                 <td className={styles.colName}>{item.name}</td>
