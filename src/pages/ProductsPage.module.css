@@ -115,3 +115,39 @@
   border-radius: 8px;
   animation: skeleton-loading 1s linear infinite alternate;
 }
+
+/* --- BARRA DE FILTROS DE CATEGORÍAS --- */
+.categoryFilters {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+
+.categoryBtn {
+  padding: 0.6rem 1.4rem;
+  border: 2px solid #e9ecef;
+  background-color: #fff;
+  color: #495057;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.categoryBtn:hover {
+  border-color: #ffd000; /* Color DE Group */
+  color: #212529;
+}
+
+.activeCategory {
+  padding: 0.6rem 1.4rem;
+  border: 2px solid #ffd000;
+  background-color: #ffd000;
+  color: #121212;
+  border-radius: 25px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(255, 208, 0, 0.3);
+}

@@ -7,7 +7,6 @@ import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebas
 import styles from './ProductManager.module.css';
 import { FaTrash } from 'react-icons/fa';
 import toast from 'react-hot-toast';
-// --- RUTA CORREGIDA ---
 import DescriptionEditor from './admin/DescriptionEditor'; 
 
 const ProgressBar = ({ progress }) => (
@@ -39,7 +38,11 @@ function ProductManager() {
   const fetchProducts = async () => {
     setLoading(true);
     const querySnapshot = await getDocs(productsCollectionRef);
-    const productsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    let productsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    // --- FILTRO MÁGICO: Ocultar tarjetas de noticias/marketing del panel ---
+    productsData = productsData.filter(product => !product.isMarketing);
+
     setProducts(productsData);
     setLoading(false);
   };
