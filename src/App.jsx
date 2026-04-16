@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import ScrollToTop from './components/ScrollToTop.jsx';
+import WhatsAppButton from './components/ui/WhatsAppButton'; // Asegúrate de poner la ruta correcta
 
 // Layouts
 import AdminLayout from './layouts/AdminLayout.jsx';
@@ -32,7 +33,6 @@ import SinglePostPage from './pages/SinglePostPage.jsx';
 import RegistrationSuccessPage from './pages/RegistrationSuccessPage';
 import ChatPage from './pages/ChatPage.jsx';
 import MessagesPage from './pages/MessagesPage.jsx';
-// --- ¡NUEVA RUTA IMPORTADA! ---
 import HomeCategoryPage from './pages/HomeCategoryPage.jsx';
 
 // Páginas de Admin
@@ -41,19 +41,18 @@ import AdminInventoryPage from './pages/admin/AdminInventoryPage.jsx';
 import AdminRecipesPage from './pages/admin/AdminRecipesPage.jsx';
 import AdminProductionPage from './pages/admin/AdminProductionPage.jsx';
 import AdminBulkPriceEditorPage from './pages/admin/AdminBulkPriceEditorPage.jsx';
-import AdminProductsPage from './pages/admin/AdminProductsPage.jsx'; // Corregido
-import AdminOrdersPage from './pages/admin/AdminOrdersPage.jsx'; // Corregido
-import AdminUsersPage from './pages/admin/AdminUsersPage.jsx'; // Corregido
-import AdminRealtimePage from './pages/admin/AdminRealtimePage.jsx'; // Corregido
-import AdminClientsPage from './pages/admin/AdminClientsPage.jsx'; // Corregido
-import AdminContactsPage from './pages/admin/AdminContactsPage.jsx'; // Corregido
-import AdminItemDetailPage from './pages/admin/AdminItemDetailPage.jsx'; // Corregido
+import AdminProductsPage from './pages/admin/AdminProductsPage.jsx'; 
+import AdminOrdersPage from './pages/admin/AdminOrdersPage.jsx'; 
+import AdminUsersPage from './pages/admin/AdminUsersPage.jsx'; 
+import AdminRealtimePage from './pages/admin/AdminRealtimePage.jsx'; 
+import AdminClientsPage from './pages/admin/AdminClientsPage.jsx'; 
+import AdminContactsPage from './pages/admin/AdminContactsPage.jsx'; 
+import AdminItemDetailPage from './pages/admin/AdminItemDetailPage.jsx'; 
 import InventoryCardsPage from './pages/admin/InventoryCardsPage';
 
-// --- ¡ESTA ES LA LÍNEA CORREGIDA! ---
 import AIPanel from './pages/AIPanel.jsx';
 
-// --- ¡NUEVO! Páginas de Cash Flow (Ruta Corregida) ---
+// Páginas de Cash Flow 
 import FixedExpensesPage from './pages/admin/FixedExpensesPage.jsx';
 import IncomingChecksPage from './pages/admin/IncomingChecksPage.jsx';
 
@@ -99,7 +98,6 @@ function App() {
           <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="inventario" element={<AdminInventoryPage />} />
           
-          {/* --- RUTA AÑADIDA PARA DETALLE DE ÍTEM --- */}
           <Route path="inventario/item/:itemCode" element={<AdminItemDetailPage />} />
           
           <Route path="clientes" element={<AdminClientsPage />} />
@@ -115,16 +113,14 @@ function App() {
           <Route path="contactos" element={<AdminContactsPage />} />
           <Route path="/admin/inventario/tarjetas" element={<InventoryCardsPage />} />
 
-          {/* --- ¡AÑADIDO! Ruta del Panel de IA --- */}
           <Route path="ai-panel" element={<AIPanel />} />
 
-          {/* --- ¡NUEVO! Rutas de Cash Flow --- */}
           <Route path="gastos-fijos" element={<FixedExpensesPage />} />
           <Route path="cheques" element={<IncomingChecksPage />} />
 
         </Route>
 
-        {/* --- MUNDO PÚBLICO (RUTAS RESTAURADAS) --- */}
+        {/* --- MUNDO PÚBLICO --- */}
         <Route path="/" element={<PublicLayout />}>
           <Route path="/solicitud-enviada" element={<OrderSuccessPage />} />
           <Route index element={<HomePage />} />
@@ -145,13 +141,16 @@ function App() {
           <Route path="perfil/:userId" element={<ProfilePage />} />
           <Route path="post/:postId" element={<ProtectedRoute><SinglePostPage /></ProtectedRoute>} />
           
-          {/* --- ¡NUEVA RUTA AÑADIDA! --- */}
           <Route path="categorias/:id" element={<HomeCategoryPage />} />
           <Route path="novedades/:id" element={<MarketingPage />} />
           
           <Route path="*" element={<h2>Página no encontrada</h2>} />
         </Route>
       </Routes>
+
+      {/* --- BOTÓN FLOTANTE DE WHATSAPP GLOBAL --- */}
+      <WhatsAppButton />
+
     </>
   );
 }
