@@ -1,0 +1,186 @@
+.testimonialsSection {
+    padding: 5rem 1.5rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+  }
+  
+  .header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+  }
+  
+  .title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #212529;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+  }
+  
+  .subtitle {
+    font-size: 1.1rem;
+    color: #6c757d;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .carouselContainer {
+    position: relative;
+    width: 100%;
+  }
+  
+  .carouselArrows {
+    position: absolute;
+    top: 50%;
+    left: -20px;
+    right: -20px;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    z-index: 10;
+    pointer-events: none;
+  }
+  
+  .scrollArrow {
+    background-color: #ffd000;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #121212;
+    cursor: pointer;
+    pointer-events: auto;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease;
+  }
+  
+  .scrollArrow:hover {
+    transform: scale(1.1);
+  }
+  
+  .grid {
+    display: flex;
+    gap: 2rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 1rem 0 2rem 0;
+    /* Ocultar barra de scroll para diseño limpio */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .grid::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .card {
+    flex: 0 0 350px; /* Ancho fijo para que funcione el carrusel */
+    scroll-snap-align: start;
+    background-color: #ffffff;
+    padding: 2.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    position: relative;
+    transition: transform 0.3s ease;
+    border: 1px solid #f1f3f5;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+  }
+  
+  .quoteIcon {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    font-size: 2.5rem;
+    color: #f1f3f5;
+    z-index: 0;
+  }
+  
+  .stars {
+    display: flex;
+    gap: 0.3rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .starIcon {
+    color: #ffd000; 
+    font-size: 1.2rem;
+  }
+  
+  .text {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: #495057;
+    margin-bottom: 2rem;
+    font-style: italic;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .authorInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-top: 1px solid #f1f3f5;
+    padding-top: 1.5rem;
+  }
+  
+  .avatar {
+    width: 50px;
+    height: 50px;
+    background-color: #ffd000;
+    color: #121212;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  
+  .name {
+    margin: 0 0 0.2rem 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #212529;
+  }
+  
+  .role {
+    font-size: 0.85rem;
+    color: #868e96;
+  }
+  
+  .editButton {
+    position: absolute;
+    top: -3rem;
+    right: 0;
+    background-color: #343a40;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: bold;
+    z-index: 99;
+  }
+  .editButton:hover {
+    background-color: #212529;
+  }

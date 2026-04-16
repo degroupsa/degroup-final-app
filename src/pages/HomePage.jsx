@@ -11,6 +11,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useAuth } from '../context/AuthContext.jsx';
 import toast from 'react-hot-toast';
 import ReactQuill from 'react-quill';
+import TestimonialsSection from '../components/ui/TestimonialsSection'; 
 import 'react-quill/dist/quill.snow.css';
 
 // --- HELPERS ---
@@ -35,12 +36,8 @@ const getYoutubeId = (url) => {
     return (match && match[2].length === 11) ? match[2] : null;
 };
 
-const quillModules = {
-  toolbar: [['bold', 'italic', 'underline'], [{ 'header': [1, 2, 3, false] }], [{ 'list': 'ordered'}, { 'list': 'bullet' }], ['clean']],
-};
-const titleModules = {
-  toolbar: [['bold', 'italic', 'underline'], [{ 'color': [] }], ['clean']],
-};
+const quillModules = { toolbar: [['bold', 'italic', 'underline'], [{ 'header': [1, 2, 3, false] }], [{ 'list': 'ordered'}, { 'list': 'bullet' }], ['clean']] };
+const titleModules = { toolbar: [['bold', 'italic', 'underline'], [{ 'color': [] }], ['clean']] };
 
 const GetCategoryIcon = ({ iconName, className }) => {
   const IconMap = { FaTractor: <FaTractor />, FaIndustry: <FaIndustry />, FaSearch: <FaSearch />, GiHarvester: <FaTractor />, GiSeedling: <FaIndustry />, GiFarmTractor: <FaTractor /> };
@@ -48,7 +45,7 @@ const GetCategoryIcon = ({ iconName, className }) => {
   return React.cloneElement(Icon, { className: className || styles.categoryIcon });
 };
 
-// --- MODAL 1: HERO SLIDES ---
+// --- MODAL: HERO SLIDES ---
 const HeroSlidesEditorModal = ({ slides, onSave, onClose }) => {
   const [localSlides, setLocalSlides] = useState(Array.isArray(slides) ? slides : []);
   const [editingIndex, setEditingIndex] = useState(null); 
@@ -75,12 +72,8 @@ const HeroSlidesEditorModal = ({ slides, onSave, onClose }) => {
       e.preventDefault(); setLoading(true);
       try {
         let url = preview;
-        if(d.type === 'youtube') {
-            url = d.url;
-        } else if (file) {
-            const r = ref(storage, `hero/${d.type==='video'?'v':'i'}/${Date.now()}_${file.name}`);
-            await uploadBytes(r, file); url = await getDownloadURL(r);
-        }
+        if(d.type === 'youtube') url = d.url;
+        else if (file) { const r = ref(storage, `hero/${d.type==='video'?'v':'i'}/${Date.now()}_${file.name}`); await uploadBytes(r, file); url = await getDownloadURL(r); }
         const newSlide = { ...d, url };
         const newSlides = [...localSlides];
         if(editingIndex === 'NEW') newSlides.push(newSlide); else newSlides[editingIndex] = newSlide;
@@ -96,12 +89,7 @@ const HeroSlidesEditorModal = ({ slides, onSave, onClose }) => {
       setLocalSlides(arr);
   };
 
-  const handleFinalSave = async () => {
-    setLoading(true);
-    await onSave('hero', { heroSlides: localSlides });
-    setLoading(false);
-    onClose();
-  };
+  const handleFinalSave = async () => { setLoading(true); await onSave('hero', { heroSlides: localSlides }); setLoading(false); onClose(); };
 
   return (
     <div className={styles.adminEditorOverlay}><div className={styles.adminEditorModal}>
@@ -111,10 +99,7 @@ const HeroSlidesEditorModal = ({ slides, onSave, onClose }) => {
           <div className={styles.slideList}>{localSlides.map((s, i) => (
             <div key={i} className={styles.slideItem}>
               <span><strong>#{i+1}</strong> {s.type==='video'?'🎬':(s.type==='youtube'?'🟥':'📷')} {s.indicatorTitle || stripHtml(s.title).substring(0,20)}</span>
-              <div className={styles.slideActions}>
-                <button type="button" onClick={()=>move(i,'up')}><FaArrowUp/></button><button type="button" onClick={()=>move(i,'down')}><FaArrowDown/></button>
-                <button type="button" onClick={()=>startEdit(i)}><FaEdit/></button><button type="button" onClick={()=>{if(confirm('Borrar?')) setLocalSlides(localSlides.filter((_,x)=>x!==i))}}><FaTrash/></button>
-              </div>
+              <div className={styles.slideActions}><button type="button" onClick={()=>move(i,'up')}><FaArrowUp/></button><button type="button" onClick={()=>move(i,'down')}><FaArrowDown/></button><button type="button" onClick={()=>startEdit(i)}><FaEdit/></button><button type="button" onClick={()=>{if(confirm('Borrar?')) setLocalSlides(localSlides.filter((_,x)=>x!==i))}}><FaTrash/></button></div>
             </div>
           ))}</div>
           <button className={styles.createBtn} onClick={()=>startEdit(-1)}>+ Slide</button>
@@ -122,21 +107,8 @@ const HeroSlidesEditorModal = ({ slides, onSave, onClose }) => {
         </>
       ) : (
         <form onSubmit={save} className={styles.formFields}>
-           <div className={styles.formGroup}>
-               <label>Tipo:</label>
-               <select value={d.type} onChange={e=>setD({...d, type:e.target.value, url:''})}>
-                   <option value="image">Imagen</option>
-                   <option value="video">Video (MP4)</option>
-                   <option value="youtube">YouTube</option>
-               </select>
-           </div>
-           
-           {d.type === 'youtube' ? (
-               <div className={styles.formGroup}><label>URL YouTube:</label><input key="yt-input" value={d.url} onChange={e=>{setD({...d, url:e.target.value}); setPreview(e.target.value)}}/></div>
-           ) : (
-               <div className={styles.formGroup}><label>Archivo:</label><input key="file-input" type="file" onChange={handleFileChange}/>{preview && <div style={{marginTop:10}}>{d.type==='video'?<video src={preview} width="150" controls/>:<img src={preview} width="150"/>}</div>}</div>
-           )}
-
+           <div className={styles.formGroup}><label>Tipo:</label><select value={d.type} onChange={e=>setD({...d, type:e.target.value, url:''})}><option value="image">Imagen</option><option value="video">Video (MP4)</option><option value="youtube">YouTube</option></select></div>
+           {d.type === 'youtube' ? <div className={styles.formGroup}><label>URL YouTube:</label><input value={d.url} onChange={e=>{setD({...d, url:e.target.value}); setPreview(e.target.value)}}/></div> : <div className={styles.formGroup}><label>Archivo:</label><input type="file" onChange={handleFileChange}/>{preview && <div style={{marginTop:10}}>{d.type==='video'?<video src={preview} width="150" controls/>:<img src={preview} width="150"/>}</div>}</div>}
            <div className={styles.formGroup}><label>Título Principal:</label><ReactQuill value={d.title} onChange={v=>setD({...d,title:v})} modules={titleModules}/></div>
            <div className={styles.formGroup}><label>Título Barra (Abajo):</label><input value={d.indicatorTitle} onChange={e=>setD({...d,indicatorTitle:e.target.value})} placeholder="Ej: DE GROUP 2026"/></div>
            <div className={styles.formGroup}><label>Descripción:</label><ReactQuill value={d.text} onChange={v=>setD({...d,text:v})} modules={quillModules}/></div>
@@ -147,6 +119,55 @@ const HeroSlidesEditorModal = ({ slides, onSave, onClose }) => {
     </div></div>
   );
 };
+
+// --- MODAL: TESTIMONIOS (¡NUEVO!) ---
+const TestimonialsEditorModal = ({ initialData, onSave, onClose }) => {
+  const [data, setData] = useState(initialData || { title: 'Lo que dicen nuestros clientes', subtitle: 'Descubrí por qué nos eligen.', items: [] });
+  const [editingItem, setEditingItem] = useState(null);
+  const [itemData, setItemData] = useState({ name: '', role: '', text: '', rating: 5 });
+
+  const handleSaveItem = (e) => {
+    e.preventDefault();
+    const newItems = [...(data.items || [])];
+    if (editingItem === 'NEW') newItems.push(itemData);
+    else newItems[editingItem] = itemData;
+    setData({ ...data, items: newItems });
+    setEditingItem(null);
+  };
+
+  const deleteItem = (i) => { if (confirm("¿Borrar testimonio?")) { const newItems = data.items.filter((_, idx) => idx !== i); setData({ ...data, items: newItems }); } };
+  const moveItem = (i, dir) => { const arr = [...data.items]; if(dir==='up' && i>0) [arr[i], arr[i-1]] = [arr[i-1], arr[i]]; if(dir==='down' && i<arr.length-1) [arr[i], arr[i+1]] = [arr[i+1], arr[i]]; setData({...data, items: arr}); };
+
+  return (
+    <div className={styles.adminEditorOverlay}><div className={styles.adminEditorModal}>
+      <h3>Gestor de Testimonios</h3>
+      {editingItem === null ? (
+        <>
+          <div className={styles.formGroup}><label>Título Sección:</label><input value={data.title} onChange={e=>setData({...data, title: e.target.value})} /></div>
+          <div className={styles.formGroup}><label>Subtítulo:</label><input value={data.subtitle} onChange={e=>setData({...data, subtitle: e.target.value})} /></div>
+          <hr style={{margin: '20px 0'}}/>
+          <div className={styles.slideList}>{data.items?.map((item, i) => (
+            <div key={i} className={styles.slideItem}>
+              <span><strong>{item.name}</strong> - {item.role}</span>
+              <div className={styles.slideActions}><button onClick={()=>moveItem(i,'up')}><FaArrowUp/></button><button onClick={()=>moveItem(i,'down')}><FaArrowDown/></button><button onClick={()=>{setItemData(item); setEditingItem(i);}}><FaEdit/></button><button onClick={()=>deleteItem(i)}><FaTrash/></button></div>
+            </div>
+          ))}</div>
+          <button className={styles.createBtn} onClick={()=>{setItemData({name:'', role:'', text:'', rating:5}); setEditingItem('NEW');}}>+ Agregar Testimonio</button>
+          <div className={styles.formActions}><button onClick={onClose}>Cancelar</button><button onClick={()=>{onSave('testimonials', data); onClose();}}>Guardar Todo</button></div>
+        </>
+      ) : (
+        <form onSubmit={handleSaveItem}>
+          <div className={styles.formGroup}><label>Nombre del Cliente:</label><input required value={itemData.name} onChange={e=>setItemData({...itemData, name: e.target.value})} /></div>
+          <div className={styles.formGroup}><label>Cargo o Profesión:</label><input required value={itemData.role} onChange={e=>setItemData({...itemData, role: e.target.value})} placeholder="Ej. Productor Agropecuario" /></div>
+          <div className={styles.formGroup}><label>Estrellas (1-5):</label><input required type="number" min="1" max="5" value={itemData.rating} onChange={e=>setItemData({...itemData, rating: Number(e.target.value)})} /></div>
+          <div className={styles.formGroup}><label>Testimonio:</label><textarea required rows="4" value={itemData.text} onChange={e=>setItemData({...itemData, text: e.target.value})} style={{width: '100%', padding:'10px', borderRadius:'8px', border:'1px solid #ddd'}}/></div>
+          <div className={styles.formActions}><button type="button" onClick={()=>setEditingItem(null)}>Volver</button><button type="submit">Guardar Testimonio</button></div>
+        </form>
+      )}
+    </div></div>
+  );
+};
+
 
 // --- MODAL 2: SECCIÓN GENÉRICA ---
 const AdminSectionEditor = ({ sectionName, initialData, onSave, onClose }) => {
@@ -352,16 +373,17 @@ function HomePage() {
   const [finalCtaData, setFinalCtaData] = useState({title:'Final CTA',text:'',buttonText:'CONTACTO',imageUrl:''});
   const [newsData, setNewsData] = useState({title:'Novedades',text:'',productIDs:[]});
   const [promotionsData, setPromotionsData] = useState({title:'Promociones',text:'',productIDs:[]});
+  // NUEVO ESTADO PARA TESTIMONIOS
+  const [testimonialsData, setTestimonialsData] = useState({title: 'Lo que dicen nuestros clientes', subtitle: 'Descubrí por qué nos eligen.', items: []});
   
   const [featuredProducts, setFeaturedProducts] = useState([]); const [promotionsList, setPromotionsList] = useState([]);
   const [categories, setCategories] = useState([]); const [allProducts, setAllProducts] = useState([]); const [prodCats, setProdCats] = useState([]);
   
   const [currSlide, setCurrSlide] = useState(0); const [progress, setProgress] = useState(0);
-  const [modals, setModals] = useState({hero:false, agri:false, final:false, news:false, promo:false, newsCards:false, promoCards:false, cat:false, card:false});
+  const [modals, setModals] = useState({hero:false, agri:false, final:false, news:false, promo:false, newsCards:false, promoCards:false, cat:false, card:false, testimonials:false});
   
-  // --- ESTADO CORREGIDO ---
   const [currCat, setCurrCat] = useState(null); 
-  const [cardToEdit, setCardToEdit] = useState(null); // CORRECCIÓN: Nombre coincidente
+  const [cardToEdit, setCardToEdit] = useState(null); 
   const [editCtx, setEditCtx] = useState('');
   
   const videoRef = useRef(null); 
@@ -377,6 +399,7 @@ function HomePage() {
           
           await fetch('sections','agritechnica',setAgritechnicaData);
           await fetch('sections','finalCta',setFinalCtaData);
+          await fetch('sections','testimonials',setTestimonialsData); // CARGAMOS LOS TESTIMONIOS
           
           const n = await getDoc(doc(db,'sections','news')); if(n.exists()) { setNewsData(n.data()); loadProds(n.data().productIDs, setFeaturedProducts); }
           const p = await getDoc(doc(db,'sections','promotions')); if(p.exists()) { setPromotionsData(p.data()); loadProds(p.data().productIDs, setPromotionsList); }
@@ -408,6 +431,7 @@ function HomePage() {
       if(sec==='hero'){ setHeroData(prev=>({...prev,...data})); setCurrSlide(0); setProgress(0); }
       if(sec==='agritechnica') setAgritechnicaData(prev=>({...prev,...data}));
       if(sec==='finalCta') setFinalCtaData(prev=>({...prev,...data}));
+      if(sec==='testimonials') setTestimonialsData(prev=>({...prev,...data})); // GUARDAMOS TESTIMONIOS
       if(sec==='news'){ setNewsData(prev=>({...prev,...data})); loadProds(data.productIDs, setFeaturedProducts); }
       if(sec==='promotions'){ setPromotionsData(prev=>({...prev,...data})); loadProds(data.productIDs, setPromotionsList); }
       toast.success("Guardado");
@@ -573,6 +597,9 @@ function HomePage() {
           </div>
       </section>
 
+      {/* NUEVO: TESTIMONIOS DE CLIENTES */}
+      <TestimonialsSection data={testimonialsData} isAdmin={isAdmin} onEdit={() => toggleModal('testimonials', true)} />
+
       {/* 6. FINAL CTA */}
       <section className={styles.finalCtaSection}>
           {isAdmin && <button className={styles.editButton} onClick={()=>toggleModal('final',true)} style={{top:'2rem',left:'2rem',zIndex:99}}><FaEdit/> Editar</button>}
@@ -595,14 +622,15 @@ function HomePage() {
       {modals.newsCards && <FeaturedProductsEditorModal sectionName="news" initialProductIDs={newsData.productIDs} allProducts={allProducts} onSave={saveData} onClose={()=>toggleModal('newsCards',false)}/>}
       {modals.promoCards && <FeaturedProductsEditorModal sectionName="promotions" initialProductIDs={promotionsData.productIDs} allProducts={allProducts} onSave={saveData} onClose={()=>toggleModal('promoCards',false)}/>}
       
-      {/* CORRECCIÓN: initialData usa currCat en lugar de currentCategory */}
       {modals.cat && <CategoryEditorModal initialData={currCat} onSave={async(d,id)=>{
           if(id){await updateDoc(doc(db,'categories',id),d);} else {await addDoc(collection(db,'categories'),d);}
           toggleModal('cat',false); window.location.reload();
       }} onClose={()=>toggleModal('cat',false)} productCategories={prodCats}/>}
       
-      {/* CORRECCIÓN: modals.card usa cardToEdit */}
       {modals.card && cardToEdit && <NewsEditModal product={cardToEdit} currentOrder={cardToEdit.order} totalItems={editCtx==='news'?featuredProducts.length:promotionsList.length} onSave={handleCardOps.save} onClose={()=>toggleModal('card',false)}/>}
+      
+      {/* MODAL DE TESTIMONIOS */}
+      {modals.testimonials && <TestimonialsEditorModal initialData={testimonialsData} onSave={saveData} onClose={() => toggleModal('testimonials', false)} />}
 
     </div>
   );
